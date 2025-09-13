@@ -6,35 +6,35 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        <img src="{{ asset('images/logo-only.png') }}" alt="Logo Only" class="w-16 object-contain" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs(['teacher.dashboard', 'admin.dashboard', 'student.dashboard'])">
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
                     @if (Auth::user()->isAdmin())
                         <!-- Admin Links -->
-                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" class="text-blue-600">
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('User Management') }}
                         </x-nav-link>
                     @elseif(Auth::user()->isTeacher())
                         <!-- Teacher Links -->
-                        <x-nav-link href="#" class="text-indigo-600">
+                        <x-nav-link :href="route('teacher.questions.index')" :active="request()->routeIs('teacher.questions.*')">
                             {{ __('Question Bank') }}
                         </x-nav-link>
-                        <x-nav-link href="#" class="text-yellow-600">
+                        <x-nav-link :href="route('teacher.exams.index')" :active="request()->routeIs('teacher.exams.*')">
                             {{ __('Exams') }}
                         </x-nav-link>
                     @elseif(Auth::user()->isStudent())
                         <!-- Student Links -->
-                        <x-nav-link href="#" class="text-green-600">
+                        <x-nav-link :href="route('student.exams.index')" :active="request()->routeIs('student.exams.*')">
                             {{ __('My Exams') }}
                         </x-nav-link>
-                        <x-nav-link href="#" class="text-blue-600">
+                        <x-nav-link href="#">
                             {{ __('Results') }}
                         </x-nav-link>
                     @endif
@@ -47,7 +47,18 @@
                     <x-slot name="trigger">
                         <button
                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }} ({{ ucfirst(Auth::user()->role) }})</div>
+
+                            @php
+                                $labels = [
+                                    'admin' => 'Admin',
+                                    'student' => 'Examinee',
+                                    'teacher' => 'Committee',
+                                ];
+                            @endphp
+
+                            <div>{{ Auth::user()->name }}
+                                ({{ $labels[Auth::user()->role] ?? ucfirst(Auth::user()->role) }})</div>
+
 
                             <div class="ml-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"

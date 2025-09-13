@@ -77,11 +77,20 @@
                                                 @if ($user->role === 'admin') bg-red-100 text-red-800
                                                 @elseif($user->role === 'teacher') bg-blue-100 text-blue-800
                                                 @else bg-green-100 text-green-800 @endif">
-                                                {{ ucfirst($user->role) }}
+
+                                                @php
+                                                    $labels = [
+                                                        'admin' => 'Admin',
+                                                        'student' => 'Examinee',
+                                                        'teacher' => 'Committee',
+                                                    ];
+                                                @endphp
+
+                                                {{ $labels[$user->role] ?? ucfirst($user->role) }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $user->created_at->format('M j, Y') }}
+                                            {{ $user->created_at->format('j F Y') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex space-x-2">

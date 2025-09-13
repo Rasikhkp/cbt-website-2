@@ -38,9 +38,9 @@
                             <select id="role" name="role"
                                 class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                                 <option value="student" {{ old('role', $user->role) == 'student' ? 'selected' : '' }}>
-                                    Student</option>
+                                    Examinee</option>
                                 <option value="teacher" {{ old('role', $user->role) == 'teacher' ? 'selected' : '' }}>
-                                    Teacher</option>
+                                    Committee</option>
                                 <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>
                                     Admin</option>
                             </select>
@@ -62,11 +62,11 @@
                             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                         </div>
 
-                        <div class="flex items-center justify-end mt-6">
-                            <a href="{{ route('admin.users.index') }}"
-                                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">
-                                Cancel
-                            </a>
+                        <div class="flex gap-2 items-center justify-end mt-6">
+                            <x-secondary-button onclick="window.location='{{ route('admin.users.index') }}'">
+                                {{ __('Cancel') }}
+                            </x-secondary-button>
+
                             <x-primary-button>
                                 {{ __('Update User') }}
                             </x-primary-button>

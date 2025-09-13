@@ -3,13 +3,14 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules;
 
 class StoreUserRequest extends FormRequest
 {
     public function authorize()
     {
-        return auth()->user()->isAdmin();
+        return Auth::user()->isAdmin();
     }
 
     public function rules()

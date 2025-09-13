@@ -32,7 +32,16 @@
                                 @if ($user->role === 'admin') bg-red-100 text-red-800
                                 @elseif($user->role === 'teacher') bg-blue-100 text-blue-800
                                 @else bg-green-100 text-green-800 @endif">
-                                {{ ucfirst($user->role) }}
+
+                                @php
+                                    $labels = [
+                                        'admin' => 'Admin',
+                                        'student' => 'Examinee',
+                                        'teacher' => 'Committee',
+                                    ];
+                                @endphp
+
+                                {{ $labels[$user->role] ?? ucfirst($user->role) }}
                             </span>
                         </div>
 
@@ -50,39 +59,19 @@
 
                             <div>
                                 <h3 class="text-sm font-medium text-gray-500">Role</h3>
-                                <p class="text-lg text-gray-900">{{ ucfirst($user->role) }}</p>
+                                <p class="text-lg text-gray-900">
+                                    {{ $labels[$user->role] ?? ucfirst($user->role) }}</p>
+                                </p>
                             </div>
 
                             <div>
                                 <h3 class="text-sm font-medium text-gray-500">Member Since</h3>
-                                <p class="text-lg text-gray-900">{{ $user->created_at->format('F j, Y') }}</p>
+                                <p class="text-lg text-gray-900">{{ $user->created_at->format('j F Y') }}</p>
                             </div>
 
                             <div>
                                 <h3 class="text-sm font-medium text-gray-500">Last Updated</h3>
-                                <p class="text-lg text-gray-900">{{ $user->updated_at->format('F j, Y g:i A') }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Future Stats Section -->
-                    <div class="mt-8 pt-6 border-t border-gray-200">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Activity Overview</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="bg-blue-50 p-4 rounded-lg">
-                                <h4 class="font-medium text-blue-800">Exams Created</h4>
-                                <p class="text-2xl font-bold text-blue-600">-</p>
-                                <p class="text-sm text-blue-600">Coming in Phase 4</p>
-                            </div>
-                            <div class="bg-green-50 p-4 rounded-lg">
-                                <h4 class="font-medium text-green-800">Exams Taken</h4>
-                                <p class="text-2xl font-bold text-green-600">-</p>
-                                <p class="text-sm text-green-600">Coming in Phase 5</p>
-                            </div>
-                            <div class="bg-purple-50 p-4 rounded-lg">
-                                <h4 class="font-medium text-purple-800">Questions Added</h4>
-                                <p class="text-2xl font-bold text-purple-600">-</p>
-                                <p class="text-sm text-purple-600">Coming in Phase 3</p>
+                                <p class="text-lg text-gray-900">{{ $user->updated_at->format('j F Y, g:i A') }}</p>
                             </div>
                         </div>
                     </div>

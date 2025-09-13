@@ -47,4 +47,40 @@ class User extends Authenticatable
     {
         return $this->role === $role;
     }
+
+    public function questions()
+    {
+        return $this->hasMany(Question::class, 'created_by');
+    }
+
+    public function createdExams()
+    {
+        return $this->hasMany(Exam::class, 'created_by');
+    }
+
+    public function assignedExams()
+    {
+        return $this->belongsToMany(Exam::class, 'exam_students', 'student_id', 'exam_id')
+            ->withPivot(['assigned_at', 'due_date', 'is_optional', 'special_instructions']);
+    }
+
+    public function examAssignments()
+    {
+        return $this->hasMany(ExamStudent::class, 'student_id');
+    }
+
+    public function examAttempts()
+    {
+        return $this->hasMany(ExamAttempt::class, 'student_id');
+    }
+
+    public function examAnswers()
+    {
+        return $this->hasManyThrough(ExamAnswer::class, ExamAttempt::class, 'student_id', 'attempt_id');
+    }
+
+    public function gradedAnswers()
+    {
+        return $this->hasMany(ExamAnswer::class, 'graded_by');
+    }
 }

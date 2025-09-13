@@ -14,7 +14,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="bg-blue-50 p-6 rounded-lg">
                             <h4 class="font-medium text-blue-800">User Management</h4>
-                            <p class="text-blue-600 text-sm mt-2">Manage teachers and students</p>
+                            <p class="text-blue-600 text-sm mt-2">Manage committees and examinees</p>
                             <a href="{{ route('admin.users.index') }}"
                                 class="inline-block mt-3 text-blue-600 hover:text-blue-800 font-medium">
                                 Manage Users →
@@ -28,7 +28,7 @@
                                 <p class="text-sm text-green-700">Total Users: {{ \App\Models\User::count() }}</p>
                                 <p class="text-sm text-green-700">Admins:
                                     {{ \App\Models\User::where('role', 'admin')->count() }}</p>
-                                <p class="text-sm text-green-700">Teachers:
+                                <p class="text-sm text-green-700">Committees:
                                     {{ \App\Models\User::where('role', 'teacher')->count() }}</p>
                                 <p class="text-sm text-green-700">Students:
                                     {{ \App\Models\User::where('role', 'student')->count() }}</p>

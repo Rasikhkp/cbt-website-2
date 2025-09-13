@@ -1,0 +1,504 @@
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ $attempt->exam->title }} - Question {{ $questionNumber }}
+            </h2>
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <div class="text-sm text-gray-600">Time Remaining</div>
+                    <div id="timer" class="text-lg font-bold text-red-600">
+                        {{ $attempt->getRemainingTimeFormatted() }}
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-600">Progress</div>
+                    <div class="text-lg font-bold text-blue-600">
+                        <span id="progress">{{ $attempt->getProgressPercentage() }}</span>%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </x-slot>
+
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="flex gap-6">
+
+                <!-- Question Navigation Sidebar -->
+                <div class="w-64 flex-shrink-0">
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg sticky top-6">
+                        <div class="p-4">
+                            <h3 class="font-medium text-gray-900 mb-4">Questions</h3>
+                            <div class="grid grid-cols-5 gap-2">
+                                @foreach($questions as $index => $examQuestion)
+                                    @php
+                                        $questionAnswer = $answers->get($examQuestion->question_id);
+                                        $isAnswered = $questionAnswer && $questionAnswer->isAnswered();
+                                        $qNumber = $index + 1;
+                                        $isCurrent = $index == $questionIndex;
+                                    @endphp
+                                    <a href="{{ route('student.attempts.question', [$attempt, $qNumber]) }}"
+                                       class="w-10 h-10 rounded border-2 flex items-center justify-center text-sm font-medium transition-colors
+                                              {{ $isCurrent ? 'border-blue-500 bg-blue-100 text-blue-700' :
+                                                 ($isAnswered ? 'border-green-500 bg-green-100 text-green-700 hover:bg-green-200' :
+                                                               'border-gray-300 bg-white text-gray-700 hover:bg-gray-100') }}">
+                                        {{ $qNumber }}
+                                    </a>
+                                @endforeach
+                            </div>
+
+                            <div class="mt-4 space-y-2 text-xs">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 rounded border-2 border-green-500 bg-green-100"></div>
+                                    <span>Answered</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 rounded border-2 border-blue-500 bg-blue-100"></div>
+                                    <span>Current</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 rounded border-2 border-gray-300 bg-white"></div>
+                                    <span>Not answered</span>
+                                </div>
+                            </div>
+
+                            <!-- Quick Stats -->
+                            <div class="mt-4 pt-4 border-t text-sm">
+                                @php
+                                    $totalQuestions = $questions->count();
+                                    $answeredCount = $answers->filter(fn($a) => $a->isAnswered())->count();
+                                @endphp
+                                <div class="space-y-1">
+                                    <div class="flex justify-between">
+                                        <span>Answered:</span>
+                                        <span class="font-medium">{{ $answeredCount }}/{{ $totalQuestions }}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Remaining:</span>
+                                        <span class="font-medium">{{ $totalQuestions - $answeredCount }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Progress Bar -->
+                                <div class="mt-3">
+                                    <div class="bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                             style="width: {{ $attempt->getProgressPercentage() }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="mt-6 pt-4 border-t">
+                                <form action="{{ route('student.attempts.submit', $attempt) }}" method="POST"
+                                      onsubmit="return confirm('Are you sure you want to submit your exam? You cannot make changes after submission.')"
+                                      id="submitForm">
+                                    @csrf
+                                    <input type="hidden" name="confirm_submit" value="1">
+                                    <button type="submit"
+                                            class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                        Submit Exam
+                                    </button>
+                                </form>
+
+                                <!-- Warning about incomplete answers -->
+                                @if($answeredCount < $totalQuestions)
+                                    <p class="text-xs text-orange-600 mt-2 text-center">
+                                        {{ $totalQuestions - $answeredCount }} question(s) unanswered
+                                    </p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Question Content -->
+                <div class="flex-1">
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="p-6">
+                            <!-- Success/Error Messages -->
+                            @if (session('success'))
+                                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
+
+                            @if (session('error'))
+                                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                                    {{ session('error') }}
+                                </div>
+                            @endif
+
+                            <!-- Question Header -->
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="flex items-center gap-3">
+                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                                        Question {{ $questionNumber }} of {{ $questions->count() }}
+                                    </span>
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                                        {{ $question->getTypeDisplayName() }}
+                                    </span>
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $question->getDifficultyColorClass() }}">
+                                        {{ ucfirst($question->difficulty) }}
+                                    </span>
+                                    @if($question->tags && count($question->tags) > 0)
+                                        @foreach(array_slice($question->tags, 0, 2) as $tag)
+                                            <span class="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
+                                                {{ $tag }}
+                                            </span>
+                                        @endforeach
+                                    @endif
+                                </div>
+                                <div class="text-sm font-medium text-gray-700">
+                                    {{ $currentQuestion->marks }} {{ Str::plural('mark', $currentQuestion->marks) }}
+                                </div>
+                            </div>
+
+                            <!-- Question Text -->
+                            <div class="mb-6">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $question->question_text }}</h3>
+                            </div>
+
+                            <!-- Question Images -->
+                            @if($question->images && $question->images->count() > 0)
+                                <div class="mb-6">
+                                    <h4 class="font-medium text-gray-700 mb-3">Reference Images:</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        @foreach($question->images as $image)
+                                            <div class="border rounded-lg p-2">
+                                                <img src="{{ $image->getUrl() }}"
+                                                     alt="{{ $image->alt_text ?: $image->original_name }}"
+                                                     class="w-full h-48 object-contain cursor-pointer hover:shadow-lg transition-shadow"
+                                                     onclick="openImageModal('{{ $image->getUrl() }}', '{{ $image->alt_text ?: $image->original_name }}')">
+                                                @if($image->alt_text)
+                                                    <p class="text-xs text-gray-600 mt-1 text-center">{{ $image->alt_text }}</p>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-2">Click on images to view full size</p>
+                                </div>
+                            @endif
+
+                            <!-- Answer Form -->
+                            <form id="answerForm" action="{{ route('student.attempts.save-answer', $attempt) }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="question_id" value="{{ $question->id }}">
+
+                                @if($question->isMCQ())
+                                    <!-- MCQ Options -->
+                                    <div class="mb-6">
+                                        <h4 class="font-medium text-gray-700 mb-3">Select your answer(s):</h4>
+                                        <div class="space-y-3">
+                                            @php $optionLabels = ['A', 'B', 'C', 'D', 'E', 'F']; @endphp
+                                            @foreach($question->options as $index => $option)
+                                                @php
+                                                    $isSelected = $answer && $answer->selected_options && in_array($option->id, $answer->selected_options);
+                                                @endphp
+                                                <label class="flex items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors {{ $isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}">
+                                                    <input type="radio"
+                                                           name="selected_options[]"
+                                                           value="{{ $option->id }}"
+                                                           {{ $isSelected ? 'checked' : '' }}
+                                                           class="rounded-full border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                                                           onchange="autoSaveAnswer()">
+                                                    <span class="ml-3 flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full {{ $isSelected ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600' }} font-medium transition-colors">
+                                                        {{ $optionLabels[$index] ?? chr(65 + $index) }}
+                                                    </span>
+                                                    <span class="ml-3 flex-1 text-gray-800">{{ $option->option_text }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                        @if($question->options->where('is_correct', true)->count() > 1)
+                                            <p class="text-sm text-blue-600 mt-2">
+                                                <i class="fas fa-info-circle"></i>
+                                                This question may have multiple correct answers. Select all that apply.
+                                            </p>
+                                        @endif
+                                    </div>
+                                @else
+                                    <!-- Text Answer -->
+                                    <div class="mb-6">
+                                        <label for="answer_text" class="block text-sm font-medium text-gray-700 mb-2">
+                                            Your Answer:
+                                        </label>
+                                        <textarea id="answer_text"
+                                                name="answer_text"
+                                                rows="{{ $question->isLong() ? 10 : 3 }}"
+                                                class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                                placeholder="{{ $question->isShort() ? 'Enter a brief answer...' : 'Provide a detailed answer...' }}"
+                                                oninput="autoSaveAnswer()">{{ $answer ? $answer->answer_text : '' }}</textarea>
+                                        @if($question->isLong())
+                                            <p class="text-xs text-gray-500 mt-1">Take your time to provide a comprehensive answer. You can use multiple paragraphs.</p>
+                                        @elseif($question->isShort())
+                                            <p class="text-xs text-gray-500 mt-1">Keep your answer brief and to the point.</p>
+                                        @endif
+                                    </div>
+                                @endif
+
+                                <!-- Answer Status -->
+                                <div class="mb-6 flex items-center justify-between">
+                                    <div id="saveStatus" class="text-sm text-gray-600 hidden">
+                                        <span class="text-green-600">✓ Auto-saved</span>
+                                    </div>
+                                    @if($answer && $answer->answered_at)
+                                        <div class="text-sm text-gray-500">
+                                            Last saved: {{ $answer->answered_at->format('M j, g:i A') }}
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <!-- Navigation and Save Buttons -->
+                                <div class="flex justify-between items-center">
+                                    <div class="flex gap-3">
+                                        @if($questionIndex > 0)
+                                            <button type="submit" name="action" value="previous"
+                                                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded flex items-center">
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                                </svg>
+                                                Previous
+                                            </button>
+                                        @endif
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <button type="submit"
+                                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                            Save Answer
+                                        </button>
+                                        @if($questionIndex < $questions->count() - 1)
+                                            <button type="submit" name="action" value="next"
+                                                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center">
+                                                Next
+                                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                </svg>
+                                            </button>
+                                        @else
+                                            <button type="button"
+                                                    onclick="document.getElementById('submitForm').submit()"
+                                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                                Submit Exam
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <!-- Keyboard Shortcuts Info -->
+                                <div class="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
+                                    <strong>Keyboard shortcuts:</strong>
+                                    Ctrl+S to save,
+                                    @if($questionIndex > 0)Ctrl+← for previous, @endif
+                                    @if($questionIndex < $questions->count() - 1)Ctrl+→ for next @endif
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-10 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium" id="modalImageTitle">Image</h3>
+                <button onclick="closeImageModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="text-center">
+                <img id="modalImage" src="" alt="" class="max-w-full max-h-96 mx-auto">
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-submit warning modal -->
+    <div id="autoSubmitModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                    <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.072 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mt-2">Time Almost Up!</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500">
+                        Your exam will be automatically submitted in <span id="autoSubmitCountdown">60</span> seconds.
+                    </p>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button id="submitNowBtn"
+                            class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300">
+                        Submit Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let timeRemaining = {{ $attempt->getRemainingTimeSeconds() }};
+        let timerInterval;
+        let autoSubmitWarning = false;
+        let autoSaveTimeout;
+
+        function updateTimer() {
+            const hours = Math.floor(timeRemaining / 3600);
+            const minutes = Math.floor((timeRemaining % 3600) / 60);
+            const seconds = Math.floor(timeRemaining % 60);
+
+            let display;
+            if (hours > 0) {
+                display = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            document.getElementById('timer').textContent = display;
+
+            // Show warning when 1 minute remaining
+            if (timeRemaining <= 60 && !autoSubmitWarning) {
+                showAutoSubmitWarning();
+                autoSubmitWarning = true;
+            }
+
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                autoSubmitExam();
+                return;
+            }
+
+            timeRemaining--;
+        }
+
+        function showAutoSubmitWarning() {
+            document.getElementById('autoSubmitModal').classList.remove('hidden');
+            let countdown = 60;
+
+            const countdownInterval = setInterval(() => {
+                document.getElementById('autoSubmitCountdown').textContent = countdown;
+                countdown--;
+
+                if (countdown < 0) {
+                    clearInterval(countdownInterval);
+                }
+            }, 1000);
+        }
+
+        function autoSubmitExam() {
+            document.getElementById('submitForm').submit();
+        }
+
+        function autoSaveAnswer() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                const formData = new FormData(document.getElementById('answerForm'));
+
+                fetch('{{ route("student.attempts.auto-save", $attempt) }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('saveStatus').classList.remove('hidden');
+                        if (data.progress) {
+                            document.getElementById('progress').textContent = data.progress;
+                        }
+                        setTimeout(() => {
+                            document.getElementById('saveStatus').classList.add('hidden');
+                        }, 2000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Auto-save failed:', error);
+                });
+            }, 2000); // 2 second delay
+        }
+
+        function openImageModal(src, title) {
+            document.getElementById('modalImage').src = src;
+            document.getElementById('modalImageTitle').textContent = title;
+            document.getElementById('imageModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Event listeners
+        document.getElementById('submitNowBtn').addEventListener('click', function() {
+            document.getElementById('submitForm').submit();
+        });
+
+        // Start the timer
+        timerInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // Close modal when clicking outside
+        document.getElementById('imageModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeImageModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        document.getElementById('answerForm').submit();
+                        break;
+                    case 'ArrowLeft':
+                        @if($questionIndex > 0)
+                            e.preventDefault();
+                            window.location.href = '{{ route("student.attempts.question", [$attempt, $questionNumber - 1]) }}';
+                        @endif
+                        break;
+                    case 'ArrowRight':
+                        @if($questionIndex < $questions->count() - 1)
+                            e.preventDefault();
+                            window.location.href = '{{ route("student.attempts.question", [$attempt, $questionNumber + 1]) }}';
+                        @endif
+                        break;
+                }
+            }
+            if (e.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+
+        // Warn before leaving page - but allow internal navigation
+        let isInternalNavigation = false;
+
+        // Mark internal navigation links
+        document.querySelectorAll('a[href*="/student/attempts/"]').forEach(link => {
+            link.addEventListener('click', function() {
+                isInternalNavigation = true;
+                setTimeout(() => { isInternalNavigation = false; }, 100);
+            });
+        });
+
+        // Mark form submissions as internal
+        document.getElementById('answerForm').addEventListener('submit', function() {
+            isInternalNavigation = true;
+        });
+
+        document.getElementById('submitForm').addEventListener('submit', function() {
+            isInternalNavigation = true;
+        });
+    </script>
+</x-app-layout>
