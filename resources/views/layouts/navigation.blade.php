@@ -29,6 +29,12 @@
                         <x-nav-link :href="route('teacher.exams.index')" :active="request()->routeIs('teacher.exams.*')">
                             {{ __('Exams') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('teacher.grading.index')" :active="request()->routeIs('teacher.grading.*')">
+                            {{ __('Grading') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('teacher.results.index')" :active="request()->routeIs('teacher.results.*')">
+                            {{ __('Results') }}
+                        </x-nav-link>
                     @elseif(Auth::user()->isStudent())
                         <!-- Student Links -->
                         <x-nav-link :href="route('student.exams.index')" :active="request()->routeIs('student.exams.*')">

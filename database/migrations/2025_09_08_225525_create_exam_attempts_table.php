@@ -23,7 +23,6 @@ return new class extends Migration
             $table->json('question_order')->nullable(); // Randomized question order for this attempt
             $table->json('session_data')->nullable(); // Additional session data
             $table->timestamps();
-
             $table->index(['exam_id', 'student_id']);
             $table->index(['status']);
         });

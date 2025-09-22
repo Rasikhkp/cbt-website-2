@@ -143,7 +143,7 @@
         function updateTimer() {
             const hours = Math.floor(timeRemaining / 3600);
             const minutes = Math.floor((timeRemaining % 3600) / 60);
-            const seconds = timeRemaining % 60;
+            const seconds = Math.floor(timeRemaining % 60);
 
             let display;
             if (hours > 0) {

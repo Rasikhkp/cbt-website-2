@@ -26,6 +26,8 @@ class Exam extends Model
         'max_attempts',
         'status',
         'settings',
+        'results_released',
+        'results_released_at'
     ];
 
     protected $casts = [
@@ -37,6 +39,8 @@ class Exam extends Model
         'allow_review' => 'boolean',
         'total_marks' => 'integer',
         'settings' => 'array',
+        'results_released' => 'boolean',
+        'results_released_at' => 'datetime'
     ];
 
     // Relationships

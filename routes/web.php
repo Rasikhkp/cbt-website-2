@@ -7,6 +7,8 @@ use App\Http\Controllers\Teacher\QuestionController;
 use App\Http\Controllers\Teacher\ExamController as TeacherExamController;
 use App\Http\Controllers\Student\ExamController as StudentExamController;
 use App\Http\Controllers\Student\ExamAttemptController;
+use App\Http\Controllers\Teacher\ExamResultController;
+use App\Http\Controllers\Teacher\GradingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -37,6 +39,20 @@ Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->name('teac
     Route::resource('exams', TeacherExamController::class);
     Route::patch('exams/{exam}/publish', [TeacherExamController::class, 'publish'])->name('exams.publish');
     Route::patch('exams/{exam}/unpublish', [TeacherExamController::class, 'unpublish'])->name('exams.unpublish');
+
+    // Grading management routes
+    Route::get('grading', [GradingController::class, 'index'])->name('grading.index');
+    Route::get('grading/exam/{exam}', [GradingController::class, 'exam'])->name('grading.exam');
+    Route::get('grading/attempt/{attempt}', [GradingController::class, 'attempt'])->name('grading.attempt');
+    Route::post('grading/answers/{answer}/grade', [GradingController::class, 'gradeAnswer'])->name('grade-answer');
+    Route::post('grading/answers/{answer}/reset', [GradingController::class, 'resetGrading'])->name('reset-grading');
+
+    // Results management routes
+    Route::get('results', [ExamResultController::class, 'index'])->name('results.index');
+    Route::get('results/{exam}', [ExamResultController::class, 'show'])->name('results.show');
+    Route::post('results/{exam}/hide', [ExamResultController::class, 'hide'])->name('results.hide');
+    Route::get('results/{exam}/export', [ExamResultController::class, 'export'])->name('results.export');
+    Route::post('results/{exam}/release', [ExamResultController::class, 'release'])->name('results.release');
 });
 
 // Student routes

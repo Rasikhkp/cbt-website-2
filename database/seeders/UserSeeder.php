@@ -34,11 +34,13 @@ class UserSeeder extends Seeder
         ]);
 
         // Create student user
-        User::create([
-            'name' => 'Examinee User',
-            'email' => 'examinee@example.com',
-            'password' => Hash::make('password'),
-            'role' => 'student',
-        ]);
+        for ($i = 1; $i <= 5; $i++) {
+            User::create([
+                'name' => "Examinee User {$i}",
+                'email' => "examinee{$i}@example.com",
+                'password' => Hash::make('password'),
+                'role' => 'student',
+            ]);
+        }
     }
 }

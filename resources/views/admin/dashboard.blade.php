@@ -34,13 +34,6 @@
                                     {{ \App\Models\User::where('role', 'student')->count() }}</p>
                             </div>
                         </div>
-
-                        <div class="bg-purple-50 p-6 rounded-lg">
-                            <h4 class="font-medium text-purple-800">Reports</h4>
-                            <p class="text-purple-600 text-sm mt-2">Generate system reports</p>
-                            <a href="#" class="inline-block mt-3 text-purple-600 hover:text-purple-800">Coming
-                                Soon →</a>
-                        </div>
                     </div>
                 </div>
             </div>

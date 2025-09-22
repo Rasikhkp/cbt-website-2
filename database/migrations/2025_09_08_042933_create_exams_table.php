@@ -16,8 +16,10 @@ return new class extends Migration
             $table->text('instructions')->nullable();
             $table->datetime('start_time');
             $table->datetime('end_time');
+            $table->datetime('results_released_at')->nullable();
             $table->integer('duration_minutes'); // Total time allowed
             $table->integer('total_marks')->default(0);
+            $table->boolean('results_released')->default(false);
             $table->boolean('randomize_questions')->default(false);
             $table->boolean('randomize_options')->default(false);
             $table->boolean('show_results_immediately')->default(false);
