@@ -110,7 +110,7 @@
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Select Questions</h3>
 
                             @if($questions->count() > 0)
-                                <div class="border rounded-lg p-4 max-h-96 overflow-y-auto">
+                                <div class="border rounded-lg p-4 h-[80vh] overflow-y-auto">
                                     <div class="space-y-3">
                                         @foreach($questions as $question)
                                             <div class="question-item border border-gray-200 rounded p-3 hover:bg-gray-50">

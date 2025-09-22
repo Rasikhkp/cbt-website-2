@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class ExamAttempt extends Model
 {
@@ -161,11 +162,13 @@ class ExamAttempt extends Model
                 $correctOptionIds = $question->options()
                     ->where('is_correct', true)
                     ->pluck('id')
+                    ->map(fn($id) => (int) $id)
                     ->sort()
                     ->values()
                     ->toArray();
 
                 $selectedOptionIds = collect($answer->selected_options)
+                    ->map(fn($id) => (int) $id)
                     ->sort()
                     ->values()
                     ->toArray();

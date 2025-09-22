@@ -12,6 +12,7 @@ use App\Models\ExamQuestion;
 use App\Models\ExamStudent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ExamController extends Controller
 {

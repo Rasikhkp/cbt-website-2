@@ -375,11 +375,6 @@
                                             <div>Due: {{ date('d M Y, H:i', strtotime($student->pivot->due_date)) }}</div>
                                         @endif
                                     </div>
-                                    <div class="mt-3">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            No attempts yet
-                                        </span>
-                                    </div>
                                 </div>
                             @endforeach
                         </div>

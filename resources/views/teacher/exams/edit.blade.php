@@ -124,7 +124,7 @@
                             @endphp
 
                             @if($questions->count() > 0)
-                                <div class="border rounded-lg p-4 max-h-96 overflow-y-auto">
+                                <div class="border rounded-lg p-4 overflow-y-auto" style="height: 1000px">
                                     <div class="space-y-3">
                                         @foreach($questions as $index => $question)
                                             @php

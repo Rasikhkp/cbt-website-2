@@ -50,6 +50,7 @@ Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->name('teac
     // Results management routes
     Route::get('results', [ExamResultController::class, 'index'])->name('results.index');
     Route::get('results/{exam}', [ExamResultController::class, 'show'])->name('results.show');
+    Route::get('results/{attempt}/review', [GradingController::class, 'attempt'])->name('results.review');
     Route::post('results/{exam}/hide', [ExamResultController::class, 'hide'])->name('results.hide');
     Route::get('results/{exam}/export', [ExamResultController::class, 'export'])->name('results.export');
     Route::post('results/{exam}/release', [ExamResultController::class, 'release'])->name('results.release');

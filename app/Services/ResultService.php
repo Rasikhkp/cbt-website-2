@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exports\ExamResultsExport;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
 use App\Models\User;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ResultService
 {
@@ -31,11 +33,11 @@ class ResultService
         if ($attempts->isEmpty()) {
             return [
                 'total_attempts' => 0,
-                'average_score' => 'N/A',
-                'highest_score' => 'N/A',
-                'lowest_score' => 'N/A',
-                'median_score' => 'N/A',
-                'standard_deviation' => 'N/A',
+                'average_score' => '-',
+                'highest_score' => '-',
+                'lowest_score' => '-',
+                'median_score' => '-',
+                'standard_deviation' => '-',
                 'grade_distribution' => [],
                 'max_possible_score' => $this->getMaxPossibleScore($exam),
             ];
@@ -193,7 +195,7 @@ class ResultService
     /**
      * Export results in various formats
      */
-    public function exportResults(Exam $exam, string $format = 'csv'): StreamedResponse
+    public function exportResults(Exam $exam, string $format = 'csv')
     {
         $attempts = $exam->attempts()
             ->where('status', 'graded')
@@ -201,20 +203,18 @@ class ResultService
             ->orderBy('total_score', 'desc')
             ->get();
 
-        $filename = "exam_results_{$exam->id}_" . now()->toDateString() . ".{$format}";
+        $filename = "exam_results_{$exam->id}_" . now()->toDateString();
 
-        return response()->streamDownload(function () use ($attempts, $exam, $format) {
+        if ($format === 'xlsx') {
+            return Excel::download(new ExamResultsExport($exam, $attempts), $filename . '.xlsx');
+        }
+
+        // fallback to CSV (your current code)
+        return response()->streamDownload(function () use ($attempts, $exam) {
             $handle = fopen('php://output', 'w');
-
-            $method = $format === 'csv' ? 'exportToCsv' : 'exportToExcel';
-            $this->{$method}($handle, $attempts, $exam);
-
+            $this->exportToCsv($handle, $attempts, $exam);
             fclose($handle);
-        }, $filename, [
-            'Content-Type' => $format === 'csv'
-                ? 'text/csv'
-                : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]);
+        }, $filename . ".csv");
     }
 
     /**
@@ -224,49 +224,55 @@ class ResultService
     {
         // Write header
         $headers = [
-            'Student Name',
-            'Email',
-            'Total Score',
+            'Examinee Name',
+            'Examinee Email',
+            'Attempt Number',
+            'Score',
             'Max Score',
             'Percentage',
             'Grade',
             'Submitted At',
-            'Time Taken (minutes)',
+            'Time Taken',
         ];
 
         // Add question headers
-        $questions = $exam->questions()->orderBy('exam_questions.order')->get();
+        $questions = $exam->questions()->orderBy('exam_questions.question_order')->get();
         foreach ($questions as $question) {
-            $headers[] = "Q" . ($question->pivot->order ?? 'N/A') . " Score";
+            $headers[] = "Q" . ($question->pivot->question_order ?? 'N/A') . " Score";
         }
 
         fputcsv($handle, $headers);
 
-        $maxScore = $this->getMaxPossibleScore($exam);
+        $maxScore = $exam->total_marks;
 
         // Write data rows
         foreach ($attempts as $attempt) {
             $percentage = $maxScore > 0 ? ($attempt->total_score / $maxScore) * 100 : 0;
             $letterGrade = $this->getLetterGrade($percentage);
             $timeTaken = $attempt->started_at && $attempt->submitted_at
-                ? $attempt->started_at->diffInMinutes($attempt->submitted_at)
+                ? $attempt->started_at->diff($attempt->submitted_at)
+                : null;
+
+            $timeTakenFormatted = $timeTaken
+                ? ($timeTaken->i . 'm ' . $timeTaken->s . 's')
                 : 'N/A';
 
             $row = [
                 $attempt->student->name,
                 $attempt->student->email,
+                $attempt->attempt_number,
                 $attempt->total_score ?? 'N/A',
                 $maxScore,
                 round($percentage, 2) . '%',
                 $letterGrade,
                 $attempt->submitted_at?->format('Y-m-d H:i:s') ?? 'N/A',
-                $timeTaken,
+                $timeTakenFormatted,
             ];
 
             // Add question scores
             foreach ($questions as $question) {
                 $answer = $attempt->answers->where('question_id', $question->id)->first();
-                $row[] = $answer?->points_awarded ?? 'N/A';
+                $row[] = $answer?->marks_awarded ?? 'N/A';
             }
 
             fputcsv($handle, $row);

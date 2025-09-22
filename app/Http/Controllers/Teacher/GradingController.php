@@ -78,7 +78,7 @@ class GradingController extends Controller
             }
         ]);
 
-        return view('teacher.grading.attempt', compact('attempt'));
+        return view('teacher.results.review', compact('attempt'));
     }
 
     /**

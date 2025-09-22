@@ -275,7 +275,7 @@ class ExamAttemptController extends Controller
             ]);
 
             // Auto-grade the attempt
-            /* $autoGradedCount = $attempt->autoGrade(); */
+            $attempt->autoGrade();
 
             DB::commit();
 

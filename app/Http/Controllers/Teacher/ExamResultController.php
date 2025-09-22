@@ -50,7 +50,7 @@ class ExamResultController extends Controller
     public function show(Exam $exam)
     {
         $attempts = ExamAttempt::where('exam_id', $exam->id)
-            ->where('status', 'graded')
+            ->whereIn('status', ['submitted', 'graded'])
             ->with([
                 'student',
                 'answers' => function ($query) {
