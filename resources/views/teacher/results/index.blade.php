@@ -38,12 +38,7 @@
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex items-center">
                             <div class="p-2 bg-blue-100 rounded-lg">
-                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                                    </path>
-                                </svg>
+                                <svg class="text-blue-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-notepad-text-icon lucide-notepad-text"><path d="M8 2v4"/><path d="M12 2v4"/><path d="M16 2v4"/><rect width="16" height="18" x="4" y="4" rx="2"/><path d="M8 10h6"/><path d="M8 14h8"/><path d="M8 18h5"/></svg>
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm text-gray-600">Total Exams</p>
@@ -74,12 +69,7 @@
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="flex items-center">
                             <div class="p-2 bg-purple-100 rounded-lg">
-                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-5.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z">
-                                    </path>
-                                </svg>
+                                <svg class="text-purple-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target-icon lucide-target"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm text-gray-600">Total Attempts</p>
@@ -227,14 +217,14 @@
                                                         @csrf
                                                         <button type="submit"
                                                             class="text-orange-600 hover:text-orange-900"
-                                                            onclick="return confirm('Hide results from students?')">
+                                                            onclick="return confirm('Hide results from examinees?')">
                                                             Hide
                                                         </button>
                                                     </form>
                                                 @endif
 
                                                 @if ($exam->total_attempts > 0)
-                                                    <a href="{{ route('teacher.results.export', ['exam' => $exam, 'format' => 'csv']) }}"
+                                                    <a href="{{ route('teacher.results.export', ['exam' => $exam, 'format' => 'xlsx']) }}"
                                                         class="text-gray-600 hover:text-gray-900">Export</a>
                                                 @endif
                                             </div>
@@ -267,7 +257,7 @@
                             <svg class="w-5 h-5 text-orange-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                             </svg>
-                            <span class="text-sm text-orange-800">Some answers are still ungraded. Students will see partial results.</span>
+                            <span class="text-sm text-orange-800">Some answers are still ungraded. Examinees will see partial results.</span>
                         </div>
                     </div>
 

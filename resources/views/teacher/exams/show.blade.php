@@ -119,7 +119,7 @@
                         </div>
                         <div class="text-center p-4 bg-indigo-50 rounded-lg">
                             <div class="text-2xl font-bold text-indigo-600">{{ $exam->assignedStudents->count() }}</div>
-                            <div class="text-sm text-indigo-600">Assigned Students</div>
+                            <div class="text-sm text-indigo-600">Assigned Examinees</div>
                         </div>
                     </div>
 
@@ -164,7 +164,7 @@
             @if($exam->instructions)
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-3">Instructions for Students</h3>
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">Instructions for Examinees</h3>
                         <div class="bg-blue-50 p-4 rounded-lg">
                             <p class="text-gray-800 whitespace-pre-wrap">{{ $exam->instructions }}</p>
                         </div>
@@ -333,7 +333,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                             <h3 class="mt-2 text-sm font-medium text-gray-900">No questions added</h3>
-                            <p class="mt-1 text-sm text-gray-500">Add questions to this exam to make it available to students.</p>
+                            <p class="mt-1 text-sm text-gray-500">Add questions to this exam to make it available to examinees.</p>
                             <div class="mt-6">
                                 <a href="{{ route('teacher.exams.edit', $exam) }}"
                                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
@@ -349,7 +349,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">
-                        Assigned Students ({{ $exam->assignedStudents->count() }})
+                        Assigned Examinees ({{ $exam->assignedStudents->count() }})
                     </h3>
 
                     @if($exam->assignedStudents->count() > 0)
@@ -383,12 +383,12 @@
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
                             </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">No students assigned</h3>
-                            <p class="mt-1 text-sm text-gray-500">Assign students to this exam to make it available to them.</p>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">No Examinees assigned</h3>
+                            <p class="mt-1 text-sm text-gray-500">Assign examinees to this exam to make it available to them.</p>
                             <div class="mt-6">
                                 <a href="{{ route('teacher.exams.edit', $exam) }}"
                                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                                    Assign Students
+                                    Assign Examinees
                                 </a>
                             </div>
                         </div>

@@ -84,7 +84,7 @@
 
                             @if ($answer->question->type === 'mcq' && $answer->question->options->count() > 0)
                                 <div class="mb-6">
-                                    <h4 class="font-medium text-gray-900 mb-2">Student Answer:</h4>
+                                    <h4 class="font-medium text-gray-900 mb-2">Examinee Answer:</h4>
                                     <div class="space-y-2">
                                         @foreach ($answer->question->options as $option)
                                             <div
@@ -108,7 +108,7 @@
                                 </div>
                             @else
                                 <div class="mb-6">
-                                    <h4 class="font-medium text-gray-900 mb-2">Student Answer:</h4>
+                                    <h4 class="font-medium text-gray-900 mb-2">Examinee Answer:</h4>
                                     <div class="bg-blue-50 rounded-lg p-4">
                                         @if ($answer->answer_text)
                                             <div class="whitespace-pre-wrap">{{ $answer->answer_text }}</div>
@@ -158,7 +158,7 @@
                                             </label>
                                             <textarea name="grader_comments" rows="3"
                                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="Provide comments to the student...">{{ $answer->grader_comments }}</textarea>
+                                                placeholder="Provide comments to the examinee...">{{ $answer->grader_comments }}</textarea>
                                         </div>
                                     </div>
 

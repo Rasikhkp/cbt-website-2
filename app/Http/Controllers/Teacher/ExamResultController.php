@@ -68,13 +68,8 @@ class ExamResultController extends Controller
     /**
      * Release results for an exam
      */
-    public function release(ReleaseResultsRequest $request, Exam $exam)
+    public function release(Request $request, Exam $exam)
     {
-        $validated = $request->validated();
-
-        Log::info('request', [$request->all()]);
-        Log::info('exam', [$exam]);
-
         $exam->update([
             'results_released' => true,
             'results_released_at' => now(),

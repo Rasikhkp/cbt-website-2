@@ -31,8 +31,10 @@
                     @else
                         <button id="releaseResultsBtn"
                             class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700 transition-colors"
-                            data-exam-id="{{ $exam->id }}" data-exam-title="{{ $exam->title }}"
+                            data-exam-id="{{ $exam->id }}"
+                            data-exam-title="{{ $exam->title }}"
                             data-attempts-count="{{ $attempts->count() }}"
+                            data-graded-count="{{ $attempts->where('status', 'graded')->count() }}"
                             {{ $attempts->where('total_score', null)->count() > 0 ? 'data-partial="true"' : '' }}>
                             Release Results
                         </button>
@@ -71,11 +73,7 @@
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="flex items-center">
                         <div class="p-2 bg-blue-100 rounded-lg">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-5.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z">
-                                </path>
-                            </svg>
+                                <svg class="text-purple-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target-icon lucide-target"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                         </div>
                         <div class="ml-4">
                             <p class="text-sm text-gray-600">Total Attempts</p>
@@ -330,20 +328,6 @@
                                 <span class="text-sm text-orange-800">Some answers are still ungraded. Examinee will
                                     see partial results.</span>
                             </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="flex items-center">
-                                <input type="checkbox" name="release_individual_scores" checked class="mr-2">
-                                <span class="text-sm text-gray-700">Release individual question scores</span>
-                            </label>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="flex items-center">
-                                <input type="checkbox" name="release_feedback" checked class="mr-2">
-                                <span class="text-sm text-gray-700">Release teacher feedback</span>
-                            </label>
                         </div>
 
                         <div class="flex justify-end space-x-3">
@@ -616,19 +600,11 @@
 
                     submitBtn.prop('disabled', true).text('Releasing...');
 
-                    console.log('data', form.serialize())
-                    const release_individual_scores = e.target.release_individual_scores.checked ? 1 : 0
-                    const release_feedback = e.target.release_feedback.checked ? 1 : 0
-
-                    console.log('url', form.attr('action'))
-
                     $.ajax({
                         url: form.attr('action'),
                         method: 'POST',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content'),
-                            release_individual_scores,
-                            release_feedback,
                         },
                         success: function(response) {
                             showNotification('Results released successfully!', 'success');
