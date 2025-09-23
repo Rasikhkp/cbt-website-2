@@ -24,7 +24,7 @@ A comprehensive online examination system built with Laravel, featuring role-bas
 - Composer
 - Node.js 16+
 - MySQL 8.0+
-- Docker & Docker Compose (for production)
+- Docker (for production)
 
 ## 🚀 Development Setup
 
