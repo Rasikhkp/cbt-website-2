@@ -113,32 +113,6 @@ git pull
 docker compose up -d --build cbt_web
 ```
 
-## 📁 Project Structure
-
-```
-exam-system/
-├── app/
-│   ├── Http/Controllers/     # Application controllers
-│   ├── Models/              # Eloquent models
-│   └── Providers/           # Service providers
-├── database/
-│   ├── migrations/          # Database migrations
-│   └── seeders/            # Database seeders
-├── resources/
-│   ├── views/
-│   │   ├── layouts/        # Master layouts
-│   │   ├── components/     # Reusable UI components
-│   │   └── pages/          # Page-specific views
-│   ├── js/
-│   │   ├── pages/          # Page-specific JavaScript
-│   │   ├── components/     # Reusable JS components
-│   │   └── utils/          # Helper utilities
-│   └── css/                # Custom styles
-├── routes/
-│   └── web.php             # Web routes
-└── docker-compose.yml      # Docker configuration
-```
-
 ## 🔧 Available Commands
 
 ### Development Commands
@@ -161,6 +135,10 @@ php artisan view:clear     # Clear view cache
 
 ## 📝 Default Users (After Seeding)
 
-- **Admin**: admin@exam.com / password
-- **Teacher**: teacher@exam.com / password  
-- **Student**: student@exam.com / password
+- **Admin**: admin@example.com / password
+- **Committee**: committee@example.com / password  
+- **Examinee 1**: examinee1@example.com / password
+- **Examinee 2**: examinee2@example.com / password
+- **Examinee 3**: examinee3@example.com / password
+- **Examinee 4**: examinee4@example.com / password
+- **Examinee 5**: examinee5@example.com / password
