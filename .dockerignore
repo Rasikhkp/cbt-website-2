@@ -1,0 +1,42 @@
+# Ignore git and IDE stuff
+.git
+.gitignore
+.idea
+.vscode
+*.md
+
+# Node / frontend build artifacts
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Composer dependencies (we install inside image)
+vendor
+
+# Laravel caches & logs
+storage/*.key
+storage/app/public
+storage/debugbar
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+storage/logs/*
+
+# Environment and config files (use env_file instead)
+.env
+.env.*
+!.env.example
+
+# Tests and docs (not needed in prod image)
+tests
+phpunit.xml
+docs
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.bak

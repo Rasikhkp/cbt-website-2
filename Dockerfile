@@ -1,51 +1,87 @@
-# Use official PHP image with Apache
-FROM php:8.3-apache
-
-# Set working directory
-WORKDIR /var/www/html
+FROM dunglas/frankenphp:1-php8.3-alpine
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apk add --no-cache \
     git \
     curl \
     libpng-dev \
-    libonig-dev \
+    oniguruma-dev \
     libxml2-dev \
     libzip-dev \
+    icu-dev \
     zip \
     unzip \
-    && rm -rf /var/lib/apt/lists/*
+    nodejs \
+    npm
 
-# Install PHP extensions (including zip)
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+# Install PHP extensions
+RUN docker-php-ext-install \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    opcache \
+    zip \
+    intl \
+    soap
 
-# Install Composer
+# Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy application files
+# Set working directory
+WORKDIR /app
+
+# Copy composer files
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# Copy package.json and package-lock.json (if available)
+COPY package*.json ./
+
+# Install Node.js dependencies
+RUN npm ci
+
+# Copy application code
 COPY . .
 
-# Fix git ownership issue and install dependencies
-RUN git config --global --add safe.directory /var/www/html && \
-    composer install --optimize-autoloader --no-dev
+# Set permissions
+RUN chown -R www-data:www-data /app \
+    && chmod -R 755 /app \
+    && chmod -R 775 /app/storage \
+    && chmod -R 775 /app/bootstrap/cache
 
-# Set proper permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+# Build assets
+RUN npm run build
 
-# Enable Apache mod_rewrite for Laravel routing
-RUN a2enmod rewrite
+# Clean up dev dependencies after build
+RUN npm prune --production
 
-# Copy custom Apache configuration
-COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
+# Generate optimized autoload files
+RUN composer dump-autoload --optimize
 
-# Expose port 80
+# Copy Caddyfile
+COPY Caddyfile /etc/caddy/Caddyfile
+
+# Configure PHP
+RUN echo -e "opcache.enable=1\n\
+opcache.enable_cli=1\n\
+opcache.memory_consumption=128\n\
+opcache.interned_strings_buffer=8\n\
+opcache.max_accelerated_files=4000\n\
+opcache.revalidate_freq=60\n\
+opcache.fast_shutdown=1" > /usr/local/etc/php/conf.d/opcache.ini
+
+
+# Expose port
 EXPOSE 80
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost/ || exit 1
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Start FrankenPHP
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
