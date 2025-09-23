@@ -88,22 +88,22 @@ docker compose up -d
 ### 2. Run Initial Setup (First Time Only)
 ```bash
 # Generate application key
-docker compose exec cbt_web php artisan key:generate
+docker exec cbt_web php artisan key:generate
 
 # Run migrations
-docker compose exec cbt_web php artisan migrate --seed
+docker exec cbt_web php artisan migrate --seed
 
 # Add storage link
-docker compose exec cbt_web php artisan storage:link
+docker exec cbt_web php artisan storage:link
 ```
 
 ### 3. Production Commands
 ```bash
 # View logs
-docker compose logs -f cbt_web
+docker logs -f cbt_web
 
 # Access application container
-docker compose exec cbt_web sh
+docker exec cbt_web sh
 
 # Stop all services
 docker compose down
