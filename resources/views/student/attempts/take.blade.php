@@ -119,10 +119,10 @@
                         </path>
                     </svg>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mt-2">Time Almost Up!</h3>
+                <h3 class="text-lg font-medium text-gray-900 mt-2">Time's Up!</h3>
                 <div class="mt-2 px-7 py-3">
                     <p class="text-sm text-gray-500">
-                        Your exam will be automatically submitted in <span id="autoSubmitCountdown">60</span> seconds.
+                        Your exam will be automatically submitted in <span id="autoSubmitCountdown"></span> seconds.
                     </p>
                 </div>
                 <div class="items-center px-4 py-3">
@@ -156,29 +156,25 @@
             document.getElementById('timer').textContent = display;
 
             // Show warning when 1 minute remaining
-            if (timeRemaining <= 60 && !autoSubmitWarning) {
+            if (timeRemaining < 1 && !autoSubmitWarning) {
                 showAutoSubmitWarning();
                 autoSubmitWarning = true;
+                clearInterval(timerInterval)
+            } else {
+                timeRemaining--
             }
-
-            if (timeRemaining <= 0) {
-                clearInterval(timerInterval);
-                autoSubmitExam();
-                return;
-            }
-
-            timeRemaining--;
         }
 
         function showAutoSubmitWarning() {
             document.getElementById('autoSubmitModal').classList.remove('hidden');
-            let countdown = 60;
+            let countdown = 10;
 
             const countdownInterval = setInterval(() => {
                 document.getElementById('autoSubmitCountdown').textContent = countdown;
                 countdown--;
 
                 if (countdown < 0) {
+                    autoSubmitExam()
                     clearInterval(countdownInterval);
                 }
             }, 1000);

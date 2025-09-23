@@ -19,7 +19,7 @@ class StoreExamRequest extends FormRequest
             'instructions' => ['nullable', 'string'],
             'start_time' => ['required', 'date', 'after:now'],
             'end_time' => ['required', 'date', 'after:start_time'],
-            'duration_minutes' => ['required', 'integer', 'min:5', 'max:600'],
+            'duration_minutes' => ['required', 'integer', 'min:1', 'max:600'],
             'randomize_questions' => ['boolean'],
             'randomize_options' => ['boolean'],
             'show_results_immediately' => ['boolean'],

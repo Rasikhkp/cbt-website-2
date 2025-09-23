@@ -104,7 +104,7 @@
                                     <x-text-input id="duration_minutes"
                                                 name="duration_minutes"
                                                 type="number"
-                                                min="5"
+                                                min="1"
                                                 max="600"
                                                 :value="old('duration_minutes', $exam->duration_minutes)"
                                                 class="mt-1 block w-full" />

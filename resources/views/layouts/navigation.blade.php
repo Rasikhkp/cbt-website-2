@@ -37,9 +37,6 @@
                         <x-nav-link :href="route('student.exams.index')" :active="request()->routeIs('student.exams.*')">
                             {{ __('My Exams') }}
                         </x-nav-link>
-                        <x-nav-link href="#">
-                            {{ __('Results') }}
-                        </x-nav-link>
                     @endif
                 </div>
             </div>

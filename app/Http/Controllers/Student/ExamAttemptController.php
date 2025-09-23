@@ -264,7 +264,7 @@ class ExamAttemptController extends Controller
 
             if ($attempt->isSubmitted()) {
                 DB::rollback();
-                return redirect()->route('student.attempts.results', $attempt)
+                return redirect()->route('student.exams.show', $attempt->exam->id)
                     ->with('info', 'This exam has already been submitted.');
             }
 
@@ -279,7 +279,7 @@ class ExamAttemptController extends Controller
 
             DB::commit();
 
-            return redirect()->route('student.attempts.results', $attempt)
+            return redirect()->route('student.exams.show', $attempt->exam->id)
                 ->with('success', 'Exam submitted successfully!');
         } catch (\Exception $e) {
             DB::rollback();
@@ -385,7 +385,9 @@ class ExamAttemptController extends Controller
             }
 
             // Prepare answer data
-            $answerData = [];
+            $answerData = [
+                'answered_at' => now()
+            ];
 
             if ($question->isMCQ()) {
                 $answerData['selected_options'] = $request->selected_options ?? [];
@@ -395,10 +397,16 @@ class ExamAttemptController extends Controller
 
             $answer->update($answerData);
 
+            $answeredCount = $answer->attempt->answers->whereNotNull('selected_options')->count();
+            $totalQuestions = $answer->attempt->answers->count();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Answer auto-saved',
-                'progress' => $attempt->getProgressPercentage()
+                'progress' => $attempt->getProgressPercentage(),
+                'answered_at' => "Last saved: " . $answer->answered_at->format('M j, g:i A'),
+                'answered_count' => $answeredCount,
+                'total_questions' => $totalQuestions
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to auto-save: ' . $e->getMessage()], 500);

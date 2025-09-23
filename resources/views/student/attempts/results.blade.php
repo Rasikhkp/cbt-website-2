@@ -62,7 +62,11 @@
                             </div>
                             <div class="flex justify-between">
                                 <span class="font-medium">Duration:</span>
-                                <span>{{ $attempt->started_at->diffInMinutes($attempt->submitted_at) }} minutes</span>
+                                <span>
+                                    {{ $timeTakenFormatted = ($attempt->started_at && $attempt->submitted_at)
+                                            ? $attempt->started_at->diff($attempt->submitted_at)->i . 'm ' . $attempt->started_at->diff($attempt->submitted_at)->s . 's'
+                                            : 'N/A'; }}
+                                </span>
                             </div>
                         </div>
                         <div class="space-y-2">
@@ -122,17 +126,6 @@
                                             @endif
                                             marks
                                         </div>
-                                        @if($answer && $answer->is_graded)
-                                            @if($answer->is_correct)
-                                                <span class="text-green-600 text-sm">✓ Correct</span>
-                                            @elseif($answer->is_correct === false)
-                                                <span class="text-red-600 text-sm">✗ Incorrect</span>
-                                            @endif
-                                        @elseif($answer && $answer->isAnswered())
-                                            <span class="text-yellow-600 text-sm">⏳ Under Review</span>
-                                        @else
-                                            <span class="text-gray-500 text-sm">No Answer</span>
-                                        @endif
                                     </div>
                                 </div>
 

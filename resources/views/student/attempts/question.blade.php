@@ -72,18 +72,18 @@
                                 <div class="space-y-1">
                                     <div class="flex justify-between">
                                         <span>Answered:</span>
-                                        <span class="font-medium">{{ $answeredCount }}/{{ $totalQuestions }}</span>
+                                        <span id="answered" class="font-medium">{{ $answeredCount }}/{{ $totalQuestions }}</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span>Remaining:</span>
-                                        <span class="font-medium">{{ $totalQuestions - $answeredCount }}</span>
+                                        <span id="remaining" class="font-medium">{{ $totalQuestions - $answeredCount }}</span>
                                     </div>
                                 </div>
 
                                 <!-- Progress Bar -->
                                 <div class="mt-3">
                                     <div class="bg-gray-200 rounded-full h-2">
-                                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                        <div id="progress-bar" class="bg-blue-500 h-2 rounded-full transition-all duration-300"
                                              style="width: {{ $attempt->getProgressPercentage() }}%"></div>
                                     </div>
                                 </div>
@@ -96,7 +96,7 @@
                                       id="submitForm">
                                     @csrf
                                     <input type="hidden" name="confirm_submit" value="1">
-                                    <button type="submit"
+                                    <button id='submit-btn' type="submit"
                                             class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                                         Submit Exam
                                     </button>
@@ -104,8 +104,8 @@
 
                                 <!-- Warning about incomplete answers -->
                                 @if($answeredCount < $totalQuestions)
-                                    <p class="text-xs text-orange-600 mt-2 text-center">
-                                        {{ $totalQuestions - $answeredCount }} question(s) unanswered
+                                    <p id="unanswered" class="text-xs text-orange-600 mt-2 text-center">
+                                    {{ $answeredCount < $totalQuestions ?  $totalQuestions - $answeredCount . " question(s) unanswered" : null }}
                                     </p>
                                 @endif
                             </div>
@@ -238,15 +238,13 @@
                                 @endif
 
                                 <!-- Answer Status -->
-                                <div class="mb-6 flex items-center justify-between">
+                                <div class="mb-6 flex gap-2">
                                     <div id="saveStatus" class="text-sm text-gray-600 hidden">
                                         <span class="text-green-600">✓ Auto-saved</span>
                                     </div>
-                                    @if($answer && $answer->answered_at)
-                                        <div class="text-sm text-gray-500">
-                                            Last saved: {{ $answer->answered_at->format('M j, g:i A') }}
-                                        </div>
-                                    @endif
+                                    <div id="answered-at" class="text-sm text-gray-500">
+                                        {{ $answer->answered_at ? "Last saved: " . $answer->answered_at->format('M j, g:i A') : null}}
+                                    </div>
                                 </div>
 
                                 <!-- Navigation and Save Buttons -->
@@ -278,7 +276,7 @@
                                             </button>
                                         @else
                                             <button type="button"
-                                                    onclick="document.getElementById('submitForm').submit()"
+                                                    onclick="document.getElementById('submit-btn').click()"
                                                     class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                                                 Submit Exam
                                             </button>
@@ -327,10 +325,10 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.072 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                     </svg>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mt-2">Time Almost Up!</h3>
+                <h3 class="text-lg font-medium text-gray-900 mt-2">Time's Up!</h3>
                 <div class="mt-2 px-7 py-3">
                     <p class="text-sm text-gray-500">
-                        Your exam will be automatically submitted in <span id="autoSubmitCountdown">60</span> seconds.
+                        Your exam will be automatically submitted in <span id="autoSubmitCountdown"></span> seconds.
                     </p>
                 </div>
                 <div class="items-center px-4 py-3">
@@ -363,30 +361,28 @@
 
             document.getElementById('timer').textContent = display;
 
-            // Show warning when 1 minute remaining
-            if (timeRemaining <= 60 && !autoSubmitWarning) {
+            console.log('timeRemaining', timeRemaining)
+            if (timeRemaining < 1 && !autoSubmitWarning) {
+                clearInterval(timerInterval);
                 showAutoSubmitWarning();
                 autoSubmitWarning = true;
-            }
 
-            if (timeRemaining <= 0) {
-                clearInterval(timerInterval);
-                autoSubmitExam();
                 return;
+            } else {
+                timeRemaining--;
             }
-
-            timeRemaining--;
         }
 
         function showAutoSubmitWarning() {
             document.getElementById('autoSubmitModal').classList.remove('hidden');
-            let countdown = 60;
+            let countdown = 10;
 
             const countdownInterval = setInterval(() => {
                 document.getElementById('autoSubmitCountdown').textContent = countdown;
                 countdown--;
 
                 if (countdown < 0) {
+                    autoSubmitExam()
                     clearInterval(countdownInterval);
                 }
             }, 1000);
@@ -415,6 +411,18 @@
                         if (data.progress) {
                             document.getElementById('progress').textContent = data.progress;
                         }
+
+                        if (data.answered_at) {
+                            document.getElementById('answered-at').textContent = data.answered_at
+                        }
+
+                        if (data.answered_count && data.total_questions) {
+                            console.log('data', data)
+                            document.getElementById('answered').textContent = `${data.answered_count} / ${data.total_questions}`
+                            document.getElementById('remaining').textContent = data.total_questions - data.answered_count;
+                            document.getElementById('progress-bar').style.width = `${data.progress}%`
+                            document.getElementById('unanswered').textContent = data.answered_count < data.total_questions ? `${data.total_questions - data.answered_count} question(s) unanswered` : ''
+                        }
                         setTimeout(() => {
                             document.getElementById('saveStatus').classList.add('hidden');
                         }, 2000);
@@ -423,7 +431,7 @@
                 .catch(error => {
                     console.error('Auto-save failed:', error);
                 });
-            }, 2000); // 2 second delay
+            }, 500);
         }
 
         function openImageModal(src, title) {

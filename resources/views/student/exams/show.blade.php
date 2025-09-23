@@ -233,12 +233,6 @@
                                         <div class="flex-1">
                                             <div class="flex items-center gap-2 mb-2">
                                                 <span class="font-medium">Attempt {{ $attempt->attempt_number }}</span>
-                                                <span class="px-2 py-1 text-xs font-semibold rounded-full {{
-                                                    $attempt->isInProgress() ? 'bg-orange-100 text-orange-800' :
-                                                    ($attempt->isSubmitted() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')
-                                                }}">
-                                                    {{ ucfirst(str_replace('_', ' ', $attempt->status)) }}
-                                                </span>
                                                 @if($attempt->isInProgress())
                                                     <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
                                                         {{ $attempt->getRemainingTimeFormatted() }} left
@@ -265,7 +259,7 @@
                                                         <span class="font-medium">Progress:</span> {{ $attempt->getProgressPercentage() }}% complete
                                                     </div>
                                                 @endif
-                                                @if($attempt->total_score !== null)
+                                                @if(($attempt->total_score !== null) && $attempt->exam->results_released)
                                                     <div class="text-green-600 font-medium">
                                                         <span class="font-medium">Score:</span> {{ $attempt->total_score }}/{{ $exam->total_marks }}
                                                         ({{ round($attempt->percentage_score, 1) }}%)
@@ -280,12 +274,12 @@
                                                    class="bg-orange-500 hover:bg-orange-700 text-white px-4 py-2 rounded text-sm font-medium text-center">
                                                     Continue Exam
                                                 </a>
-                                            @elseif($attempt->isSubmitted() && ($exam->show_results_immediately || $attempt->isGraded()))
+                                            @elseif($attempt->exam->results_released)
                                                 <a href="{{ route('student.attempts.results', $attempt) }}"
                                                    class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium text-center">
                                                     View Results
                                                 </a>
-                                            @elseif($attempt->isSubmitted())
+                                            @else
                                                 <span class="bg-gray-300 text-gray-700 px-4 py-2 rounded text-sm text-center">
                                                     Pending Review
                                                 </span>
@@ -295,36 +289,6 @@
                                 </div>
                             @endforeach
                         </div>
-
-                        <!-- Attempt Statistics -->
-                        @if($attempts->count() > 1)
-                            <div class="mt-6 pt-4 border-t border-gray-200">
-                                <h4 class="font-medium text-gray-900 mb-3">Your Statistics</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                                    <div class="bg-gray-50 p-3 rounded">
-                                        <div class="font-medium text-gray-700">Total Attempts</div>
-                                        <div class="text-lg text-gray-900">{{ $attempts->count() }}</div>
-                                    </div>
-                                    @php
-                                        $completedAttempts = $attempts->whereIn('status', ['submitted', 'graded']);
-                                        $bestScore = $completedAttempts->whereNotNull('percentage_score')->max('percentage_score');
-                                        $averageScore = $completedAttempts->whereNotNull('percentage_score')->avg('percentage_score');
-                                    @endphp
-                                    @if($bestScore !== null)
-                                        <div class="bg-green-50 p-3 rounded">
-                                            <div class="font-medium text-green-700">Best Score</div>
-                                            <div class="text-lg text-green-900">{{ round($bestScore, 1) }}%</div>
-                                        </div>
-                                    @endif
-                                    @if($averageScore !== null)
-                                        <div class="bg-blue-50 p-3 rounded">
-                                            <div class="font-medium text-blue-700">Average Score</div>
-                                            <div class="text-lg text-blue-900">{{ round($averageScore, 1) }}%</div>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        @endif
                     </div>
                 </div>
             @endif
