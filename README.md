@@ -1,61 +1,166 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎓 Laravel Exam System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A comprehensive online examination system built with Laravel, featuring role-based access control, real-time exam taking with autosave, and automated grading capabilities.
 
-## About Laravel
+## ✨ Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Role-based Authentication** - Admin, Committee, and Examinee roles with distinct permissions
+- **Question Bank Management** - Shared repository for MCQ, Short Answer, and Long Answer questions
+- **Flexible Exam Creation** - Fixed or randomized question selection with customizable time limits
+- **Real-time Exam Taking** - Auto-save functionality
+- **Automated Grading** - Auto-grade MCQ, manual grading for short answers and essays
+- **Result Management** - Committee can review, grade, and release results to Examinee
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠 Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend**: Laravel 12+ with MySQL
+- **Frontend**: Blade Templates + Tailwind CSS + jQuery
+- **Bundling**: Laravel Vite
+- **Containerization**: Docker (Production)
 
-## Learning Laravel
+## 📋 Prerequisites
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP 8.2+
+- Composer
+- Node.js 16+
+- MySQL 8.0+
+- Docker & Docker Compose (for production)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 🚀 Development Setup
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Rasikhkp/cbt-website-2.git
+cd cbt-website-2
+```
 
-## Laravel Sponsors
+### 2. Install Dependencies
+```bash
+# Install PHP dependencies
+composer install
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# Install Node.js dependencies
+npm install
+```
 
-### Premium Partners
+### 3. Environment Configuration
+```bash
+# Copy environment file
+cp .env.example .env
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# Generate application key
+php artisan key:generate
 
-## Contributing
+# Configure your database in .env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=exam_system
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. Database Setup
+```bash
+# Run migrations and seed the database
+php artisan migrate --seed
+```
 
-## Code of Conduct
+### 5. Start Development Servers
+```bash
+# Terminal 1: Start Laravel development server
+php artisan serve
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Terminal 2: Start Vite development server (for hot reloading)
+npm run dev
+```
 
-## Security Vulnerabilities
+Your application will be available at `http://localhost:8000`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🐳 Production Deployment (Docker)
 
-## License
+### 1. Build and Start Containers
+```bash
+# Build and start all services
+docker compose up -d
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 2. Run Initial Setup (First Time Only)
+```bash
+# Generate application key
+docker compose exec cbt_web php artisan key:generate
+
+# Run migrations
+docker compose exec cbt_web php artisan migrate --seed
+
+# Add storage link
+docker compose exec cbt_web php artisan storage:link
+```
+
+### 3. Production Commands
+```bash
+# View logs
+docker compose logs -f cbt_web
+
+# Access application container
+docker compose exec cbt_web sh
+
+# Stop all services
+docker compose down
+
+# Update application (pull new code)
+git pull
+docker compose up -d --build cbt_web
+```
+
+## 📁 Project Structure
+
+```
+exam-system/
+├── app/
+│   ├── Http/Controllers/     # Application controllers
+│   ├── Models/              # Eloquent models
+│   └── Providers/           # Service providers
+├── database/
+│   ├── migrations/          # Database migrations
+│   └── seeders/            # Database seeders
+├── resources/
+│   ├── views/
+│   │   ├── layouts/        # Master layouts
+│   │   ├── components/     # Reusable UI components
+│   │   └── pages/          # Page-specific views
+│   ├── js/
+│   │   ├── pages/          # Page-specific JavaScript
+│   │   ├── components/     # Reusable JS components
+│   │   └── utils/          # Helper utilities
+│   └── css/                # Custom styles
+├── routes/
+│   └── web.php             # Web routes
+└── docker-compose.yml      # Docker configuration
+```
+
+## 🔧 Available Commands
+
+### Development Commands
+```bash
+# Start development environment
+php artisan serve          # Start Laravel server
+npm run dev                # Start Vite dev server with hot reload
+npm run watch              # Watch for file changes
+
+# Database operations
+php artisan migrate        # Run migrations
+php artisan migrate:fresh  # Fresh migration (drops all tables)
+php artisan db:seed        # Run seeders
+
+# Clear caches
+php artisan config:clear   # Clear config cache
+php artisan route:clear    # Clear route cache
+php artisan view:clear     # Clear view cache
+```
+
+## 📝 Default Users (After Seeding)
+
+- **Admin**: admin@exam.com / password
+- **Teacher**: teacher@exam.com / password  
+- **Student**: student@exam.com / password
