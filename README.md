@@ -81,6 +81,18 @@ Your application will be available at `http://localhost:8000`
 
 ### 1. Build and Start Containers
 ```bash
+# Copy environment file
+cp .env.example .env.prod
+
+# Configure your database in .env.prod, for example:
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=cbt_web
+DB_USERNAME=laravel
+DB_PASSWORD=secret123
+MYSQL_ROOT_PASSWORD=moresecret123
+
 # Build and start all services
 docker compose up -d
 ```
