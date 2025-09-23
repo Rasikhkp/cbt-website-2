@@ -1,5 +1,5 @@
 # Use official PHP image with Apache
-FROM php:8.2-apache
+FROM php:8.3-apache
 
 # Set working directory
 WORKDIR /var/www/html
@@ -11,12 +11,13 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libzip-dev \
     zip \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+# Install PHP extensions (including zip)
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -24,8 +25,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy application files
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --optimize-autoloader --no-dev
+# Fix git ownership issue and install dependencies
+RUN git config --global --add safe.directory /var/www/html && \
+    composer install --optimize-autoloader --no-dev
 
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html \
