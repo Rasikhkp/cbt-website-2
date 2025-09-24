@@ -356,7 +356,6 @@
 
             document.getElementById('timer').textContent = display;
 
-            console.log('timeRemaining', timeRemaining)
             if (timeRemaining < 1 && !autoSubmitWarning) {
                 clearInterval(timerInterval);
                 showAutoSubmitWarning();

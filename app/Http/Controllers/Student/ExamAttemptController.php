@@ -214,12 +214,14 @@ class ExamAttemptController extends Controller
             }
 
             // Prepare answer data
-            $answerData = [
-                'answered_at' => now(),
-            ];
+            $answerData = [];
+
+            if ($request->selected_options || $request->answer_text) {
+                $answerData['answered_at'] = now();
+            }
 
             if ($question->isMCQ()) {
-                $answerData['selected_options'] = $request->selected_options ?? [];
+                $answerData['selected_options'] = $request->selected_options;
                 $answerData['answer_text'] = null;
             } else {
                 $answerData['answer_text'] = $request->answer_text;
@@ -239,12 +241,10 @@ class ExamAttemptController extends Controller
 
                 if ($request->action === 'next' && $currentIndex !== false && $currentIndex < $questions->count() - 1) {
                     $nextQuestionNumber = $currentIndex + 2; // Convert to 1-based
-                    return redirect()->route('student.attempts.question', [$attempt, $nextQuestionNumber])
-                        ->with('success', 'Answer saved successfully.');
+                    return redirect()->route('student.attempts.question', [$attempt, $nextQuestionNumber]);
                 } elseif ($request->action === 'previous' && $currentIndex !== false && $currentIndex > 0) {
                     $prevQuestionNumber = $currentIndex; // Convert to 1-based
-                    return redirect()->route('student.attempts.question', [$attempt, $prevQuestionNumber])
-                        ->with('success', 'Answer saved successfully.');
+                    return redirect()->route('student.attempts.question', [$attempt, $prevQuestionNumber]);
                 }
             }
 

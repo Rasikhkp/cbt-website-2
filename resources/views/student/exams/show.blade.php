@@ -143,12 +143,6 @@
                                 @if($exam->max_attempts > 1)
                                     <li>• You can attempt this exam {{ $exam->max_attempts - $attempts->count() }} more time(s)</li>
                                 @endif
-                                @if($exam->randomize_questions)
-                                    <li>• Questions will be presented in random order</li>
-                                @endif
-                                @if($exam->randomize_options)
-                                    <li>• Answer options will be shuffled for multiple choice questions</li>
-                                @endif
                             </ul>
                         </div>
 
