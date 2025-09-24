@@ -79,11 +79,6 @@ class ExamAttempt extends Model
             return 0;
         }
 
-        // If time_remaining_seconds is set (for pause/resume), use it
-        if ($this->time_remaining_seconds !== null) {
-            return max(0, $this->time_remaining_seconds);
-        }
-
         // Otherwise calculate from expires_at
         $remaining = now()->diffInSeconds($this->expires_at, false);
         return max(0, $remaining);

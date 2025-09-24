@@ -16,12 +16,10 @@ return new class extends Migration
             $table->datetime('started_at');
             $table->datetime('submitted_at')->nullable();
             $table->datetime('expires_at'); // When the attempt expires based on duration
-            $table->integer('time_remaining_seconds')->nullable(); // For pause/resume functionality
             $table->decimal('total_score', 8, 2)->nullable();
             $table->decimal('percentage_score', 5, 2)->nullable();
             $table->enum('status', ['in_progress', 'submitted', 'expired', 'graded'])->default('in_progress');
             $table->json('question_order')->nullable(); // Randomized question order for this attempt
-            $table->json('session_data')->nullable(); // Additional session data
             $table->timestamps();
             $table->index(['exam_id', 'student_id']);
             $table->index(['status']);

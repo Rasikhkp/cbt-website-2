@@ -41,9 +41,6 @@ Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->name('teac
     Route::patch('exams/{exam}/unpublish', [TeacherExamController::class, 'unpublish'])->name('exams.unpublish');
 
     // Grading management routes
-    Route::get('grading', [GradingController::class, 'index'])->name('grading.index');
-    Route::get('grading/exam/{exam}', [GradingController::class, 'exam'])->name('grading.exam');
-    Route::get('grading/attempt/{attempt}', [GradingController::class, 'attempt'])->name('grading.attempt');
     Route::post('grading/answers/{answer}/grade', [GradingController::class, 'gradeAnswer'])->name('grade-answer');
     Route::post('grading/answers/{answer}/reset', [GradingController::class, 'resetGrading'])->name('reset-grading');
 
@@ -76,10 +73,6 @@ Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')
     // AJAX routes for real-time functionality
     Route::get('/attempts/{attempt}/time-remaining', [ExamAttemptController::class, 'getTimeRemaining'])->name('attempts.time-remaining');
     Route::post('/attempts/{attempt}/auto-save', [ExamAttemptController::class, 'autoSaveAnswer'])->name('attempts.auto-save');
-
-    // Future routes for Phase 6 (Pause/Resume functionality)
-    Route::post('/attempts/{attempt}/pause', [ExamAttemptController::class, 'pause'])->name('attempts.pause');
-    Route::post('/attempts/{attempt}/resume', [ExamAttemptController::class, 'resume'])->name('attempts.resume');
 });
 
 // Profile routes

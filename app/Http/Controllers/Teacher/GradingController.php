@@ -4,19 +4,11 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GradeAnswerRequest;
-use App\Http\Requests\StoreExamRequest;
-use App\Http\Requests\UpdateExamRequest;
 use App\Models\Exam;
 use App\Models\ExamAnswer;
 use App\Models\ExamAttempt;
-use App\Models\Question;
-use App\Models\User;
-use App\Models\ExamQuestion;
-use App\Models\ExamStudent;
 use App\Services\GradingService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class GradingController extends Controller
 {
@@ -25,47 +17,6 @@ class GradingController extends Controller
     public function __construct(GradingService $gradingService)
     {
         $this->gradingService = $gradingService;
-    }
-
-    /**
-     * Show list of exams that need grading
-     */
-    public function index(Request $request)
-    {
-        $examsNeedingGrading = Exam::where('created_by', auth()->id())
-            ->whereHas('attempts', function ($query) {
-                $query->where('status', 'submitted');
-            })
-            ->get();
-
-        return view('teacher.grading.index', compact('examsNeedingGrading'));
-    }
-
-    /**
-     * Show grading overview for specific exam
-     */
-    public function exam(Exam $exam)
-    {
-        $attempts = ExamAttempt::where('exam_id', $exam->id)
-            ->whereIn('status', ['submitted', 'graded'])
-            ->with([
-                'student',
-                'answers' => function ($query) {
-                    $query->with('question');
-                }
-            ])
-            ->withCount([
-                'answers as total_answers',
-                'answers as graded_answers' => function ($query) {
-                    $query->where('is_graded', true);
-                },
-                'answers as ungraded_answers' => function ($query) {
-                    $query->where('is_graded', false);
-                }
-            ])
-            ->get();
-
-        return view('teacher.grading.exam', compact('exam', 'attempts'));
     }
 
     public function attempt(ExamAttempt $attempt)
