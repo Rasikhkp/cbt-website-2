@@ -85,7 +85,7 @@ git clone https://github.com/Rasikhkp/cbt-website-2.git
 cd cbt-website-2
 ```
 
-### 2. Setup DB environment and Start Containers
+### 2. Setup DB environment
 ```bash
 # Copy environment file
 cp .env.example .env.prod
@@ -101,9 +101,6 @@ MYSQL_DATABASE=cbt_web
 MYSQL_USER=laravel
 MYSQL_PASSWORD=secret123
 MYSQL_ROOT_PASSWORD=moresecret123
-
-# Build and start all services
-docker compose up -d
 ```
 
 ### 3. Run Initial Setup (First Time Only)
