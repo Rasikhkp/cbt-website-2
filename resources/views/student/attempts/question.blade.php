@@ -238,12 +238,12 @@
                                 @endif
 
                                 <!-- Answer Status -->
-                                <div class="mb-6 flex gap-2">
-                                    <div id="saveStatus" class="text-sm text-gray-600 hidden">
-                                        <span class="text-green-600">✓ Auto-saved</span>
-                                    </div>
+                                <div class="mb-6 flex justify-between gap-2">
                                     <div id="answered-at" class="text-sm text-gray-500">
                                         {{ $answer->answered_at ? "Last saved: " . $answer->answered_at->format('M j, g:i A') : null}}
+                                    </div>
+                                    <div id="saveStatus" class="text-sm text-gray-600 hidden">
+                                        <span class="text-green-600">✓ Auto saved</span>
                                     </div>
                                 </div>
 
@@ -262,10 +262,6 @@
                                     </div>
 
                                     <div class="flex gap-3">
-                                        <button type="submit"
-                                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                            Save Answer
-                                        </button>
                                         @if($questionIndex < $questions->count() - 1)
                                             <button type="submit" name="action" value="next"
                                                     class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center">
