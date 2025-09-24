@@ -9,7 +9,7 @@ echo "Setting up Laravel application..."
 sed -i "s|^APP_KEY=.*|APP_KEY=base64:$(openssl rand -base64 32)|" .env.prod
 
 # Start containers
-docker compose up -d --build
+docker compose up -d
 
 # Wait for DB and run setup
 sleep 10
