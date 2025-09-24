@@ -79,7 +79,13 @@ Your application will be available at `http://localhost:8000`
 
 ## 🐳 Production Deployment (Docker)
 
-### 1. Setup DB environment and Start Containers
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Rasikhkp/cbt-website-2.git
+cd cbt-website-2
+```
+
+### 2. Setup DB environment and Start Containers
 ```bash
 # Copy environment file
 cp .env.example .env.prod
@@ -100,7 +106,7 @@ MYSQL_ROOT_PASSWORD=moresecret123
 docker compose up -d
 ```
 
-### 2. Run Initial Setup (First Time Only)
+### 3. Run Initial Setup (First Time Only)
 ```bash
 # Generate application key
 sed -i "s|^APP_KEY=.*|APP_KEY=base64:$(openssl rand -base64 32)|" .env.prod
@@ -115,7 +121,7 @@ docker compose exec laravel php artisan migrate --seed
 docker compose exec laravel php artisan storage:link
 ```
 
-### 3. Production Commands
+### 4. Production Commands
 ```bash
 # View logs
 docker logs -f cbt_web
@@ -128,7 +134,7 @@ docker compose down
 
 # Update application (pull new code)
 git pull
-docker compose up -d --build cbt_web
+docker compose up -d
 ```
 
 ## 🔧 Available Commands
