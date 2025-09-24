@@ -117,22 +117,6 @@ sed -i "s|^APP_KEY=.*|APP_KEY=base64:$(openssl rand -base64 32)|" .env.prod
 docker compose up -d
 ```
 
-### 4. Production Commands
-```bash
-# View logs
-docker logs -f cbt_web
-
-# Access application container
-docker exec cbt_web sh
-
-# Stop all services
-docker compose down
-
-# Update application (pull new code)
-git pull
-docker compose up -d
-```
-
 ## 🔧 Available Commands
 
 ### Development Commands
@@ -151,6 +135,22 @@ php artisan db:seed        # Run seeders
 php artisan config:clear   # Clear config cache
 php artisan route:clear    # Clear route cache
 php artisan view:clear     # Clear view cache
+```
+
+### Production Commands
+```bash
+# View logs
+docker logs -f cbt_web
+
+# Access application container
+docker exec cbt_web sh
+
+# Stop all services
+docker compose down
+
+# Update application (pull new code)
+git pull
+docker compose up -d
 ```
 
 ## 📝 Default Users (After Seeding)
