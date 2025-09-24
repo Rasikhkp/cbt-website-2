@@ -79,7 +79,7 @@ Your application will be available at `http://localhost:8000`
 
 ## 🐳 Production Deployment (Docker)
 
-### 1. Build and Start Containers
+### 1. Setup DB environment and Start Containers
 ```bash
 # Copy environment file
 cp .env.example .env.prod
@@ -91,6 +91,9 @@ DB_PORT=3306
 DB_DATABASE=cbt_web
 DB_USERNAME=laravel
 DB_PASSWORD=secret123
+MYSQL_DATABASE=cbt_web
+MYSQL_USER=laravel
+MYSQL_PASSWORD=secret123
 MYSQL_ROOT_PASSWORD=moresecret123
 
 # Build and start all services
@@ -100,13 +103,16 @@ docker compose up -d
 ### 2. Run Initial Setup (First Time Only)
 ```bash
 # Generate application key
-docker exec cbt_web php artisan key:generate
+sed -i "s|^APP_KEY=.*|APP_KEY=base64:$(openssl rand -base64 32)|" .env.prod
+
+# Build again
+docker compose up -d
 
 # Run migrations
-docker exec cbt_web php artisan migrate --seed
+docker compose exec laravel php artisan migrate --seed
 
 # Add storage link
-docker exec cbt_web php artisan storage:link
+docker compose exec laravel php artisan storage:link
 ```
 
 ### 3. Production Commands
