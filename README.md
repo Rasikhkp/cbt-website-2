@@ -90,6 +90,11 @@ cd cbt-website-2
 # Copy environment file
 cp .env.example .env.prod
 
+# Configure .env.prod to production
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://yourdomain.com
+
 # Configure your database in .env.prod, for example:
 DB_CONNECTION=mysql
 DB_HOST=mysql
@@ -108,14 +113,8 @@ MYSQL_ROOT_PASSWORD=moresecret123
 # Generate application key
 sed -i "s|^APP_KEY=.*|APP_KEY=base64:$(openssl rand -base64 32)|" .env.prod
 
-# Build again
+# Run the container
 docker compose up -d
-
-# Run migrations
-docker compose exec laravel php artisan migrate --seed
-
-# Add storage link
-docker compose exec laravel php artisan storage:link
 ```
 
 ### 4. Production Commands
