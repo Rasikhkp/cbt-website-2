@@ -12,7 +12,10 @@ RUN apk add --no-cache \
     zip \
     unzip \
     nodejs \
-    npm
+    npm \
+    bash \
+    wait4ports \
+    mysql-client
 
 # Install PHP extensions
 RUN docker-php-ext-install \
@@ -66,6 +69,10 @@ RUN composer dump-autoload --optimize
 # Copy Caddyfile
 COPY Caddyfile /etc/caddy/Caddyfile
 
+# Copy custom entrypoint
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Configure PHP
 RUN echo -e "opcache.enable=1\n\
 opcache.enable_cli=1\n\
@@ -75,7 +82,6 @@ opcache.max_accelerated_files=4000\n\
 opcache.revalidate_freq=60\n\
 opcache.fast_shutdown=1" > /usr/local/etc/php/conf.d/opcache.ini
 
-
 # Expose port
 EXPOSE 80
 
@@ -83,5 +89,6 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost/ || exit 1
 
-# Start FrankenPHP
+# Start FrankenPHP via entrypoint
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
