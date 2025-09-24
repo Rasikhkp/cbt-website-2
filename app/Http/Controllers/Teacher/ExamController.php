@@ -69,7 +69,6 @@ class ExamController extends Controller
                 'duration_minutes' => $request->duration_minutes,
                 'randomize_questions' => $request->randomize_questions,
                 'randomize_options' => $request->randomize_options,
-                'allow_review' => $request->allow_review,
                 'max_attempts' => $request->max_attempts,
             ]);
 
@@ -171,7 +170,6 @@ class ExamController extends Controller
                 'duration_minutes' => $request->duration_minutes,
                 'randomize_questions' => $request->randomize_questions,
                 'randomize_options' => $request->randomize_options,
-                'allow_review' => $request->allow_review,
                 'max_attempts' => $request->max_attempts,
             ]);
 

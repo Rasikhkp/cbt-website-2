@@ -200,17 +200,6 @@
                                             Randomize MCQ option order
                                         </label>
                                     </div>
-
-                                    <div class="flex items-center">
-                                        <input type="checkbox"
-                                               id="allow_review"
-                                               name="allow_review"
-                                               checked
-                                               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                        <label for="allow_review" class="ml-2 text-sm text-gray-700">
-                                            Allow students to review answers before submission
-                                        </label>
-                                    </div>
                                 </div>
 
                                 <div>

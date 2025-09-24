@@ -32,7 +32,6 @@ class ExamSeeder extends Seeder
                 'duration_minutes' => 90,
                 'randomize_questions' => true,
                 'randomize_options' => true,
-                'allow_review' => true,
                 'max_attempts' => 1,
                 'status' => 'published',
             ],
@@ -45,7 +44,6 @@ class ExamSeeder extends Seeder
                 'duration_minutes' => 30,
                 'randomize_questions' => false,
                 'randomize_options' => true,
-                'allow_review' => true,
                 'max_attempts' => 2,
                 'status' => 'published',
             ],
@@ -58,7 +56,6 @@ class ExamSeeder extends Seeder
                 'duration_minutes' => 120,
                 'randomize_questions' => true,
                 'randomize_options' => false,
-                'allow_review' => true,
                 'max_attempts' => 1,
                 'status' => 'draft',
             ]
@@ -77,7 +74,6 @@ class ExamSeeder extends Seeder
                 'duration_minutes' => $examData['duration_minutes'],
                 'randomize_questions' => $examData['randomize_questions'],
                 'randomize_options' => $examData['randomize_options'],
-                'allow_review' => $examData['allow_review'],
                 'max_attempts' => $examData['max_attempts'],
                 'status' => $examData['status'],
             ]);

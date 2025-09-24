@@ -24,7 +24,6 @@ class UpdateExamRequest extends FormRequest
             'duration_minutes' => ['required', 'integer', 'min:1', 'max:600'],
             'randomize_questions' => ['boolean'],
             'randomize_options' => ['boolean'],
-            'allow_review' => ['boolean'],
             'max_attempts' => ['required', 'integer', 'min:1', 'max:10'],
             'questions' => ['required', 'array', 'min:1'],
             'questions.*' => ['exists:questions,id'],
@@ -40,7 +39,6 @@ class UpdateExamRequest extends FormRequest
         $this->merge([
             'randomize_questions' => $this->has('randomize_questions'),
             'randomize_options' => $this->has('randomize_options'),
-            'allow_review' => $this->has('allow_review'),
         ]);
     }
 }
