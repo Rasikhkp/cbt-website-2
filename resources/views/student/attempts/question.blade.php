@@ -228,7 +228,7 @@
                                                 rows="{{ $question->isLong() ? 10 : 3 }}"
                                                 class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                                 placeholder="{{ $question->isShort() ? 'Enter a brief answer...' : 'Provide a detailed answer...' }}"
-                                                oninput="autoSaveAnswer()">{{ $answer ? $answer->answer_text : '' }}</textarea>
+                                                oninput="debouncedAutoSave()">{{ $answer ? $answer->answer_text : '' }}</textarea>
                                         @if($question->isLong())
                                             <p class="text-xs text-gray-500 mt-1">Take your time to provide a comprehensive answer. You can use multiple paragraphs.</p>
                                         @elseif($question->isShort())
@@ -341,6 +341,7 @@
         let timeRemaining = {{ $attempt->getRemainingTimeSeconds() }};
         let timerInterval;
         let autoSubmitWarning = false;
+        let debounceTimer;
 
         function updateTimer() {
             const hours = Math.floor(timeRemaining / 3600);
@@ -423,6 +424,13 @@
             .catch(error => {
                 console.error('Auto-save failed:', error);
             });
+        }
+
+        function debouncedAutoSave() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                autoSaveAnswer();
+            }, 1000); // delay = 1000ms (1 second)
         }
 
         function openImageModal(src, title) {
