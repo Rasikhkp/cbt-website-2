@@ -4,7 +4,7 @@ set -e
 # Wait for DB to be ready (if needed)
 if [ ! -z "$DB_HOST" ]; then
   echo "⏳ Waiting for database at $DB_HOST:$DB_PORT..."
-  wait4ports tcp://$DB_HOST:$DB_PORT -t 30
+  wait4ports -t 30 tcp://$DB_HOST:$DB_PORT
 fi
 
 # Ensure APP_KEY exists
