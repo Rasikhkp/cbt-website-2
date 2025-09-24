@@ -301,12 +301,6 @@ class ExamAttemptController extends Controller
                 ->with('error', 'This exam has not been submitted yet.');
         }
 
-        // Check if results should be shown
-        if (!$attempt->exam->show_results_immediately && !$attempt->isGraded()) {
-            return redirect()->route('student.exams.show', $attempt->exam)
-                ->with('info', 'Results are not available yet. Your teacher will release them when grading is complete.');
-        }
-
         $questions = $attempt->getQuestionsInOrder();
         $answers = $attempt->answers()->with('question.options')->get()->keyBy('question_id');
 

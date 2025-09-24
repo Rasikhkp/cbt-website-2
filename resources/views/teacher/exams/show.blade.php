@@ -151,10 +151,6 @@
                                     {{ $exam->randomize_options ? 'Yes' : 'No' }}
                                 </span>
                             </div>
-                            <div class="flex justify-between">
-                                <span class="font-medium">Show Results:</span>
-                                <span>{{ $exam->show_results_immediately ? 'Immediately' : 'After review' }}</span>
-                            </div>
                         </div>
                     </div>
                 </div>

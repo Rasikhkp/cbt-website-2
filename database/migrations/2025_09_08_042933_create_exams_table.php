@@ -22,7 +22,6 @@ return new class extends Migration
             $table->boolean('results_released')->default(false);
             $table->boolean('randomize_questions')->default(false);
             $table->boolean('randomize_options')->default(false);
-            $table->boolean('show_results_immediately')->default(false);
             $table->boolean('allow_review')->default(true);
             $table->integer('max_attempts')->default(1);
             $table->enum('status', ['draft', 'published', 'completed', 'archived'])->default('draft');

@@ -203,16 +203,6 @@
 
                                     <div class="flex items-center">
                                         <input type="checkbox"
-                                               id="show_results_immediately"
-                                               name="show_results_immediately"
-                                               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                        <label for="show_results_immediately" class="ml-2 text-sm text-gray-700">
-                                            Show results immediately after submission
-                                        </label>
-                                    </div>
-
-                                    <div class="flex items-center">
-                                        <input type="checkbox"
                                                id="allow_review"
                                                name="allow_review"
                                                checked
