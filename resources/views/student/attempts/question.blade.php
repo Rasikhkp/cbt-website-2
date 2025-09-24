@@ -341,7 +341,6 @@
         let timeRemaining = {{ $attempt->getRemainingTimeSeconds() }};
         let timerInterval;
         let autoSubmitWarning = false;
-        let autoSaveTimeout;
 
         function updateTimer() {
             const hours = Math.floor(timeRemaining / 3600);
@@ -389,45 +388,42 @@
         }
 
         function autoSaveAnswer() {
-            clearTimeout(autoSaveTimeout);
-            autoSaveTimeout = setTimeout(() => {
-                const formData = new FormData(document.getElementById('answerForm'));
+            const formData = new FormData(document.getElementById('answerForm'));
 
-                fetch('{{ route("student.attempts.auto-save", $attempt) }}', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            fetch('{{ route("student.attempts.auto-save", $attempt) }}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('saveStatus').classList.remove('hidden');
+                    if (data.progress) {
+                        document.getElementById('progress').textContent = data.progress;
                     }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('saveStatus').classList.remove('hidden');
-                        if (data.progress) {
-                            document.getElementById('progress').textContent = data.progress;
-                        }
 
-                        if (data.answered_at) {
-                            document.getElementById('answered-at').textContent = data.answered_at
-                        }
-
-                        if (data.answered_count && data.total_questions) {
-                            console.log('data', data)
-                            document.getElementById('answered').textContent = `${data.answered_count} / ${data.total_questions}`
-                            document.getElementById('remaining').textContent = data.total_questions - data.answered_count;
-                            document.getElementById('progress-bar').style.width = `${data.progress}%`
-                            document.getElementById('unanswered').textContent = data.answered_count < data.total_questions ? `${data.total_questions - data.answered_count} question(s) unanswered` : ''
-                        }
-                        setTimeout(() => {
-                            document.getElementById('saveStatus').classList.add('hidden');
-                        }, 2000);
+                    if (data.answered_at) {
+                        document.getElementById('answered-at').textContent = data.answered_at
                     }
-                })
-                .catch(error => {
-                    console.error('Auto-save failed:', error);
-                });
-            }, 500);
+
+                    if (data.answered_count && data.total_questions) {
+                        console.log('data', data)
+                        document.getElementById('answered').textContent = `${data.answered_count} / ${data.total_questions}`
+                        document.getElementById('remaining').textContent = data.total_questions - data.answered_count;
+                        document.getElementById('progress-bar').style.width = `${data.progress}%`
+                        document.getElementById('unanswered').textContent = data.answered_count < data.total_questions ? `${data.total_questions - data.answered_count} question(s) unanswered` : ''
+                    }
+                    setTimeout(() => {
+                        document.getElementById('saveStatus').classList.add('hidden');
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                console.error('Auto-save failed:', error);
+            });
         }
 
         function openImageModal(src, title) {
