@@ -114,7 +114,7 @@ MYSQL_ROOT_PASSWORD=moresecret123
 sed -i "s|^APP_KEY=.*|APP_KEY=base64:$(openssl rand -base64 32)|" .env.prod
 
 # Run the container
-docker compose up -d
+docker compose up -d --build
 
 # Run migration and seeders
 docker compose exec laravel php artisan migrate --seed --force
@@ -153,7 +153,7 @@ docker compose down
 
 # Update application (pull new code)
 git pull
-docker compose up -d
+docker compose up -d --build
 ```
 
 ## 📝 Default Users (After Seeding)
