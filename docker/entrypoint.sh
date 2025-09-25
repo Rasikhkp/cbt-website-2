@@ -1,13 +1,16 @@
 #!/bin/bash
 set -e
 
-# Run migrations + seed
-echo "📦 Running migrations..."
-php artisan migrate --seed --force
+echo "📦 Checking if migrations already ran..."
+if php artisan migrate:status | grep -q "Yes"; then
+    echo "✅ Migrations already applied, skipping migrate --seed"
+else
+    echo "🚀 Running migrations + seed..."
+    php artisan migrate --seed --force
+fi
 
-# Ensure storage link
 echo "🔗 Ensuring storage link..."
 php artisan storage:link || true
 
-# Finally, run original CMD
 exec "$@"
+
