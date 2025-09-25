@@ -115,6 +115,9 @@ sed -i "s|^APP_KEY=.*|APP_KEY=base64:$(openssl rand -base64 32)|" .env.prod
 
 # Run the container
 docker compose up -d
+
+# Run migration and seeders
+docker compose exec laravel php artisan migrate --seed --force
 ```
 
 ## 🔧 Available Commands
