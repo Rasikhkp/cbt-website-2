@@ -69,10 +69,6 @@ RUN composer dump-autoload --optimize
 # Copy Caddyfile
 COPY Caddyfile /etc/caddy/Caddyfile
 
-# Copy custom entrypoint
-COPY docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
 # Configure PHP
 RUN echo -e "opcache.enable=1\n\
 opcache.enable_cli=1\n\
