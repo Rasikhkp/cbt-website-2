@@ -84,6 +84,9 @@
                             <div class="flex justify-between items-start mb-3">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2 mb-2">
+                                        <span class="px-2 py-1 rounded-full bg-gray-200 text-xs text-gray-800">
+                                            #{{ $question->id }}
+                                        </span>
                                         <span
                                             class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
                                             {{ $question->getTypeDisplayName() }}

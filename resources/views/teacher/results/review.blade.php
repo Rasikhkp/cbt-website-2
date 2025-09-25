@@ -52,14 +52,17 @@
                         data-answer-id="{{ $answer->id }}">
                         <div class="px-6 py-4 border-b border-gray-200">
                             <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold text-gray-900">
-                                    Question {{ $loop->iteration }}
+                                <div>
+                                    <span class="px-2 py-1 rounded-full bg-gray-200 text-xs text-gray-800">
+                                        #{{ $answer->question->id }}
+                                    </span>
                                     @if ($answer->question->type)
                                         <span class="ml-2 px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full">
                                             {{ strtoupper($answer->question->type) }}
                                         </span>
                                     @endif
-                                </h3>
+                                </div>
+
                                 <div class="flex items-center space-x-2">
                                     @if ($answer->is_graded)
                                         <span
@@ -98,7 +101,7 @@
                                                     <span
                                                         class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Correct</span>
                                                 @endif
-                                                @if (in_array($option->id, $answer->selected_options))
+                                                @if (in_array($option->id, $answer->selected_options ?? []))
                                                     <span
                                                         class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full ml-2">Selected</span>
                                                 @endif

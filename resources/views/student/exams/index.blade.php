@@ -126,7 +126,7 @@
                                         <div class="ml-4">
                                             <a href="{{ route('student.exams.show', $exam) }}"
                                                 class="bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm font-medium">
-                                                View Results
+                                                View Details
                                             </a>
                                         </div>
                                     </div>

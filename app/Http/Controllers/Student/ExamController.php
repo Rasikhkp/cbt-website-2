@@ -7,6 +7,7 @@ use App\Models\Exam;
 use App\Models\ExamAttempt;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class ExamController extends Controller
 {
@@ -51,8 +52,38 @@ class ExamController extends Controller
             ->orderBy('attempt_number', 'desc')
             ->get();
 
+        // Check if there is attempts that are already expired and if the exam is already expired
+        $expiredAttempts = $attempts->where('status', 'in_progress')->where('expires_at', "<", now());
+
+        if (!$expiredAttempts->isEmpty()) {
+            foreach ($expiredAttempts as $attempt) {
+                $attempt->update([
+                    'status' => 'submitted',
+                    'submitted_at' => now()
+                ]);
+
+                $attempt->autoGrade();
+            }
+        }
+
+        if ($exam->isPast()) {
+            $inProgressAttempts = $attempts->where('status', 'in_progress');
+
+            foreach ($inProgressAttempts as $attempt) {
+                $attempt->update([
+                    'status' => 'submitted',
+                    'submitted_at' => now()
+                ]);
+
+                $attempt->autoGrade();
+            }
+        }
+
         // Check if there's an active attempt
-        $activeAttempt = $attempts->where('status', 'in_progress')->first();
+        $activeAttempt = $attempts
+            ->where('status', 'in_progress')
+            ->where('expires_at', ">", now())
+            ->first();
 
         // Check if student can start a new attempt
         $canStartNewAttempt = $attempts->count() < $exam->max_attempts;

@@ -186,8 +186,8 @@
                                     <!-- Question Header -->
                                     <div class="flex justify-between items-start mb-4">
                                         <div class="flex items-center gap-3">
-                                            <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-medium">
-                                                Q{{ $examQuestion->question_order }}
+                                            <span class="px-2 py-1 rounded-full bg-gray-200 text-xs text-gray-800">
+                                                #{{ $question->id }}
                                             </span>
                                             <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
                                                 {{ $question->getTypeDisplayName() }}
@@ -364,12 +364,6 @@
                                                 </span>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="mt-2 text-xs text-gray-500">
-                                        <div>Assigned: {{ date('d M Y, H:i', strtotime($student->pivot->assigned_at)) }}</div>
-                                        @if($student->pivot->due_date)
-                                            <div>Due: {{ date('d M Y, H:i', strtotime($student->pivot->due_date)) }}</div>
-                                        @endif
                                     </div>
                                 </div>
                             @endforeach

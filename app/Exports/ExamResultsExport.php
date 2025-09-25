@@ -41,7 +41,6 @@ class ExamResultsExport implements FromCollection, WithHeadings
                 $maxScore,
                 round($percentage, 2) . '%',
                 $this->getLetterGrade($percentage),
-                $attempt->submitted_at?->format('Y-m-d H:i:s') ?? 'N/A',
                 $timeTakenFormatted,
             ];
 
@@ -67,7 +66,6 @@ class ExamResultsExport implements FromCollection, WithHeadings
             'Max Score',
             'Percentage',
             'Grade',
-            'Submitted At',
             'Time Taken',
         ];
 

@@ -397,7 +397,17 @@
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             })
-            .then(response => response.json())
+            .then(async response => {
+                const data = await response.json().catch(() => ({})); // catch invalid JSON
+                if (!response.ok) {
+                    if (data.error === 'Exam is expired') {
+                        showAutoSubmitWarning()
+                    }
+
+                    throw new Error(data.message || "Auto-save failed");
+                }
+                return data;
+            })
             .then(data => {
                 if (data.success) {
                     document.getElementById('saveStatus').classList.remove('hidden');
@@ -422,7 +432,7 @@
                 }
             })
             .catch(error => {
-                console.error('Auto-save failed:', error);
+                console.error(error);
             });
         }
 

@@ -31,9 +31,7 @@ class ExamResultController extends Controller
                     ->with('student');
             }])
             ->withCount([
-                'attempts as total_attempts' => function ($query) {
-                    $query->whereIn('status', ['submitted', 'graded']);
-                },
+                'attempts as total_attempts',
                 'attempts as graded_attempts' => function ($query) {
                     $query->where('status', 'graded');
                 }
@@ -50,7 +48,6 @@ class ExamResultController extends Controller
     public function show(Exam $exam)
     {
         $attempts = ExamAttempt::where('exam_id', $exam->id)
-            ->whereIn('status', ['submitted', 'graded'])
             ->with([
                 'student',
                 'answers' => function ($query) {
@@ -104,5 +101,33 @@ class ExamResultController extends Controller
         $format = $request->get('format', 'csv');
 
         return $this->resultService->exportResults($exam, $format);
+    }
+
+    public function submit(Request $request, ExamAttempt $attempt)
+    {
+        try {
+            DB::beginTransaction();
+
+            if ($attempt->isSubmitted()) {
+                DB::rollback();
+                return redirect()->back()->with('info', 'This exam has already been submitted.');
+            }
+
+            // Mark attempt as submitted
+            $attempt->update([
+                'status' => 'submitted',
+                'submitted_at' => now(),
+            ]);
+
+            // Auto-grade the attempt
+            $attempt->autoGrade();
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Exam submitted successfully!');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Failed to submit exam: ' . $e->getMessage());
+        }
     }
 }

@@ -110,12 +110,12 @@ class ExamAttemptController extends Controller
         // Check if attempt has expired
         if ($attempt->isInProgress() && $attempt->isExpired()) {
             $attempt->markAsExpired();
-            return redirect()->route('student.attempts.results', $attempt)
+            return redirect()->back()
                 ->with('warning', 'Your exam time has expired and has been automatically submitted.');
         }
 
         if (!$attempt->isInProgress()) {
-            return redirect()->route('student.attempts.results', $attempt)
+            return redirect()->back()
                 ->with('info', 'This exam attempt has already been submitted.');
         }
 
@@ -364,6 +364,10 @@ class ExamAttemptController extends Controller
 
         if (!$attempt->isInProgress() || $attempt->isExpired()) {
             return response()->json(['error' => 'Exam is not active'], 422);
+        }
+
+        if (now()->greaterThan($attempt->exam->end_time)) {
+            return response()->json(['error' => 'Exam is expired'], 422);
         }
 
         try {

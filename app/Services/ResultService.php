@@ -231,7 +231,6 @@ class ResultService
             'Max Score',
             'Percentage',
             'Grade',
-            'Submitted At',
             'Time Taken',
         ];
 
@@ -265,7 +264,6 @@ class ResultService
                 $maxScore,
                 round($percentage, 2) . '%',
                 $letterGrade,
-                $attempt->submitted_at?->format('Y-m-d H:i:s') ?? 'N/A',
                 $timeTakenFormatted,
             ];
 
