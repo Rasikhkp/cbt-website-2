@@ -283,24 +283,4 @@ class ExamController extends Controller
 
         return back()->with('success', 'Exam unpublished successfully.');
     }
-
-    public function filterQuestions(Request $request)
-    {
-        Log::info('masuk');
-        $tags = $request->input('tags', []);
-        
-        $query = Question::query();
-        
-        if (!empty($tags)) {
-            $query->where(function($q) use ($tags) {
-                foreach ($tags as $tag) {
-                    $q->orWhereJsonContains('tags', $tag);
-                }
-            });
-        }
-        
-        $questions = $query->get();
-        
-        return view('teacher.exams.partials.questions-list', compact('questions'));
-    }
 }
