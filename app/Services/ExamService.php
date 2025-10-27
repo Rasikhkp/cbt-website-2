@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
 use App\Models\ExamAnswer;
+use App\Models\Question;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -219,5 +220,22 @@ class ExamService
             'progressPercentage' => $totalQuestions > 0 ? round(($answeredCount / $totalQuestions) * 100, 1) : 0,
             'questions' => $questionProgress,
         ];
+    }
+
+    public function getUniqueTagsForSelect()
+    {
+        return Question::whereNotNull('tags')
+            ->pluck('tags')
+            ->flatten()
+            ->unique()
+            ->sort()
+            ->values()
+            ->map(function($tag) {
+                return [
+                    'value' => $tag,
+                    'label' => ucfirst($tag)
+                ];
+            })
+            ->toArray();
     }
 }

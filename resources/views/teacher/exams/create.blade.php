@@ -109,54 +109,23 @@
                         <div class="mb-8">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Select Questions</h3>
 
+                            <div class="flex gap-4 mb-4">
+                                <x-multi-select 
+                                    name="tags"
+                                    id="tags-select"
+                                    :options="$uniqueTags"
+                                    :selected="request('tags', [])"
+                                />
+
+                                <button type="button" onclick="filterQuestions()" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
+                                    Filter by Tags
+                                </button>
+                            </div>
+
+
                             @if($questions->count() > 0)
-                                <div class="border rounded-lg p-4 h-[80vh] overflow-y-auto">
-                                    <div class="space-y-3">
-                                        @foreach($questions as $question)
-                                            <div class="question-item border border-gray-200 rounded p-3 hover:bg-gray-50">
-                                                <div class="flex items-start space-x-3">
-                                                    <input type="checkbox"
-                                                           name="questions[]"
-                                                           value="{{ $question->id }}"
-                                                           id="question_{{ $question->id }}"
-                                                           class="mt-1 rounded question-checkbox"
-                                                           onchange="updateSelectedQuestions()">
-
-                                                    <div class="flex-1">
-                                                        <div class="flex items-center gap-2 mb-1">
-                                                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                                                {{ $question->getTypeDisplayName() }}
-                                                            </span>
-                                                            <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $question->getDifficultyColorClass() }}">
-                                                                {{ ucfirst($question->difficulty) }}
-                                                            </span>
-                                                        </div>
-                                                        <p class="text-sm text-gray-800">{{ Str::limit($question->question_text, 100) }}</p>
-                                                        <div class="flex items-center gap-4 text-xs text-gray-500 mt-1">
-                                                            <span>Default: {{ $question->points }} pts</span>
-                                                            @if($question->images->count() > 0)
-                                                                <span>{{ $question->images->count() }} image(s)</span>
-                                                            @endif
-                                                            @if($question->isMCQ())
-                                                                <span>{{ $question->options->count() }} options</span>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="question-marks-input hidden">
-                                                        <label class="block text-xs font-medium text-gray-700">Marks</label>
-                                                        <input type="number"
-                                                               name="question_marks[]"
-                                                               step="0.1"
-                                                               min="0.1"
-                                                               max="100"
-                                                               value="{{ $question->points }}"
-                                                               class="mt-1 block w-20 text-sm border-gray-300 rounded">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
+                                <div class="border rounded-lg p-4 h-[80vh] overflow-y-auto" id="questions-container">
+                                    @include('teacher.exams.partials.questions-list', ['questions' => $questions])
                                 </div>
                                 <div class="mt-4 p-3 bg-blue-50 rounded">
                                     <div class="flex justify-between items-center text-sm">
@@ -220,7 +189,7 @@
 
                         <!-- Student Assignment -->
                         <div class="mb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Assign Students</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Assign Examinee</h3>
 
                             @if($students->count() > 0)
                                 <div class="border rounded-lg p-4 max-h-64 overflow-y-auto">
@@ -248,7 +217,7 @@
                                     </div>
                                 </div>
                                 <p class="text-sm text-gray-500 mt-2">
-                                    Leave unchecked to manually assign students later
+                                    Leave unchecked to manually assign examinee later
                                 </p>
                             @else
                                 <div class="text-center py-6 border-2 border-dashed border-gray-300 rounded-lg">
@@ -330,5 +299,23 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateSelectedQuestions();
         });
+
+        function filterQuestions() {
+            const tagsElement = document.querySelectorAll('[name="tags[]"]');
+            const selectedTags = Array.from(tagsElement).map(tagElement => tagElement.value);
+            console.log('selectedTags', selectedTags)
+
+            // const params = new URLSearchParams();
+            // selectedTags.forEach(tag => params.append('tags[]', tag));
+            
+            // fetch(`{{ route('teacher.exams.filter-questions') }}?${params}`)
+            //     .then(response => response.text())
+            //     .then(html => {
+            //         document.getElementById('questions-container').innerHTML = 
+            //             '<div class="space-y-3">' + html + '</div>';
+            //         updateSelectedQuestions();
+            //     })
+            //     .catch(error => console.error('Error:', error));
+        }
     </script>
 </x-app-layout>

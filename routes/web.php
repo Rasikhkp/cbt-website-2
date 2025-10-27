@@ -36,6 +36,7 @@ Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->name('teac
     Route::resource('questions', QuestionController::class);
 
     // Exam management routes
+    Route::get('exams/filter-questions', [TeacherExamController::class, 'filterQuestions'])->name('exams.filter-questions');
     Route::resource('exams', TeacherExamController::class);
     Route::patch('exams/{exam}/publish', [TeacherExamController::class, 'publish'])->name('exams.publish');
     Route::patch('exams/{exam}/unpublish', [TeacherExamController::class, 'unpublish'])->name('exams.unpublish');

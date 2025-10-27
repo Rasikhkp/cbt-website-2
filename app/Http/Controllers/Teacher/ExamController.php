@@ -10,12 +10,20 @@ use App\Models\Question;
 use App\Models\User;
 use App\Models\ExamQuestion;
 use App\Models\ExamStudent;
+use App\Services\ExamService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ExamController extends Controller
 {
+    protected $examService;
+
+    public function __construct(ExamService $examService)
+    {
+        $this->examService = $examService;
+    }
+
     public function index(Request $request)
     {
         $query = Exam::with(['creator', 'examQuestions', 'assignedStudents']);
@@ -49,8 +57,9 @@ class ExamController extends Controller
             ->get();
 
         $students = User::where('role', 'student')->orderBy('name')->get();
+        $uniqueTags = $this->examService->getUniqueTagsForSelect();
 
-        return view('teacher.exams.create', compact('questions', 'students'));
+        return view('teacher.exams.create', compact('questions', 'students', 'uniqueTags'));
     }
 
     public function store(StoreExamRequest $request)
@@ -273,5 +282,25 @@ class ExamController extends Controller
         $exam->update(['status' => 'draft']);
 
         return back()->with('success', 'Exam unpublished successfully.');
+    }
+
+    public function filterQuestions(Request $request)
+    {
+        Log::info('masuk');
+        $tags = $request->input('tags', []);
+        
+        $query = Question::query();
+        
+        if (!empty($tags)) {
+            $query->where(function($q) use ($tags) {
+                foreach ($tags as $tag) {
+                    $q->orWhereJsonContains('tags', $tag);
+                }
+            });
+        }
+        
+        $questions = $query->get();
+        
+        return view('teacher.exams.partials.questions-list', compact('questions'));
     }
 }

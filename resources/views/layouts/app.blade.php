@@ -17,6 +17,8 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+   
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -40,6 +42,10 @@
             {{ $slot }}
         </main>
     </div>
+
+     <script>
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>
