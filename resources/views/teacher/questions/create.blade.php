@@ -91,7 +91,7 @@
                                         <span class="option-label">A.</span>
                                     </div>
                                     <div>
-                                        <textarea name="options[]" class="tinymce-field"></textarea>
+                                        <textarea name="options[]" class="tinymce-field">{{ old('options.0') }}</textarea>
                                         <div class="mt-2 space-y-4" id="imagesContainer">
                                             <div class="image-upload-item border-2 border-dashed border-gray-300 p-4 rounded-lg">
                                                 <div class="flex flex-col items-center">
@@ -120,7 +120,7 @@
                                         <span class="option-label">B.</span>
                                     </div>
                                     <div>
-                                        <textarea name="options[]" class="tinymce-field"></textarea>
+                                        <textarea name="options[]" class="tinymce-field">{{ old('options.1') }}</textarea>
                                         <div class="mt-2 space-y-4" id="imagesContainer">
                                             <div class="image-upload-item border-2 border-dashed border-gray-300 p-4 rounded-lg">
                                                 <div class="flex flex-col items-center">
@@ -228,7 +228,7 @@
             }
         }
 
-        function addOption() {
+        function addOption(oldValue = '') {
             if (optionCount >= 6) return; // Maximum 6 options
 
             const container = document.getElementById('optionsContainer');
@@ -240,7 +240,7 @@
                 <input type="radio" name="correct_options[]" value="${optionCount}">
                 <span class="option-label">${optionLabels[optionCount]}.</span>
                 <div>
-                    <textarea name="options[]" class="tinymce-field"></textarea>
+                    <textarea name="options[]" class="tinymce-field">${oldValue}</textarea>
                     <div class="mt-2 space-y-4" id="imagesContainer">
                         <div class="image-upload-item border-2 border-dashed border-gray-300 p-4 rounded-lg">
                             <div class="flex flex-col items-center">
@@ -344,7 +344,7 @@
             @if (old('options'))
                 @foreach (old('options', []) as $index => $option)
                     @if ($index > 1)
-                        addOption();
+                        addOption('{{ $option }}');
                     @endif
                 @endforeach
             @endif
