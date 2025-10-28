@@ -99,6 +99,8 @@
                             @endif
                         </div>
                     </div>
+                    <div id="mytextarea">
+                    </div>
                 </div>
             </div>
         </div>

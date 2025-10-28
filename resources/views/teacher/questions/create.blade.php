@@ -44,9 +44,8 @@
                         <!-- Question Text -->
                         <div class="mb-6">
                             <x-input-label for="question_text" :value="__('Question Text')" />
-                            <textarea id="question_text" name="question_text" rows="4"
-                                class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                placeholder="Enter your question here...">{{ old('question_text') }}</textarea>
+                            <div class="mb-2"></div>
+                            <textarea id="question_text" name="question_text" id="tinymce-field" class="tinymce-field"></textarea>
                             <x-input-error :messages="$errors->get('question_text')" class="mt-2" />
                         </div>
 

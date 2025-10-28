@@ -83,7 +83,7 @@
                         <div class="border-b border-gray-200 pb-6 mb-6 last:border-b-0 last:pb-0 last:mb-0">
                             <div class="flex justify-between items-start mb-3">
                                 <div class="flex-1">
-                                    <div class="flex items-center gap-2 mb-2">
+                                    <div class="flex items-center gap-2">
                                         <span class="px-2 py-1 rounded-full bg-gray-200 text-xs text-gray-800">
                                             #{{ $question->id }}
                                         </span>
@@ -99,9 +99,13 @@
                                             {{ $question->points }} {{ Str::plural('point', $question->points) }}
                                         </span>
                                     </div>
-                                    <h3 class="text-lg font-medium text-gray-900 mb-2">
-                                        {{ Str::limit($question->question_text, 100) }}
-                                    </h3>
+
+                                    <div class="bg-gray-50 p-4 my-4 rounded-lg">
+                                        <div class="prose">
+                                            {!! $question->question_text !!}
+                                        </div>
+                                    </div>
+
                                     @if ($question->tags && count($question->tags) > 0)
                                         <div class="flex flex-wrap gap-1 mb-2">
                                             @foreach ($question->tags as $tag)
