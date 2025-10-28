@@ -44,7 +44,7 @@
                         <!-- Question Text -->
                         <div class="mb-6">
                             <x-input-label for="question_text" :value="__('Question Text')" />
-                            <textarea id="question_text" name="question_text" id="tinymce-field" class="tinymce-field">{{ old('question_text', $question->question_text) }}</textarea>
+                            <textarea id="question_text" name="question_text" class="tinymce-field">{{ old('question_text', $question->question_text) }}</textarea>
                             <x-input-error :messages="$errors->get('question_text')" class="mt-2" />
                         </div>
 
@@ -117,13 +117,12 @@
                                 @endphp
 
                                 @for ($i = 0; $i < max(2, count($options)); $i++)
-                                    <div class="option-item flex items-center space-x-3">
-                                        <input type="radio" name="correct_options[]" value="{{ $i }}"
-                                            {{ in_array($i, $correctOptions) ? 'checked' : '' }}>
-                                        <span class="option-label">{{ $optionLabels[$i] ?? chr(65 + $i) }}.</span>
-                                        <input type="text" name="options[]" value="{{ $options[$i] ?? '' }}"
-                                            placeholder="Enter option {{ $optionLabels[$i] ?? chr(65 + $i) }}"
-                                            class="flex-1 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                    <div class="option-item flex items-start gap-3">
+                                        <div class="flex gap-3 items-center mt-1">
+                                            <input type="radio" name="correct_options[]" value="{{ $i }}" {{ in_array($i, $correctOptions) ? 'checked' : '' }}>
+                                            <span class="option-label">{{ $optionLabels[$i] ?? chr(65 + $i) }}.</span>
+                                        </div>
+                                        <textarea name="options[]" class="tinymce-field">{{ $options[$i] ?? '' }}</textarea>
                                     </div>
                                 @endfor
                             </div>
@@ -180,9 +179,7 @@
                         <!-- Explanation -->
                         <div class="mb-6">
                             <x-input-label for="explanation" :value="__('Explanation (Optional)')" />
-                            <textarea id="explanation" name="explanation" rows="3"
-                                class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                placeholder="Provide explanation for the correct answer...">{{ old('explanation', $question->explanation) }}</textarea>
+                            <textarea id="explanation" name="explanation" class="tinymce-field prose">{{ old('explanation', $question->explanation) }}</textarea>
                             <x-input-error :messages="$errors->get('explanation')" class="mt-2" />
                         </div>
 
@@ -226,12 +223,13 @@
             optionDiv.innerHTML = `
                 <input type="radio" name="correct_options[]" value="${optionCount}">
                 <span class="option-label">${optionLabels[optionCount] || String.fromCharCode(65 + optionCount)}.</span>
-                <input type="text" name="options[]" placeholder="Enter option ${optionLabels[optionCount] || String.fromCharCode(65 + optionCount)}"
-                       class="flex-1 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                <textarea name="options[]" class="tinymce-field"></textarea>
             `;
 
             container.appendChild(optionDiv);
             optionCount++;
+
+            addTinyMCE()
         }
 
         function removeOption() {

@@ -101,7 +101,7 @@
                                             class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full {{ $option->is_correct ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600' }} mr-3">
                                             {{ $optionLabels[$index] ?? chr(65 + $index) }}
                                         </span>
-                                        <span class="flex-1 text-gray-800">{{ $option->option_text }}</span>
+                                        <span class="prose flex-1 text-gray-800">{!! $option->option_text !!}</span>
                                         @if ($option->is_correct)
                                             <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd"
@@ -119,9 +119,9 @@
                     @if ($question->explanation)
                         <div class="mb-6">
                             <h3 class="text-lg font-medium text-gray-900 mb-3">Explanation:</h3>
-                            <div class="bg-blue-50 p-4 rounded-lg">
-                                <p class="text-gray-800">
-                                    {{ $question->explanation }}</p>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <div class="prose">
+                                    {!! $question->explanation !!}</div>
                             </div>
                         </div>
                     @endif

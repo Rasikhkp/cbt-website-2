@@ -45,7 +45,7 @@
                         <div class="mb-6">
                             <x-input-label for="question_text" :value="__('Question Text')" />
                             <div class="mb-2"></div>
-                            <textarea id="question_text" name="question_text" id="tinymce-field" class="tinymce-field"></textarea>
+                            <textarea id="question_text" name="question_text" class="tinymce-field">{{ old('question_text') }}</textarea>
                             <x-input-error :messages="$errors->get('question_text')" class="mt-2" />
                         </div>
 
@@ -83,17 +83,19 @@
                         <div id="mcqOptions" class="mb-6 hidden">
                             <x-input-label :value="__('Answer Options')" />
                             <div class="mt-2 space-y-3" id="optionsContainer">
-                                <div class="option-item flex items-center space-x-3">
-                                    <input type="radio" name="correct_options[]" value="0">
-                                    <span class="option-label">A.</span>
-                                    <input type="text" name="options[]" placeholder="Enter option A"
-                                        class="flex-1 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                <div class="option-item flex items-start gap-3">
+                                    <div class="flex gap-3 items-center mt-1">
+                                        <input type="radio" name="correct_options[]" value="0">
+                                        <span class="option-label">A.</span>
+                                    </div>
+                                    <textarea name="options[]" class="tinymce-field"></textarea>
                                 </div>
-                                <div class="option-item flex items-center space-x-3">
-                                    <input type="radio" name="correct_options[]" value="1">
-                                    <span class="option-label">B.</span>
-                                    <input type="text" name="options[]" placeholder="Enter option B"
-                                        class="flex-1 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                <div class="option-item flex items-start gap-3">
+                                    <div class="flex gap-3 items-center mt-1">
+                                        <input type="radio" name="correct_options[]" value="1">
+                                        <span class="option-label">B.</span>
+                                    </div>
+                                    <textarea name="options[]" class="tinymce-field"></textarea>
                                 </div>
                             </div>
                             <button type="button" onclick="addOption()"
@@ -146,9 +148,8 @@
                         <!-- Explanation -->
                         <div class="mb-6">
                             <x-input-label for="explanation" :value="__('Explanation (Optional)')" />
-                            <textarea id="explanation" name="explanation" rows="3"
-                                class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                placeholder="Provide explanation for the correct answer...">{{ old('explanation') }}</textarea>
+                            <div class="mb-2"></div>
+                            <textarea id="explanation" class="tinymce-field" name="explanation">{{ old('explanation') }}</textarea>
                             <x-input-error :messages="$errors->get('explanation')" class="mt-2" />
                         </div>
 
@@ -192,12 +193,13 @@
             optionDiv.innerHTML = `
                 <input type="radio" name="correct_options[]" value="${optionCount}">
                 <span class="option-label">${optionLabels[optionCount]}.</span>
-                <input type="text" name="options[]" placeholder="Enter option ${optionLabels[optionCount]}"
-                       class="flex-1 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                <textarea name="options[]" class="tinymce-field"></textarea>
             `;
 
             container.appendChild(optionDiv);
             optionCount++;
+
+            addTinyMCE()
         }
 
         function removeOption() {
