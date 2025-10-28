@@ -168,12 +168,9 @@
                                         @foreach($question->images as $image)
                                             <div class="border rounded-lg p-2">
                                                 <img src="{{ $image->getUrl() }}"
-                                                     alt="{{ $image->alt_text ?: $image->original_name }}"
+                                                     alt="question image"
                                                      class="w-full h-48 object-contain cursor-pointer hover:shadow-lg transition-shadow"
-                                                     onclick="openImageModal('{{ $image->getUrl() }}', '{{ $image->alt_text ?: $image->original_name }}')">
-                                                @if($image->alt_text)
-                                                    <p class="text-xs text-gray-600 mt-1 text-center">{{ $image->alt_text }}</p>
-                                                @endif
+                                                     onclick="openImageModal('{{ $image->getUrl() }}')">
                                             </div>
                                         @endforeach
                                     </div>

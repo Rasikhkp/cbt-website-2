@@ -14,6 +14,7 @@ class QuestionOption extends Model
         'option_text',
         'is_correct',
         'order',
+        'image_path',
     ];
 
     protected $casts = [

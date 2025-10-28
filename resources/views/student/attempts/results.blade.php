@@ -139,9 +139,9 @@
                                     <div class="mb-4">
                                         <div class="flex flex-wrap gap-2">
                                             @foreach($question->images as $image)
-                                                <div class="relative group cursor-pointer" onclick="openImageModal('{{ $image->getUrl() }}', '{{ $image->alt_text ?: $image->original_name }}')">
+                                                <div class="relative group cursor-pointer" onclick="openImageModal('{{ $image->getUrl() }}')">
                                                     <img src="{{ $image->getUrl() }}"
-                                                         alt="{{ $image->alt_text ?: $image->original_name }}"
+                                                         alt="question image"
                                                          class="w-20 h-20 object-cover rounded border border-gray-300 hover:border-blue-500 transition-colors">
                                                 </div>
                                             @endforeach

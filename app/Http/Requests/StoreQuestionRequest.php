@@ -22,7 +22,7 @@ class StoreQuestionRequest extends FormRequest
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string'],
             'images.*' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:2048'],
-            'alt_texts.*' => ['nullable', 'string', 'max:255'],
+            'option_image.*' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:2048'],
         ];
 
         // MCQ specific validation
@@ -43,6 +43,7 @@ class StoreQuestionRequest extends FormRequest
             'options.min' => 'MCQ questions must have at least 2 options.',
             'options.max' => 'MCQ questions can have maximum 6 options.',
             'images.*.max' => 'Each image must be smaller than 2MB.',
+            'option_image.*.max' => 'Each image must be smaller than 2MB.',
         ];
     }
 

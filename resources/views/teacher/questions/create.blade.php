@@ -63,8 +63,6 @@
                                         </button>
                                         <div class="image-preview mt-2 hidden">
                                             <img src="" alt="Preview" class="max-w-full h-32 object-contain">
-                                            <input type="text" name="alt_texts[]" placeholder="Alt text (optional)"
-                                                class="mt-2 block w-full border-gray-300 rounded text-sm">
                                             <button type="button" onclick="removeImageUpload(this)"
                                                 class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove
                                                 Image</button>
@@ -74,6 +72,10 @@
                             </div>
                             <button type="button" onclick="addImageUpload()"
                                 class="mt-2 text-blue-600 hover:text-blue-800 text-sm">+ Add Another Image</button>
+                            <button type="button" onclick="removeImageContainer()"
+                                class="mt-3 ml-4 text-red-600 hover:text-red-800 text-sm">
+                                - Remove Image
+                            </button>
                             <p class="text-sm text-gray-500 mt-1">Maximum file size: 2MB per image. Supported formats:
                                 JPEG, JPG, PNG, GIF</p>
                             <x-input-error :messages="$errors->get('images.*')" class="mt-2" />
@@ -88,14 +90,58 @@
                                         <input type="radio" name="correct_options[]" value="0">
                                         <span class="option-label">A.</span>
                                     </div>
-                                    <textarea name="options[]" class="tinymce-field"></textarea>
+                                    <div>
+                                        <textarea name="options[]" class="tinymce-field"></textarea>
+                                        <div class="mt-2 space-y-4" id="imagesContainer">
+                                            <div class="image-upload-item border-2 border-dashed border-gray-300 p-4 rounded-lg">
+                                                <div class="flex flex-col items-center">
+                                                    <input type="file" name="option_image[]" accept="image/*"
+                                                        class="image-input hidden" onchange="handleImagePreview(this, 0)">
+                                                    <button type="button" onclick="this.previousElementSibling.click()"
+                                                        class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded text-sm">
+                                                        Choose Image (Optional)
+                                                    </button>
+                                                    <div class="image-preview mt-2 hidden">
+                                                        <img src="" alt="Preview" class="max-w-full h-32 object-contain">
+                                                        <button type="button" onclick="removeImageUpload(this)"
+                                                            class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove Image</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="text-sm text-gray-500 mt-1">Maximum file size: 2MB per image. Supported formats:
+                                JPEG, JPG, PNG, GIF</p>
+                                    </div>
+
                                 </div>
                                 <div class="option-item flex items-start gap-3">
                                     <div class="flex gap-3 items-center mt-1">
                                         <input type="radio" name="correct_options[]" value="1">
                                         <span class="option-label">B.</span>
                                     </div>
-                                    <textarea name="options[]" class="tinymce-field"></textarea>
+                                    <div>
+                                        <textarea name="options[]" class="tinymce-field"></textarea>
+                                        <div class="mt-2 space-y-4" id="imagesContainer">
+                                            <div class="image-upload-item border-2 border-dashed border-gray-300 p-4 rounded-lg">
+                                                <div class="flex flex-col items-center">
+                                                    <input type="file" name="option_image[]" accept="image/*"
+                                                        class="image-input hidden" onchange="handleImagePreview(this, 0)">
+                                                    <button type="button" onclick="this.previousElementSibling.click()"
+                                                        class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded text-sm">
+                                                        Choose Image (Optional)
+                                                    </button>
+                                                    <div class="image-preview mt-2 hidden">
+                                                        <img src="" alt="Preview" class="max-w-full h-32 object-contain">
+                                                        <button type="button" onclick="removeImageUpload(this)"
+                                                            class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove
+                                                            Image</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="text-sm text-gray-500 mt-1">Maximum file size: 2MB per image. Supported formats:
+                                JPEG, JPG, PNG, GIF</p>
+                                    </div>
                                 </div>
                             </div>
                             <button type="button" onclick="addOption()"
@@ -193,7 +239,29 @@
             optionDiv.innerHTML = `
                 <input type="radio" name="correct_options[]" value="${optionCount}">
                 <span class="option-label">${optionLabels[optionCount]}.</span>
-                <textarea name="options[]" class="tinymce-field"></textarea>
+                <div>
+                    <textarea name="options[]" class="tinymce-field"></textarea>
+                    <div class="mt-2 space-y-4" id="imagesContainer">
+                        <div class="image-upload-item border-2 border-dashed border-gray-300 p-4 rounded-lg">
+                            <div class="flex flex-col items-center">
+                                <input type="file" name="option_image[]" accept="image/*"
+                                    class="image-input hidden" onchange="handleImagePreview(this, 0)">
+                                <button type="button" onclick="this.previousElementSibling.click()"
+                                    class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded text-sm">
+                                    Choose Image (Optional)
+                                </button>
+                                <div class="image-preview mt-2 hidden">
+                                    <img src="" alt="Preview" class="max-w-full h-32 object-contain">
+                                    <button type="button" onclick="removeImageUpload(this)"
+                                        class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove
+                                        Image</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">Maximum file size: 2MB per image. Supported formats:
+            JPEG, JPG, PNG, GIF</p>
+                </div>
             `;
 
             container.appendChild(optionDiv);
@@ -226,8 +294,6 @@
                     </button>
                     <div class="image-preview mt-2 hidden">
                         <img src="" alt="Preview" class="max-w-full h-32 object-contain">
-                        <input type="text" name="alt_texts[]" placeholder="Alt text (optional)"
-                               class="mt-2 block w-full border-gray-300 rounded text-sm">
                         <button type="button" onclick="removeImageUpload(this)"
                                 class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove Image</button>
                     </div>
@@ -253,8 +319,21 @@
         }
 
         function removeImageUpload(button) {
-            const uploadItem = button.closest('.image-upload-item');
-            uploadItem.remove();
+            const imagePreview = button.closest('.image-preview');
+            imagePreview.querySelector('img').src = ''
+            imagePreview.classList.add('hidden');
+        }
+
+        function removeImageContainer() {
+            if (imageUploadCount <= 1) return;
+
+            const container = document.getElementById('imagesContainer')
+
+            const lastImage = container.lastElementChild
+            if (lastImage) {
+                container.removeChild(lastImage)
+                imageUploadCount--
+            }
         }
 
         // Initialize form based on old input

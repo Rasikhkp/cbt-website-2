@@ -55,12 +55,10 @@
                                 <div class="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     @foreach ($question->images as $image)
                                         <div class="border rounded-lg p-4">
-                                            <img src="{{ $image->getUrl() }}" alt="{{ $image->alt_text }}"
+                                            <img src="{{ $image->getUrl() }}" alt="question image"
                                                 class="w-full h-32 object-contain mb-2">
                                             <p class="text-sm text-gray-600 mb-2">{{ $image->original_name }}</p>
                                             <p class="text-xs text-gray-500 mb-2">{{ $image->getFormattedSize() }}</p>
-                                            @if ($image->alt_text)
-                                                <p class="text-xs text-gray-600 mb-2">Alt: {{ $image->alt_text }}</p>
                                             @endif
                                             <label class="flex items-center text-sm">
                                                 <input type="checkbox" name="remove_images[]"
@@ -87,8 +85,6 @@
                                         </button>
                                         <div class="image-preview mt-2 hidden">
                                             <img src="" alt="Preview" class="max-w-full h-32 object-contain">
-                                            <input type="text" name="alt_texts[]" placeholder="Alt text (optional)"
-                                                class="mt-2 block w-full border-gray-300 rounded text-sm">
                                             <button type="button" onclick="removeImageUpload(this)"
                                                 class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove
                                                 Image</button>
@@ -256,8 +252,6 @@
                     </button>
                     <div class="image-preview mt-2 hidden">
                         <img src="" alt="Preview" class="max-w-full h-32 object-contain">
-                        <input type="text" name="alt_texts[]" placeholder="Alt text (optional)"
-                               class="mt-2 block w-full border-gray-300 rounded text-sm">
                         <button type="button" onclick="removeImageUpload(this)"
                                 class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove Image</button>
                     </div>

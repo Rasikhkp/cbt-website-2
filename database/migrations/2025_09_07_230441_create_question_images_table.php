@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('mime_type');
             $table->unsignedBigInteger('size');
             $table->integer('order')->default(0);
-            $table->text('alt_text')->nullable();
             $table->timestamps();
         });
     }

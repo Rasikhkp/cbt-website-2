@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('question_id')->constrained()->onDelete('cascade');
             $table->text('option_text');
+            $table->text('image_path')->nullable();
             $table->boolean('is_correct')->default(false);
             $table->integer('order')->default(0);
             $table->timestamps();

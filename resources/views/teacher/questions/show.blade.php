@@ -70,18 +70,10 @@
                             <h3 class="text-lg font-medium text-gray-900 mb-3">Images:</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 @foreach ($question->images as $image)
-                                    <div class="border rounded-lg p-4">
                                         <img src="{{ $image->getUrl() }}"
-                                            alt="{{ $image->alt_text ?: $image->original_name }}"
-                                            class="w-full h-48 object-contain mb-3 cursor-pointer"
-                                            onclick="openImageModal('{{ $image->getUrl() }}', '{{ $image->alt_text ?: $image->original_name }}')">
-                                        <div class="text-sm text-gray-600">
-                                            <p class="font-medium">{{ $image->original_name }}</p>
-                                            <p>{{ $image->getFormattedSize() }}</p>
-                                            @if ($image->alt_text)
-                                                <p class="italic">{{ $image->alt_text }}</p>
-                                            @endif
-                                        </div>
+                                            alt="question image"
+                                            class="w-full rounded-xl h-48 object-contain mb-3 cursor-pointer"
+                                            onclick="openImageModal('{{ $image->getUrl() }}')">
                                     </div>
                                 @endforeach
                             </div>
@@ -96,12 +88,22 @@
                                 @php $optionLabels = ['A', 'B', 'C', 'D', 'E', 'F']; @endphp
                                 @foreach ($question->options as $index => $option)
                                     <div
-                                        class="flex items-center p-3 border rounded-lg {{ $option->is_correct ? 'border-green-500 bg-green-50' : 'border-gray-200' }}">
-                                        <span
-                                            class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full {{ $option->is_correct ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600' }} mr-3">
-                                            {{ $optionLabels[$index] ?? chr(65 + $index) }}
-                                        </span>
-                                        <span class="prose flex-1 text-gray-800">{!! $option->option_text !!}</span>
+                                        class="flex justify-between items-center p-3 border rounded-lg {{ $option->is_correct ? 'border-green-500 bg-green-50' : 'border-gray-200' }}">
+                                        <div class="flex gap-4 items-center">
+                                            <div
+                                                class="w-8 h-8 flex items-center justify-center rounded-full {{ $option->is_correct ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600' }}">
+                                                {{ $optionLabels[$index] ?? chr(65 + $index) }}
+                                            </div>
+                                            <div class="flex flex-col gap-2 justify-center" >
+                                                <div class="prose flex-1 text-gray-800">{!! $option->option_text !!}</div>
+                                                @if($option->image_path)
+                                                    <img src="{{ Storage::url($option->image_path) }}"
+                                                        alt="option_image"
+                                                        class="w-full rounded-xl h-48 object-contain cursor-pointer"
+                                                        onclick="openImageModal('{{ Storage::url($option->image_path) }}', 'option_image')">
+                                                @endif
+                                            </div>
+                                        </div>
                                         @if ($option->is_correct)
                                             <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd"
@@ -127,7 +129,7 @@
                     @endif
 
                     <!-- Question Meta -->
-                    <div class="border-t pt-6">
+                    <div class="border-t p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-600">
                             <div>
                                 <p><span class="font-medium">Created by:</span> {{ $question->creator->name }}</p>

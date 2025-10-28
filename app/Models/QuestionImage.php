@@ -18,7 +18,6 @@ class QuestionImage extends Model
         'mime_type',
         'size',
         'order',
-        'alt_text',
     ];
 
     public function question()

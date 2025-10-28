@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class QuestionController extends Controller
 {
@@ -70,12 +71,25 @@ class QuestionController extends Controller
                 $correctOptions = $request->correct_options ?: [];
 
                 foreach ($request->options as $index => $optionText) {
+                    $path = '';
+                    $filename = '';
+
+                    if (isset($request->option_image[$index])) {
+                        $image = $request->option_image[$index];
+                        $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();
+                        $path = $image->storeAs('questions/' . $question->id, $filename, 'public');
+                    }
+
+                    Log::info('path', [$path]);
+                    Log::info('filename', [$filename]);
+
                     if (!empty($optionText)) {
                         QuestionOption::create([
                             'question_id' => $question->id,
                             'option_text' => $optionText,
                             'is_correct' => in_array($index, $correctOptions),
                             'order' => $index,
+                            'image_path' => $path
                         ]);
                     }
                 }
@@ -95,7 +109,6 @@ class QuestionController extends Controller
                         'mime_type' => $image->getMimeType(),
                         'size' => $image->getSize(),
                         'order' => $index,
-                        'alt_text' => $request->alt_texts[$index] ?? null,
                     ]);
                 }
             }
@@ -198,7 +211,6 @@ class QuestionController extends Controller
                         'mime_type' => $image->getMimeType(),
                         'size' => $image->getSize(),
                         'order' => $currentMaxOrder + $index + 1,
-                        'alt_text' => $request->alt_texts[$index] ?? null,
                     ]);
                 }
             }

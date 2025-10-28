@@ -24,7 +24,6 @@ class UpdateQuestionRequest extends FormRequest
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string'],
             'images.*' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:2048'],
-            'alt_texts.*' => ['nullable', 'string', 'max:255'],
             'remove_images' => ['nullable', 'array'],
             'remove_images.*' => ['integer'],
         ];
