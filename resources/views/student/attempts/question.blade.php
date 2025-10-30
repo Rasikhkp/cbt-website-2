@@ -157,7 +157,9 @@
 
                             <!-- Question Text -->
                             <div class="mb-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $question->question_text }}</h3>
+                                <div class="bg-gray-50  p-4 rounded-lg">
+                                    <div class="prose">{!! $question->question_text !!}
+                                    </div>
                             </div>
 
                             <!-- Question Images -->
@@ -203,7 +205,16 @@
                                                     <span class="ml-3 flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full {{ $isSelected ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600' }} font-medium transition-colors">
                                                         {{ $optionLabels[$index] ?? chr(65 + $index) }}
                                                     </span>
-                                                    <span class="ml-3 flex-1 text-gray-800">{{ $option->option_text }}</span>
+                                                    <span class="ml-3 flex-1 gap-2 flex flex-col items-start text-gray-800">
+                                                        <div class="prose">{!! $option->option_text !!}</div>
+
+                                                        @if($option->image_path)
+                                                            <img src="{{ Storage::url($option->image_path) }}"
+                                                                alt="option_image"
+                                                                class="rounded-xl h-48 object-contain cursor-pointer"
+                                                                onclick="openImageModal('{{ Storage::url($option->image_path) }}')">
+                                                        @endif
+                                                    </span>
                                                 </label>
                                             @endforeach
                                         </div>
@@ -442,7 +453,6 @@
 
         function openImageModal(src, title) {
             document.getElementById('modalImage').src = src;
-            document.getElementById('modalImageTitle').textContent = title;
             document.getElementById('imageModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
