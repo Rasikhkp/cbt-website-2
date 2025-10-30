@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\UploadedFile;
 
 class QuestionController extends Controller
 {
@@ -70,23 +71,20 @@ class QuestionController extends Controller
             if ($request->type === 'mcq') {
                 $correctOptions = $request->correct_options ?: [];
 
-                foreach ($request->options as $index => $optionText) {
+                foreach ($request->options as $index => $option) {
                     $path = '';
                     $filename = '';
 
-                    if (isset($request->option_image[$index])) {
-                        $image = $request->option_image[$index];
+                    if (isset($option['option_image'])) {
+                        $image = $option['option_image'];
                         $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();
                         $path = $image->storeAs('questions/' . $question->id, $filename, 'public');
                     }
 
-                    Log::info('path', [$path]);
-                    Log::info('filename', [$filename]);
-
-                    if (!empty($optionText)) {
+                    if (!empty($option['option_text'])) {
                         QuestionOption::create([
                             'question_id' => $question->id,
-                            'option_text' => $optionText,
+                            'option_text' => $option['option_text'],
                             'is_correct' => in_array($index, $correctOptions),
                             'order' => $index,
                             'image_path' => $path
@@ -146,8 +144,10 @@ class QuestionController extends Controller
         return view('teacher.questions.edit', compact('question'));
     }
 
-    public function update(UpdateQuestionRequest $request, Question $question)
+    public function update(Request $request, Question $question)
     {
+        Log::info('Request Data: ' . json_encode($request->all(), JSON_PRETTY_PRINT));
+
         try {
             DB::beginTransaction();
 
@@ -163,55 +163,91 @@ class QuestionController extends Controller
 
             // Handle MCQ options
             if ($request->type === 'mcq') {
-                // Delete existing options
-                $question->options()->delete();
-
                 $correctOptions = $request->correct_options ?: [];
+                $existingOptionImages = collect($request->options)
+                    ->filter(function ($option) {
+                        return isset($option['option_image']) && is_string($option['option_image']);
+                    })
+                    ->pluck('option_image')
+                    ->values()
+                    ->toArray();
 
-                foreach ($request->options as $index => $optionText) {
-                    if (!empty($optionText)) {
-                        QuestionOption::create([
-                            'question_id' => $question->id,
-                            'option_text' => $optionText,
-                            'is_correct' => in_array($index, $correctOptions),
-                            'order' => $index,
-                        ]);
+                Log::info('Question Option: ' . json_encode($question->options, JSON_PRETTY_PRINT));
+
+                foreach ($question->options as $option) {
+                    if (!in_array($option->image_path, $existingOptionImages)) {
+                        Storage::disk('public')->delete($option->image_path);
                     }
+
+                    $option->delete();
                 }
+
+                foreach ($request->options as $index => $option) {
+                    $path = '';
+                    $filename = '';
+
+                    if (!empty($option['option_image'])) {
+                        if ($option['option_image'] instanceof UploadedFile) {
+                            $image = $option['option_image'];
+                            $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();
+                            $path = $image->storeAs('questions/' . $question->id, $filename, 'public');
+                        } else {
+                            $path = $option['option_image'];
+                        }
+                    }
+
+                    QuestionOption::create([
+                        'question_id' => $question->id,
+                        'option_text' => $option['option_text'],
+                        'is_correct' => in_array($index, $correctOptions),
+                        'order' => $index,
+                        'image_path' => $path
+                    ]);
+                }
+
             } else {
                 // Remove options for non-MCQ questions
                 $question->options()->delete();
             }
 
-            // Handle image removal
-            if ($request->filled('remove_images')) {
-                $imagesToRemove = QuestionImage::whereIn('id', $request->remove_images)
-                    ->where('question_id', $question->id)
-                    ->get();
+            // Handle new image uploads
+            if (!empty($request->images)) {
+                $existingImages = collect($request->images)
+                    ->filter(function ($image) {
+                        return is_string($image);
+                    })
+                    ->values()
+                    ->toArray();
 
-                foreach ($imagesToRemove as $image) {
+                foreach ($question->images as $image) {
+                    if(!in_array($image->path, $existingImages)) {
+                        Storage::disk('public')->delete($image->path);
+                        $image->delete();
+                    }
+                }
+
+                foreach ($request->images as $index => $image) {
+                    $currentMaxOrder = $question->images()->max('order') ?: -1;
+
+                    if ($image instanceof UploadedFile) {
+                        $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();
+                        $path = $image->storeAs('questions/' . $question->id, $filename, 'public');
+
+                        QuestionImage::create([
+                            'question_id' => $question->id,
+                            'filename' => $filename,
+                            'original_name' => $image->getClientOriginalName(),
+                            'path' => $path,
+                            'mime_type' => $image->getMimeType(),
+                            'size' => $image->getSize(),
+                            'order' => $currentMaxOrder + $index + 1,
+                        ]);
+                    }
+                }
+            } else {
+                foreach ($question->images as $image) {
                     Storage::disk('public')->delete($image->path);
                     $image->delete();
-                }
-            }
-
-            // Handle new image uploads
-            if ($request->hasFile('images')) {
-                $currentMaxOrder = $question->images()->max('order') ?: -1;
-
-                foreach ($request->file('images') as $index => $image) {
-                    $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();
-                    $path = $image->storeAs('questions/' . $question->id, $filename, 'public');
-
-                    QuestionImage::create([
-                        'question_id' => $question->id,
-                        'filename' => $filename,
-                        'original_name' => $image->getClientOriginalName(),
-                        'path' => $path,
-                        'mime_type' => $image->getMimeType(),
-                        'size' => $image->getSize(),
-                        'order' => $currentMaxOrder + $index + 1,
-                    ]);
                 }
             }
 

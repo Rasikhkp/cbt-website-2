@@ -28,15 +28,10 @@
                         <!-- Question Type -->
                         <div class="mb-6">
                             <x-input-label for="type" :value="__('Question Type')" />
-                            <select id="type" name="type"
-                                class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                onchange="toggleOptionsSection()">
-                                <option value="mcq" {{ old('type', $question->type) == 'mcq' ? 'selected' : '' }}>
-                                    Multiple Choice Question</option>
-                                <option value="short" {{ old('type', $question->type) == 'short' ? 'selected' : '' }}>
-                                    Short Answer</option>
-                                <option value="long" {{ old('type', $question->type) == 'long' ? 'selected' : '' }}>
-                                    Long Answer</option>
+                            <select id="type" name="type" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" onchange="toggleOptionsSection()">
+                                <option value="mcq" {{ old('type', $question->type) == 'mcq' ? 'selected' : '' }}>Multiple Choice Question</option>
+                                <option value="short" {{ old('type', $question->type) == 'short' ? 'selected' : '' }}>Short Answer</option>
+                                <option value="long" {{ old('type', $question->type) == 'long' ? 'selected' : '' }}>Long Answer</option>
                             </select>
                             <x-input-error :messages="$errors->get('type')" class="mt-2" />
                         </div>
@@ -48,63 +43,34 @@
                             <x-input-error :messages="$errors->get('question_text')" class="mt-2" />
                         </div>
 
-                        <!-- Existing Images -->
-                        @if ($question->images->count() > 0)
-                            <div class="mb-6">
-                                <x-input-label :value="__('Current Images')" />
-                                <div class="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Question Image -->
+                        <div class="mb-6">
+                            <x-input-label for="images" :value="__('Question Images (Optional)')" />
+                            <div class="mt-2 flex flex-wrap gap-4" id="imageContainer">
+                                @if ($question->images->count() > 0)
                                     @foreach ($question->images as $image)
-                                        <div class="border rounded-lg p-4">
-                                            <img src="{{ $image->getUrl() }}" alt="question image"
-                                                class="w-full h-32 object-contain mb-2">
-                                            <p class="text-sm text-gray-600 mb-2">{{ $image->original_name }}</p>
-                                            <p class="text-xs text-gray-500 mb-2">{{ $image->getFormattedSize() }}</p>
-                                            @endif
-                                            <label class="flex items-center text-sm">
-                                                <input type="checkbox" name="remove_images[]"
-                                                    value="{{ $image->id }}" class="rounded mr-2">
-                                                Remove this image
-                                            </label>
+                                        <div class="relative image-preview w-fit">
+                                            <input type='text' name="images[]" value="{{ $image->path }}" class="hidden image-input" />
+                                            <img src="{{ $image->getUrl() }}" class="h-60 w-60 rounded-lg object-contain object-center border-2 border-gray-300 border-dashed" />
+                                            <button type='button' onclick="removeImage(this, false)" class="w-5 h-5 flex items-center hover:bg-gray-100 justify-center bg-white absolute -top-2 -right-2 rounded-full text-gray-300 border border-gray-300">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                            </button>
                                         </div>
                                     @endforeach
-                                </div>
+                                @endif
+                                <button type='button' class="add-image-btn transition-all hover:bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg h-60 w-60 text-gray-300" onclick="addImage()">+</button>
                             </div>
-                        @endif
-
-                        <!-- Add New Images Section -->
-                        <div class="mb-6">
-                            <x-input-label for="images" :value="__('Add New Images (Optional)')" />
-                            <div class="mt-2 space-y-4" id="imagesContainer">
-                                <div class="image-upload-item border-2 border-dashed border-gray-300 p-4 rounded-lg">
-                                    <div class="flex flex-col items-center">
-                                        <input type="file" name="images[]" accept="image/*"
-                                            class="image-input hidden" onchange="handleImagePreview(this, 0)">
-                                        <button type="button" onclick="this.previousElementSibling.click()"
-                                            class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded text-sm">
-                                            Choose Image
-                                        </button>
-                                        <div class="image-preview mt-2 hidden">
-                                            <img src="" alt="Preview" class="max-w-full h-32 object-contain">
-                                            <button type="button" onclick="removeImageUpload(this)"
-                                                class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove
-                                                Image</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="button" onclick="addImageUpload()"
-                                class="mt-2 text-blue-600 hover:text-blue-800 text-sm">+ Add Another Image</button>
                             <p class="text-sm text-gray-500 mt-1">Maximum file size: 2MB per image. Supported formats:
                                 JPEG, JPG, PNG, GIF</p>
-                            <x-input-error :messages="$errors->get('images.*')" class="mt-2" />
+                            <x-input-error :messages="implode(', ', collect($errors->get('images.*'))->flatten()->toArray())" class="mt-2" />
                         </div>
 
                         <!-- MCQ Options -->
-                        <div id="mcqOptions" class="mb-6 {{ $question->type === 'mcq' ? '' : 'hidden' }}">
+                        <div id="mcqOptions" class="mb-6 {{ old('type', $question->type) === 'mcq' ? '' : 'hidden' }}">
                             <x-input-label :value="__('Answer Options')" />
                             <div class="mt-2 space-y-3" id="optionsContainer">
                                 @php
-                                    $options = old('options', $question->options->pluck('option_text')->toArray());
+                                    $options = old('options', $question->options);
                                     $correctOptions = old(
                                         'correct_options',
                                         $question->options->where('is_correct', true)->keys()->toArray(),
@@ -118,7 +84,27 @@
                                             <input type="radio" name="correct_options[]" value="{{ $i }}" {{ in_array($i, $correctOptions) ? 'checked' : '' }}>
                                             <span class="option-label">{{ $optionLabels[$i] ?? chr(65 + $i) }}.</span>
                                         </div>
-                                        <textarea name="options[]" class="tinymce-field">{{ $options[$i] ?? '' }}</textarea>
+                                        <div>
+                                            <textarea name="options[{{ $i }}][option_text]" class="tinymce-field">{{ $options[$i]['option_text'] ?? '' }}</textarea>
+                                            <x-input-error :messages="$errors->get('options.' . $i . '.option_text')" class="mt-2" />
+                                            <div class="mt-2 space-y-2" id="optionImageContainer">
+                                                @if(!empty($options[$i]->image_path))
+                                                    <div class="relative image-preview w-fit">
+                                                        <input type='text' name="options[{{ $i }}][option_image]" value="{{ $options[$i]->image_path }}" class="hidden image-input" />
+                                                        @if (!empty($options[$i]->image_path))
+                                                            <img src="{{ Storage::url($options[$i]->image_path) }}" class="h-60 w-60 rounded-lg object-contain object-center border-2 border-gray-300 border-dashed" />
+                                                        @endif
+                                                        <button type='button' onclick="removeImage(this, true)" class="w-5 h-5 flex items-center hover:bg-gray-100 justify-center bg-white absolute -top-2 -right-2 rounded-full text-gray-300 border border-gray-300">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                                        </button>
+                                                    </div>
+                                                @endif
+                                                <button type='button' class="add-image-btn {{ empty($options[$i]->image_path) ? '' : 'hidden' }} transition-all hover:bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg h-60 w-60 text-gray-300" onclick="addOptionImage(this, {{ $i }})">+</button>
+                                                <div class="text-sm text-gray-500">Maximum file size: 2MB per image. Supported formats: JPEG, JPG, PNG, GIF</div>
+                                                <x-input-error :messages="$errors->get('options.' . $i . '.option_image')" class="" />
+                                            </div>
+
+                                        </div>
                                     </div>
                                 @endfor
                             </div>
@@ -197,6 +183,8 @@
         let imageUploadCount = 1;
         let optionCount = {{ max(2, count(old('options', $question->options->toArray()))) }};
 
+        console.log('optionCount', optionCount)
+
         function toggleOptionsSection() {
             const type = document.getElementById('type').value;
             const mcqOptions = document.getElementById('mcqOptions');
@@ -213,13 +201,20 @@
 
             const container = document.getElementById('optionsContainer');
             const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
+            const nextIndex = optionCount
 
             const optionDiv = document.createElement('div');
-            optionDiv.className = 'option-item flex items-center space-x-3';
+            optionDiv.className = 'option-item flex items-start gap-3';
             optionDiv.innerHTML = `
                 <input type="radio" name="correct_options[]" value="${optionCount}">
-                <span class="option-label">${optionLabels[optionCount] || String.fromCharCode(65 + optionCount)}.</span>
-                <textarea name="options[]" class="tinymce-field"></textarea>
+                <span class="option-label">${optionLabels[optionCount]}.</span>
+                <div>
+                    <textarea name="options[${nextIndex}][option_text]" class="tinymce-field"></textarea>
+                    <div class="mt-2 space-y-2" id="optionImageContainer">
+                        <button type='button' class="add-image-btn transition-all hover:bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg h-60 w-60 text-gray-300" onclick="addOptionImage(this, ${nextIndex})">+</button>
+                        <div class="text-sm text-gray-500">Maximum file size: 2MB per image. Supported formats: JPEG, JPG, PNG, GIF</div>
+                    </div>
+                </div>
             `;
 
             container.appendChild(optionDiv);
@@ -239,46 +234,69 @@
             }
         }
 
-        function addImageUpload() {
-            const container = document.getElementById('imagesContainer');
-            const uploadDiv = document.createElement('div');
-            uploadDiv.className = 'image-upload-item border-2 border-dashed border-gray-300 p-4 rounded-lg';
-            uploadDiv.innerHTML = `
-                <div class="flex flex-col items-center">
-                    <input type="file" name="images[]" accept="image/*" class="image-input hidden" onchange="handleImagePreview(this, ${imageUploadCount})">
-                    <button type="button" onclick="this.previousElementSibling.click()"
-                            class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded text-sm">
-                        Choose Image
-                    </button>
-                    <div class="image-preview mt-2 hidden">
-                        <img src="" alt="Preview" class="max-w-full h-32 object-contain">
-                        <button type="button" onclick="removeImageUpload(this)"
-                                class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove Image</button>
-                    </div>
-                </div>
-            `;
+        function addImage() {
+            const imageContainer = document.querySelector('#imageContainer')
+            const newImagePreview = document.createElement('div')
+            newImagePreview.classList.add('relative', 'image-preview', 'hidden')
+            newImagePreview.innerHTML = `
+                                    <input type='file' name="images[]" class="hidden image-input" onchange="handleImagePreview(this, false)" />
+                                    <img src="" class="h-60 w-60 rounded-lg object-contain object-center border-2 border-gray-300 border-dashed" />
+                                    <button type='button' onclick="removeImage(this, false)" class="w-5 h-5 flex items-center hover:bg-gray-100 justify-center bg-white absolute -top-2 -right-2 rounded-full text-gray-300 border border-gray-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                    </button>`
 
-            container.appendChild(uploadDiv);
-            imageUploadCount++;
+            imageContainer.prepend(newImagePreview)
+            imageContainer.querySelector('.image-input').click()
         }
 
-        function handleImagePreview(input, index) {
-            const file = input.files[0];
+        function handleImagePreview(input, isOptionImage) {
+            const file = input.files[0]
+            const img = input.nextElementSibling
+            const imgPreview = input.parentElement
+            const addImageBtn = imgPreview.parentElement.querySelector('.add-image-btn')
+
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = input.parentElement.querySelector('.image-preview');
-                    const img = preview.querySelector('img');
-                    img.src = e.target.result;
-                    preview.classList.remove('hidden');
+                const reader = new FileReader()
+                reader.onload = e => {
+                    img.src = e.target.result
+                    imgPreview.classList.remove('hidden')
+                    if (isOptionImage) {
+                        addImageBtn.classList.add('hidden')
+                    }
                 }
-                reader.readAsDataURL(file);
+
+                reader.readAsDataURL(file)
             }
         }
 
-        function removeImageUpload(button) {
-            const uploadItem = button.closest('.image-upload-item');
-            uploadItem.remove();
+        function removeImage(removeButton, isOptionImage) {
+            if (isOptionImage) {
+                console.log(removeButton.parentElement)
+                const addImageBtn = removeButton.closest('#optionImageContainer').querySelector('.add-image-btn')
+                console.log(addImageBtn)
+
+                addImageBtn.classList.remove('hidden')
+            }
+
+            removeButton.closest('.image-preview').remove()
+        }
+
+        function addOptionImage(addImageBtn, index) {
+            const optionImageContainer = addImageBtn.parentElement
+
+            const newImagePreview = document.createElement('div')
+            newImagePreview.classList.add('relative', 'image-preview', 'hidden', 'w-fit')
+            newImagePreview.innerHTML = `
+                                    <input type='file' name="options[${index}][option_image]" class="hidden image-input" onchange="handleImagePreview(this, true)" />
+                                    <img src="" class="h-60 w-60 rounded-lg object-contain object-center border-2 border-gray-300 border-dashed" />
+                                    <button type='button' onclick="removeImage(this, true)" class="w-5 h-5 flex items-center hover:bg-gray-100 justify-center bg-white absolute -top-2 -right-2 rounded-full text-gray-300 border border-gray-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                    </button>`
+
+            optionImageContainer.prepend(newImagePreview)
+            optionImageContainer.querySelector('.image-input').click()
+
+
         }
     </script>
 </x-app-layout>

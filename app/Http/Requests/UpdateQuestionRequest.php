@@ -23,20 +23,31 @@ class UpdateQuestionRequest extends FormRequest
             'difficulty' => ['required', 'in:easy,medium,hard'],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string'],
-            'images.*' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:2048'],
-            'remove_images' => ['nullable', 'array'],
-            'remove_images.*' => ['integer'],
+            'images.*' => ['nullable', 'string', 'image', 'mimes:jpeg,jpg,png,gif', 'max:2048'],
         ];
 
         // MCQ specific validation
         if ($this->type === 'mcq') {
             $rules['options'] = ['required', 'array', 'min:2', 'max:6'];
-            $rules['options.*'] = ['required', 'string', 'min:1'];
+            $rules['options.*.option_text'] = ['required', 'string', 'min:1'];
+            $rules['options.*.option_image'] = ['nullable', 'string', 'image', 'mimes:jpeg,jpg,png,gif', 'max:2048'];
             $rules['correct_options'] = ['required', 'array', 'min:1'];
             $rules['correct_options.*'] = ['integer', 'min:0'];
         }
 
         return $rules;
+    }
+
+    public function messages()
+    {
+        return [
+            'correct_options.required' => 'Please select at least one correct answer.',
+            'options.*.option_text.required' => 'MCQ option text cannot be empty',
+            'options.*.option_image.max' => 'Each image must be smaller than 2MB.',
+            'options.min' => 'MCQ questions must have at least 2 options.',
+            'options.max' => 'MCQ questions can have maximum 6 options.',
+            'images.*.max' => 'Each image must be smaller than 2MB.',
+        ];
     }
 
     public function prepareForValidation()

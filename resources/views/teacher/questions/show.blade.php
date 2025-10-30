@@ -70,11 +70,10 @@
                             <h3 class="text-lg font-medium text-gray-900 mb-3">Images:</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 @foreach ($question->images as $image)
-                                        <img src="{{ $image->getUrl() }}"
-                                            alt="question image"
-                                            class="w-full rounded-xl h-48 object-contain mb-3 cursor-pointer"
-                                            onclick="openImageModal('{{ $image->getUrl() }}')">
-                                    </div>
+                                    <img src="{{ $image->getUrl() }}"
+                                        alt="question image"
+                                        class="rounded-xl h-48 object-contain mb-3 cursor-pointer"
+                                        onclick="openImageModal('{{ $image->getUrl() }}')">
                                 @endforeach
                             </div>
                         </div>
@@ -129,7 +128,7 @@
                     @endif
 
                     <!-- Question Meta -->
-                    <div class="border-t p-6">
+                    <div class="border-t pt-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-600">
                             <div>
                                 <p><span class="font-medium">Created by:</span> {{ $question->creator->name }}</p>
@@ -167,9 +166,8 @@
     </div>
 
     <script>
-        function openImageModal(src, title) {
+        function openImageModal(src) {
             document.getElementById('modalImage').src = src;
-            document.getElementById('modalImageTitle').textContent = title;
             document.getElementById('imageModal').classList.remove('hidden');
         }
 

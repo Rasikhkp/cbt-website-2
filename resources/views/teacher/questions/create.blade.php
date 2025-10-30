@@ -18,6 +18,16 @@
                 </div>
             @endif
 
+            @if ($errors->any())
+                <div class="bg-red-100 text-red-700 p-4 rounded">
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <form method="POST" action="{{ route('teacher.questions.store') }}" enctype="multipart/form-data"
@@ -52,97 +62,41 @@
                         <!-- Images Section -->
                         <div class="mb-6">
                             <x-input-label for="images" :value="__('Question Images (Optional)')" />
-                            <div class="mt-2 space-y-4" id="imagesContainer">
-                                <div class="image-upload-item border-2 border-dashed border-gray-300 p-4 rounded-lg">
-                                    <div class="flex flex-col items-center">
-                                        <input type="file" name="images[]" accept="image/*"
-                                            class="image-input hidden" onchange="handleImagePreview(this, 0)">
-                                        <button type="button" onclick="this.previousElementSibling.click()"
-                                            class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded text-sm">
-                                            Choose Image
-                                        </button>
-                                        <div class="image-preview mt-2 hidden">
-                                            <img src="" alt="Preview" class="max-w-full h-32 object-contain">
-                                            <button type="button" onclick="removeImageUpload(this)"
-                                                class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove
-                                                Image</button>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="mt-2 flex flex-wrap gap-4" id="imageContainer">
+                                <button type='button' class="add-image-btn transition-all hover:bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg h-60 w-60 text-gray-300" onclick="addImage()">+</button>
                             </div>
-                            <button type="button" onclick="addImageUpload()"
-                                class="mt-2 text-blue-600 hover:text-blue-800 text-sm">+ Add Another Image</button>
-                            <button type="button" onclick="removeImageContainer()"
-                                class="mt-3 ml-4 text-red-600 hover:text-red-800 text-sm">
-                                - Remove Image
-                            </button>
                             <p class="text-sm text-gray-500 mt-1">Maximum file size: 2MB per image. Supported formats:
                                 JPEG, JPG, PNG, GIF</p>
-                            <x-input-error :messages="$errors->get('images.*')" class="mt-2" />
+                            <x-input-error :messages="implode(', ', collect($errors->get('images.*'))->flatten()->toArray())" class="mt-2" />
                         </div>
 
                         <!-- MCQ Options (Hidden by default) -->
-                        <div id="mcqOptions" class="mb-6 hidden">
+                        <div id="mcqOptions" class="mb-6 {{ old('type') === 'mcq' ? '' : 'hidden' }}">
                             <x-input-label :value="__('Answer Options')" />
                             <div class="mt-2 space-y-3" id="optionsContainer">
-                                <div class="option-item flex items-start gap-3">
-                                    <div class="flex gap-3 items-center mt-1">
-                                        <input type="radio" name="correct_options[]" value="0">
-                                        <span class="option-label">A.</span>
-                                    </div>
-                                    <div>
-                                        <textarea name="options[]" class="tinymce-field">{{ old('options.0') }}</textarea>
-                                        <div class="mt-2 space-y-4" id="imagesContainer">
-                                            <div class="image-upload-item border-2 border-dashed border-gray-300 p-4 rounded-lg">
-                                                <div class="flex flex-col items-center">
-                                                    <input type="file" name="option_image[]" accept="image/*"
-                                                        class="image-input hidden" onchange="handleImagePreview(this, 0)">
-                                                    <button type="button" onclick="this.previousElementSibling.click()"
-                                                        class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded text-sm">
-                                                        Choose Image (Optional)
-                                                    </button>
-                                                    <div class="image-preview mt-2 hidden">
-                                                        <img src="" alt="Preview" class="max-w-full h-32 object-contain">
-                                                        <button type="button" onclick="removeImageUpload(this)"
-                                                            class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove Image</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <p class="text-sm text-gray-500 mt-1">Maximum file size: 2MB per image. Supported formats:
-                                JPEG, JPG, PNG, GIF</p>
-                                    </div>
+                                @php
+                                    $options = old('options', [[], []]);
+                                    $correctOptions = old('correct_options', []);
+                                    $optionLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
+                                @endphp
 
-                                </div>
-                                <div class="option-item flex items-start gap-3">
-                                    <div class="flex gap-3 items-center mt-1">
-                                        <input type="radio" name="correct_options[]" value="1">
-                                        <span class="option-label">B.</span>
-                                    </div>
-                                    <div>
-                                        <textarea name="options[]" class="tinymce-field">{{ old('options.1') }}</textarea>
-                                        <div class="mt-2 space-y-4" id="imagesContainer">
-                                            <div class="image-upload-item border-2 border-dashed border-gray-300 p-4 rounded-lg">
-                                                <div class="flex flex-col items-center">
-                                                    <input type="file" name="option_image[]" accept="image/*"
-                                                        class="image-input hidden" onchange="handleImagePreview(this, 0)">
-                                                    <button type="button" onclick="this.previousElementSibling.click()"
-                                                        class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded text-sm">
-                                                        Choose Image (Optional)
-                                                    </button>
-                                                    <div class="image-preview mt-2 hidden">
-                                                        <img src="" alt="Preview" class="max-w-full h-32 object-contain">
-                                                        <button type="button" onclick="removeImageUpload(this)"
-                                                            class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove
-                                                            Image</button>
-                                                    </div>
-                                                </div>
+                                @for ($i = 0; $i < max(2, count($options)); $i++)
+                                    <div class="option-item flex items-start gap-3">
+                                        <div class="flex gap-3 items-center mt-1">
+                                            <input type="radio" name="correct_options[]" value="{{ $i }}" {{ in_array($i, $correctOptions) ? 'checked' : '' }}>
+                                            <span class="option-label">{{ $optionLabels[$i] ?? chr(65 + $i) }}.</span>
+                                        </div>
+                                        <div>
+                                            <textarea name="options[{{ $i }}][option_text]" class="tinymce-field">{{ $options[$i]['option_text'] ?? '' }}</textarea>
+                                            <x-input-error :messages="$errors->get('options.' . $i . '.option_text')" class="mt-2" />
+                                            <div class="mt-2 space-y-2" id="optionImageContainer">
+                                                <button type='button' class="add-image-btn transition-all hover:bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg h-60 w-60 text-gray-300" onclick="addOptionImage(this, {{ $i }})">+</button>
+                                                <div class="text-sm text-gray-500">Maximum file size: 2MB per image. Supported formats: JPEG, JPG, PNG, GIF</div>
+                                                <x-input-error :messages="$errors->get('options.' . $i . '.option_image')" />
                                             </div>
                                         </div>
-                                        <p class="text-sm text-gray-500 mt-1">Maximum file size: 2MB per image. Supported formats:
-                                JPEG, JPG, PNG, GIF</p>
                                     </div>
-                                </div>
+                                @endfor
                             </div>
                             <button type="button" onclick="addOption()"
                                 class="mt-3 text-blue-600 hover:text-blue-800 text-sm">
@@ -214,7 +168,6 @@
     </div>
 
     <script>
-        let imageUploadCount = 1;
         let optionCount = 2;
 
         function toggleOptionsSection() {
@@ -228,39 +181,24 @@
             }
         }
 
-        function addOption(oldValue = '') {
+        function addOption() {
             if (optionCount >= 6) return; // Maximum 6 options
 
             const container = document.getElementById('optionsContainer');
             const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
+            const nextIndex = optionCount
 
             const optionDiv = document.createElement('div');
-            optionDiv.className = 'option-item flex items-center space-x-3';
+            optionDiv.className = 'option-item flex items-start gap-3';
             optionDiv.innerHTML = `
                 <input type="radio" name="correct_options[]" value="${optionCount}">
                 <span class="option-label">${optionLabels[optionCount]}.</span>
                 <div>
-                    <textarea name="options[]" class="tinymce-field">${oldValue}</textarea>
-                    <div class="mt-2 space-y-4" id="imagesContainer">
-                        <div class="image-upload-item border-2 border-dashed border-gray-300 p-4 rounded-lg">
-                            <div class="flex flex-col items-center">
-                                <input type="file" name="option_image[]" accept="image/*"
-                                    class="image-input hidden" onchange="handleImagePreview(this, 0)">
-                                <button type="button" onclick="this.previousElementSibling.click()"
-                                    class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded text-sm">
-                                    Choose Image (Optional)
-                                </button>
-                                <div class="image-preview mt-2 hidden">
-                                    <img src="" alt="Preview" class="max-w-full h-32 object-contain">
-                                    <button type="button" onclick="removeImageUpload(this)"
-                                        class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove
-                                        Image</button>
-                                </div>
-                            </div>
-                        </div>
+                    <textarea name="options[${nextIndex}][option_text]" class="tinymce-field"></textarea>
+                    <div class="mt-2 space-y-2" id="optionImageContainer">
+                        <button type='button' class="add-image-btn transition-all hover:bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg h-60 w-60 text-gray-300" onclick="addOptionImage(this, ${nextIndex})">+</button>
+                        <div class="text-sm text-gray-500">Maximum file size: 2MB per image. Supported formats: JPEG, JPG, PNG, GIF</div>
                     </div>
-                    <p class="text-sm text-gray-500 mt-1">Maximum file size: 2MB per image. Supported formats:
-            JPEG, JPG, PNG, GIF</p>
                 </div>
             `;
 
@@ -281,73 +219,65 @@
             }
         }
 
-        function addImageUpload() {
-            const container = document.getElementById('imagesContainer');
-            const uploadDiv = document.createElement('div');
-            uploadDiv.className = 'image-upload-item border-2 border-dashed border-gray-300 p-4 rounded-lg';
-            uploadDiv.innerHTML = `
-                <div class="flex flex-col items-center">
-                    <input type="file" name="images[]" accept="image/*" class="image-input hidden" onchange="handleImagePreview(this, ${imageUploadCount})">
-                    <button type="button" onclick="this.previousElementSibling.click()"
-                            class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded text-sm">
-                        Choose Image
-                    </button>
-                    <div class="image-preview mt-2 hidden">
-                        <img src="" alt="Preview" class="max-w-full h-32 object-contain">
-                        <button type="button" onclick="removeImageUpload(this)"
-                                class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove Image</button>
-                    </div>
-                </div>
-            `;
+        function addImage() {
+            const imageContainer = document.querySelector('#imageContainer')
+            const newImagePreview = document.createElement('div')
+            newImagePreview.classList.add('relative', 'image-preview', 'hidden')
+            newImagePreview.innerHTML = `
+                                    <input type='file' name="images[]" class="hidden image-input" onchange="handleImagePreview(this, false)" />
+                                    <img src="" class="h-60 w-60 rounded-lg object-contain object-center border-2 border-gray-300 border-dashed" />
+                                    <button type='button' onclick="removeImage(this, false)" class="w-5 h-5 flex items-center hover:bg-gray-100 justify-center bg-white absolute -top-2 -right-2 rounded-full text-gray-300 border border-gray-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                    </button>`
 
-            container.appendChild(uploadDiv);
-            imageUploadCount++;
+            imageContainer.prepend(newImagePreview)
+            imageContainer.querySelector('.image-input').click()
         }
 
-        function handleImagePreview(input, index) {
-            const file = input.files[0];
+        function handleImagePreview(input, isOptionImage) {
+            const file = input.files[0]
+            const img = input.nextElementSibling
+            const imgPreview = input.parentElement
+            const addImageBtn = imgPreview.parentElement.querySelector('.add-image-btn')
+
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = input.parentElement.querySelector('.image-preview');
-                    const img = preview.querySelector('img');
-                    img.src = e.target.result;
-                    preview.classList.remove('hidden');
+                const reader = new FileReader()
+                reader.onload = e => {
+                    img.src = e.target.result
+                    imgPreview.classList.remove('hidden')
+                    if (isOptionImage) {
+                        addImageBtn.classList.add('hidden')
+                    }
                 }
-                reader.readAsDataURL(file);
+
+                reader.readAsDataURL(file)
             }
         }
 
-        function removeImageUpload(button) {
-            const imagePreview = button.closest('.image-preview');
-            imagePreview.querySelector('img').src = ''
-            imagePreview.classList.add('hidden');
-        }
-
-        function removeImageContainer() {
-            if (imageUploadCount <= 1) return;
-
-            const container = document.getElementById('imagesContainer')
-
-            const lastImage = container.lastElementChild
-            if (lastImage) {
-                container.removeChild(lastImage)
-                imageUploadCount--
+        function removeImage(removeButton, isOptionImage) {
+            if (isOptionImage) {
+                addImageBtn.classList.remove('hidden')
             }
+
+            removeButton.closest('.image-preview').remove()
         }
 
-        // Initialize form based on old input
-        document.addEventListener('DOMContentLoaded', function() {
-            toggleOptionsSection();
+        function addOptionImage(addImageBtn, index) {
+            const optionImageContainer = addImageBtn.parentElement
 
-            // Handle old MCQ options if form was submitted with errors
-            @if (old('options'))
-                @foreach (old('options', []) as $index => $option)
-                    @if ($index > 1)
-                        addOption('{{ $option }}');
-                    @endif
-                @endforeach
-            @endif
-        });
+            const newImagePreview = document.createElement('div')
+            newImagePreview.classList.add('relative', 'image-preview', 'hidden', 'w-fit')
+            newImagePreview.innerHTML = `
+                                    <input type='file' name="options[${index}][option_image]" class="hidden image-input" onchange="handleImagePreview(this, true)" />
+                                    <img src="" class="h-60 w-60 rounded-lg object-contain object-center border-2 border-gray-300 border-dashed" />
+                                    <button type='button' onclick="removeImage(this, true)" class="w-5 h-5 flex items-center hover:bg-gray-100 justify-center bg-white absolute -top-2 -right-2 rounded-full text-gray-300 border border-gray-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                    </button>`
+
+            optionImageContainer.prepend(newImagePreview)
+            optionImageContainer.querySelector('.image-input').click()
+
+
+        }
     </script>
 </x-app-layout>
