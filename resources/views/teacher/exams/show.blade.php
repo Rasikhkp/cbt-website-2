@@ -203,7 +203,9 @@
 
                                     <!-- Question Text -->
                                     <div class="mb-4">
-                                        <p class="text-gray-800 font-medium mb-2">{{ $question->question_text }}</p>
+                                        <div class="bg-gray-50  p-4 rounded-lg">
+                                            <div class="prose">{!! $question->question_text !!}</div>
+                                        </div>
 
                                         @if($question->tags && count($question->tags) > 0)
                                             <div class="flex flex-wrap gap-1 mb-3">
@@ -248,7 +250,15 @@
                                                         <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full {{ $option->is_correct ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600' }} mr-3 text-sm font-medium">
                                                             {{ $optionLabels[$index] ?? chr(65 + $index) }}
                                                         </span>
-                                                        <span class="flex-1 text-gray-800">{{ $option->option_text }}</span>
+                                                        <div class="flex flex-1 flex-col gap-2 justify-center" >
+                                                            <div class="prose flex-1 text-gray-800">{!! $option->option_text !!}</div>
+                                                            @if($option->image_path)
+                                                                <img src="{{ Storage::url($option->image_path) }}"
+                                                                    alt="option_image"
+                                                                    class="w-fit rounded-xl h-48 object-contain cursor-pointer"
+                                                                    onclick="openImageModal('{{ Storage::url($option->image_path) }}', 'option_image')">
+                                                            @endif
+                                                        </div>
                                                         @if($option->is_correct)
                                                             <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>

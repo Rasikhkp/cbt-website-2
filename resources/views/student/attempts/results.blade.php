@@ -131,7 +131,10 @@
 
                                 <!-- Question Text -->
                                 <div class="mb-4">
-                                    <h4 class="font-medium text-gray-900 mb-2">{{ $question->question_text }}</h4>
+
+                                    <div class="bg-gray-50  p-4 rounded-lg">
+                                        <div class="prose">{!! $question->question_text !!}</div>
+                                    </div>
                                 </div>
 
                                 <!-- Question Images -->
@@ -170,7 +173,15 @@
                                                     }} mr-3 text-sm font-medium">
                                                         {{ $optionLabels[$optionIndex] ?? chr(65 + $optionIndex) }}
                                                     </span>
-                                                    <span class="flex-1 text-gray-800">{{ $option->option_text }}</span>
+                                                    <div class="flex flex-col flex-1 gap-2 justify-center" >
+                                                        <div class="prose flex-1 text-gray-800">{!! $option->option_text !!}</div>
+                                                        @if($option->image_path)
+                                                            <img src="{{ Storage::url($option->image_path) }}"
+                                                                alt="option_image"
+                                                                class="w-fit rounded-xl h-48 object-contain cursor-pointer"
+                                                                onclick="openImageModal('{{ Storage::url($option->image_path) }}', 'option_image')">
+                                                        @endif
+                                                    </div>
                                                     <div class="flex items-center gap-2">
                                                         @if($isSelected)
                                                             <span class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">Your Answer</span>

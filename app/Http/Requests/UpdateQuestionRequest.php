@@ -23,14 +23,16 @@ class UpdateQuestionRequest extends FormRequest
             'difficulty' => ['required', 'in:easy,medium,hard'],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string'],
-            'images.*' => ['nullable', 'string', 'image', 'mimes:jpeg,jpg,png,gif', 'max:2048'],
+            'new_images.*' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:2048'],
+            'existing_images.*' => ['nullable', 'string'],
         ];
 
         // MCQ specific validation
         if ($this->type === 'mcq') {
             $rules['options'] = ['required', 'array', 'min:2', 'max:6'];
             $rules['options.*.option_text'] = ['required', 'string', 'min:1'];
-            $rules['options.*.option_image'] = ['nullable', 'string', 'image', 'mimes:jpeg,jpg,png,gif', 'max:2048'];
+            $rules['options.*.new_option_image'] = ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:2048'];
+            $rules['options.*.existing_option_image'] = ['nullable', 'string',];
             $rules['correct_options'] = ['required', 'array', 'min:1'];
             $rules['correct_options.*'] = ['integer', 'min:0'];
         }

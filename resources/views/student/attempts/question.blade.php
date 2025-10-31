@@ -157,28 +157,27 @@
 
                             <!-- Question Text -->
                             <div class="mb-6">
-                                <div class="bg-gray-50  p-4 rounded-lg">
-                                    <div class="prose">{!! $question->question_text !!}
+                                <div class="bg-gray-50 mb-4  p-4 rounded-lg">
+                                    <div class="prose">{!! $question->question_text !!}</div>
+                                </div>
+
+                                @if($question->images && $question->images->count() > 0)
+                                    <div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            @foreach($question->images as $image)
+                                                <div class="border rounded-lg p-2">
+                                                    <img src="{{ $image->getUrl() }}"
+                                                         alt="question image"
+                                                         class="w-full h-48 object-contain cursor-pointer hover:shadow-lg transition-shadow"
+                                                         onclick="openImageModal('{{ $image->getUrl() }}')">
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-2">Click on images to view full size</p>
                                     </div>
+                                @endif
                             </div>
 
-                            <!-- Question Images -->
-                            @if($question->images && $question->images->count() > 0)
-                                <div class="mb-6">
-                                    <h4 class="font-medium text-gray-700 mb-3">Reference Images:</h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        @foreach($question->images as $image)
-                                            <div class="border rounded-lg p-2">
-                                                <img src="{{ $image->getUrl() }}"
-                                                     alt="question image"
-                                                     class="w-full h-48 object-contain cursor-pointer hover:shadow-lg transition-shadow"
-                                                     onclick="openImageModal('{{ $image->getUrl() }}')">
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-2">Click on images to view full size</p>
-                                </div>
-                            @endif
 
                             <!-- Answer Form -->
                             <form id="answerForm" action="{{ route('student.attempts.save-answer', $attempt) }}" method="POST">

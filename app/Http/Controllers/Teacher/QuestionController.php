@@ -144,10 +144,8 @@ class QuestionController extends Controller
         return view('teacher.questions.edit', compact('question'));
     }
 
-    public function update(Request $request, Question $question)
+    public function update(UpdateQuestionRequest $request, Question $question)
     {
-        Log::info('Request Data: ' . json_encode($request->all(), JSON_PRETTY_PRINT));
-
         try {
             DB::beginTransaction();
 
@@ -165,14 +163,12 @@ class QuestionController extends Controller
             if ($request->type === 'mcq') {
                 $correctOptions = $request->correct_options ?: [];
                 $existingOptionImages = collect($request->options)
-                    ->filter(function ($option) {
-                        return isset($option['option_image']) && is_string($option['option_image']);
-                    })
-                    ->pluck('option_image')
+                    ->filter(fn($option) => !empty($option['existing_option_image']))
                     ->values()
-                    ->toArray();
-
-                Log::info('Question Option: ' . json_encode($question->options, JSON_PRETTY_PRINT));
+                    ->map(function ($option) {
+                        return $option['existing_option_image'];
+                    })
+                    ->all();
 
                 foreach ($question->options as $option) {
                     if (!in_array($option->image_path, $existingOptionImages)) {
@@ -186,14 +182,12 @@ class QuestionController extends Controller
                     $path = '';
                     $filename = '';
 
-                    if (!empty($option['option_image'])) {
-                        if ($option['option_image'] instanceof UploadedFile) {
-                            $image = $option['option_image'];
-                            $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();
-                            $path = $image->storeAs('questions/' . $question->id, $filename, 'public');
-                        } else {
-                            $path = $option['option_image'];
-                        }
+                    if (!empty($option['new_option_image'])) {
+                        $image = $option['new_option_image'];
+                        $filename = Str::uuid() . '.' . $image->getClientOriginalExtension();
+                        $path = $image->storeAs('questions/' . $question->id, $filename, 'public');
+                    } else if (!empty($option['existing_option_image'])) {
+                        $path = $option['existing_option_image'];
                     }
 
                     QuestionOption::create([
@@ -210,23 +204,15 @@ class QuestionController extends Controller
                 $question->options()->delete();
             }
 
-            // Handle new image uploads
-            if (!empty($request->images)) {
-                $existingImages = collect($request->images)
-                    ->filter(function ($image) {
-                        return is_string($image);
-                    })
-                    ->values()
-                    ->toArray();
-
-                foreach ($question->images as $image) {
-                    if(!in_array($image->path, $existingImages)) {
-                        Storage::disk('public')->delete($image->path);
-                        $image->delete();
-                    }
+            foreach ($question->images as $image) {
+                if(!in_array($image->path, $request->existing_images)) {
+                    Storage::disk('public')->delete($image->path);
+                    $image->delete();
                 }
+            }
 
-                foreach ($request->images as $index => $image) {
+            if (!empty($request->new_images)) {
+                foreach ($request->new_images as $index => $image) {
                     $currentMaxOrder = $question->images()->max('order') ?: -1;
 
                     if ($image instanceof UploadedFile) {
@@ -243,11 +229,6 @@ class QuestionController extends Controller
                             'order' => $currentMaxOrder + $index + 1,
                         ]);
                     }
-                }
-            } else {
-                foreach ($question->images as $image) {
-                    Storage::disk('public')->delete($image->path);
-                    $image->delete();
                 }
             }
 

@@ -79,9 +79,9 @@
                             </div>
 
                             <!-- Question Text -->
-                            <div class="my-6">
-                                <div class="bg-gray-50 rounded-lg p-4">
-                                    {!! nl2br(e($answer->question->question_text)) !!}
+                            <div class="bg-gray-50 p-4 my-4 rounded-lg">
+                                <div class="prose">
+                                    {!! $answer->question->question_text !!}
                                 </div>
                             </div>
 
@@ -96,7 +96,15 @@
                                                     class="w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 {{ $option->is_correct ? 'border-green-500 bg-green-500 text-white' : 'border-gray-300' }}">
                                                     {{ chr(65 + $loop->index) }}
                                                 </span>
-                                                <span class="flex-1">{{ $option->option_text }}</span>
+                                                <div class="flex flex-1 flex-col gap-2 justify-center" >
+                                                    <div class="prose flex-1 text-gray-800">{!! $option->option_text !!}</div>
+                                                    @if($option->image_path)
+                                                        <img src="{{ Storage::url($option->image_path) }}"
+                                                            alt="option_image"
+                                                            class="w-fit rounded-xl h-48 object-contain cursor-pointer"
+                                                            onclick="openImageModal('{{ Storage::url($option->image_path) }}', 'option_image')">
+                                                    @endif
+                                                </div>
                                                 @if ($option->is_correct)
                                                     <span
                                                         class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Correct</span>

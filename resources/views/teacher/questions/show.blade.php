@@ -59,8 +59,7 @@
                     <div class="mb-6">
                         <h3 class="text-lg font-medium text-gray-900 mb-3">Question:</h3>
                         <div class="bg-gray-50  p-4 rounded-lg">
-                            <div class="prose">{!! $question->question_text !!}
-                            </div>
+                            <div class="prose">{!! $question->question_text !!}</div>
                         </div>
                     </div>
 

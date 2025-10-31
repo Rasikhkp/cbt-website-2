@@ -18,16 +18,6 @@
                 </div>
             @endif
 
-            @if ($errors->any())
-                <div class="bg-red-100 text-red-700 p-4 rounded">
-                    <ul class="list-disc list-inside">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <form method="POST" action="{{ route('teacher.questions.store') }}" enctype="multipart/form-data"

@@ -127,7 +127,7 @@
                                 <div class="border rounded-lg p-4 h-[80vh] overflow-y-auto">
                                     <div class="space-y-3">
                                         @foreach($questions as $question)
-                                            <div data-tags="{{ implode(', ', $question->tags) }}" class="question-item border border-gray-200 rounded p-3 hover:bg-gray-50">
+                                            <div data-tags="{{ implode(', ', $question->tags) }}" class="question-item border border-gray-200 rounded p-3">
                                                 <div class="flex items-start space-x-3">
                                                     <input type="checkbox"
                                                            name="questions[]"
@@ -145,7 +145,11 @@
                                                                 {{ ucfirst($question->difficulty) }}
                                                             </span>
                                                         </div>
-                                                        <p class="text-sm text-gray-800">{{ Str::limit($question->question_text, 100) }}</p>
+                                                        <div class="bg-gray-50 p-4 my-4 rounded-lg">
+                                                            <div class="prose">
+                                                                {!! $question->question_text !!}
+                                                            </div>
+                                                        </div>
                                                         <div class="flex items-center gap-4 text-xs text-gray-500 mt-1">
                                                             <span>Default: {{ $question->points }} pts</span>
                                                             @if($question->images->count() > 0)

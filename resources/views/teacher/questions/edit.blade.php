@@ -50,7 +50,7 @@
                                 @if ($question->images->count() > 0)
                                     @foreach ($question->images as $image)
                                         <div class="relative image-preview w-fit">
-                                            <input type='text' name="images[]" value="{{ $image->path }}" class="hidden image-input" />
+                                            <input type='text' name="existing_images[]" value="{{ $image->path }}" class="hidden image-input" />
                                             <img src="{{ $image->getUrl() }}" class="h-60 w-60 rounded-lg object-contain object-center border-2 border-gray-300 border-dashed" />
                                             <button type='button' onclick="removeImage(this, false)" class="w-5 h-5 flex items-center hover:bg-gray-100 justify-center bg-white absolute -top-2 -right-2 rounded-full text-gray-300 border border-gray-300">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -90,7 +90,7 @@
                                             <div class="mt-2 space-y-2" id="optionImageContainer">
                                                 @if(!empty($options[$i]->image_path))
                                                     <div class="relative image-preview w-fit">
-                                                        <input type='text' name="options[{{ $i }}][option_image]" value="{{ $options[$i]->image_path }}" class="hidden image-input" />
+                                                        <input type='text' name="options[{{ $i }}][existing_option_image]" value="{{ $options[$i]->image_path }}" class="hidden image-input" />
                                                         @if (!empty($options[$i]->image_path))
                                                             <img src="{{ Storage::url($options[$i]->image_path) }}" class="h-60 w-60 rounded-lg object-contain object-center border-2 border-gray-300 border-dashed" />
                                                         @endif
@@ -101,7 +101,7 @@
                                                 @endif
                                                 <button type='button' class="add-image-btn {{ empty($options[$i]->image_path) ? '' : 'hidden' }} transition-all hover:bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg h-60 w-60 text-gray-300" onclick="addOptionImage(this, {{ $i }})">+</button>
                                                 <div class="text-sm text-gray-500">Maximum file size: 2MB per image. Supported formats: JPEG, JPG, PNG, GIF</div>
-                                                <x-input-error :messages="$errors->get('options.' . $i . '.option_image')" class="" />
+                                                <x-input-error :messages="$errors->get('options.' . $i . '.new_option_image')" class="" />
                                             </div>
 
                                         </div>
@@ -239,7 +239,7 @@
             const newImagePreview = document.createElement('div')
             newImagePreview.classList.add('relative', 'image-preview', 'hidden')
             newImagePreview.innerHTML = `
-                                    <input type='file' name="images[]" class="hidden image-input" onchange="handleImagePreview(this, false)" />
+                                    <input type='file' name="new_images[]" class="hidden image-input" onchange="handleImagePreview(this, false)" />
                                     <img src="" class="h-60 w-60 rounded-lg object-contain object-center border-2 border-gray-300 border-dashed" />
                                     <button type='button' onclick="removeImage(this, false)" class="w-5 h-5 flex items-center hover:bg-gray-100 justify-center bg-white absolute -top-2 -right-2 rounded-full text-gray-300 border border-gray-300">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -287,7 +287,7 @@
             const newImagePreview = document.createElement('div')
             newImagePreview.classList.add('relative', 'image-preview', 'hidden', 'w-fit')
             newImagePreview.innerHTML = `
-                                    <input type='file' name="options[${index}][option_image]" class="hidden image-input" onchange="handleImagePreview(this, true)" />
+                                    <input type='file' name="options[${index}][new_option_image]" class="hidden image-input" onchange="handleImagePreview(this, true)" />
                                     <img src="" class="h-60 w-60 rounded-lg object-contain object-center border-2 border-gray-300 border-dashed" />
                                     <button type='button' onclick="removeImage(this, true)" class="w-5 h-5 flex items-center hover:bg-gray-100 justify-center bg-white absolute -top-2 -right-2 rounded-full text-gray-300 border border-gray-300">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
