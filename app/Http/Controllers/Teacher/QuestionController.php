@@ -270,4 +270,21 @@ class QuestionController extends Controller
             return back()->with('error', 'Error deleting question: ' . $e->getMessage());
         }
     }
+
+    public function import()
+    {
+        return view('teacher.questions.import');
+    }
+
+    public function uploadFile(Request $request)
+    {
+        try {
+            $file = $request->file('file');
+
+            Log::info('file', [$file]);
+        } catch (\Exception $e) {
+
+        }
+    }
+
 }

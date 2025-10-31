@@ -4,10 +4,16 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Question Bank') }}
             </h2>
-            <a href="{{ route('teacher.questions.create') }}"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Add New Question
-            </a>
+            <div class="flex gap-4">
+                <a href="{{ route('teacher.questions.create') }}"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Add New Question
+                </a>
+                <a href="{{ route('teacher.questions.import') }}"
+                    class="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold py-2 px-4 rounded">
+                    Import Question
+                </a>
+            </div>
         </div>
     </x-slot>
 

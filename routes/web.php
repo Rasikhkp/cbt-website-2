@@ -15,7 +15,13 @@ Route::get('/', function () {
     return redirect('dashboard');
 });
 
-// Dashboard routes with role-based redirection
+Route::get('/download-template', function () {
+    $path = public_path('templates/questions-template.xlsx');
+    return Response::download($path, 'questions-template.xlsx');
+})->name('download.template');
+
+Route::post('/upload-file', [QuestionController::class, 'uploadFile']);
+
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
@@ -33,6 +39,7 @@ Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->name('teac
     Route::get('/dashboard', [DashboardController::class, 'teacherDashboard'])->name('dashboard');
 
     // Question management routes
+    Route::get('questions/import', [QuestionController::class, 'import'])->name('questions.import');
     Route::resource('questions', QuestionController::class);
 
     // Exam management routes
