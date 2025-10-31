@@ -33,9 +33,11 @@
                 <input id="file-input" type="file" class="hidden" />
             </div>
 
-            <div class="flex justify-end">
+            <div class="flex justify-end mb-4">
                 <x-primary-button disabled id="upload-btn" onclick="uploadFile()">Upload File</x-primary-button>
             </div>
+
+            <div id="error-container" class="flex flex-col gap-2"></div>
         </div>
 
         <!-- Right Column - Top Section -->
@@ -108,6 +110,7 @@
         const dragSmallText = dropzone.querySelector("#drag-small-text")
         const fileInput = dropzone.querySelector('#file-input')
         const uploadBtn = document.querySelector('#upload-btn')
+        const errorContainer = document.querySelector('#error-container')
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content
 
         let isFileHovering = false
@@ -156,25 +159,51 @@
                 uploadBtn.disabled = false
             }
         })
-
         async function uploadFile() {
+            errorContainer.innerHTML = ''
             const formData = new FormData()
             formData.append('file', selectedFile)
 
             try {
                 const res = await fetch('/upload-file', {
                     headers: {
-                        "X-CSRF-TOKEN": csrfToken
+                        'X-CSRF-TOKEN': csrfToken
                     },
                     method: 'POST',
                     body: formData
                 })
 
-                const data = await res.json()
+                // Try to parse JSON no matter what
+                const data = await res.json().catch(() => null)
 
-                console.log(data)
-            } catch (e) {
-                console.log(e)
+                // Handle success
+                if (res.ok) {
+                    console.log('✅ Success:', data)
+                    return
+                }
+
+                // Handle validation errors (422)
+                if (res.status === 422) {
+                    console.warn('⚠️ Validation Errors:', data.errors)
+                    // Example: show messages per row
+                    data.errors.forEach(err => {
+                        console.log(`Row ${err.row} - ${err.attribute}: ${err.errors.join(', ')}`)
+                        const errorElement = document.createElement('div')
+                        errorElement.className = "py-3 px-4 flex gap-2 border border-red-500 rounded text-red-500"
+                        errorElement.innerHTML = `
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-alert-icon lucide-circle-alert"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                               Row ${err.row}: ${err.errors.join(', ')}
+                            `
+                        errorContainer.appendChild(errorElement)
+                    })
+
+                    return
+                }
+
+                // Handle other errors
+                console.error('❌ Error response:', data)
+            } catch (error) {
+                console.error('🔥 Fetch failed:', error)
             }
         }
 
@@ -197,6 +226,5 @@
                 reader.readAsDataURL(file)
             }
         }
-
     </script>
 </x-app-layout>
