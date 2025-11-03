@@ -13,9 +13,12 @@ import 'tinymce/plugins/charmap';
 
 window.Alpine = Alpine;
 Alpine.start();
+window.test = () => 'anjay'
+
+window.tinymce = tinymce
 
 window.addTinyMCE = () => {
-    tinymce.init({
+    window.tinymce.init({
         selector: '.tinymce-field',
         license_key: 'gpl', // gpl for open source, T8LK:... for commercial
         skin: false, // use imported skin.css
@@ -27,7 +30,7 @@ window.addTinyMCE = () => {
             tiny_mce_wiris: wirisPlugin,
         },
         draggable_modal: true,
-        content_style: "@import url('https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap'); body { font-family: Figtree; }"
+        content_style: "@import url('https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap'); body { font-family: Figtree; }",
     })
 }
 

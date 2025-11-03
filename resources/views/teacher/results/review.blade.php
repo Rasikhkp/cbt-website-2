@@ -97,7 +97,9 @@
                                                     {{ chr(65 + $loop->index) }}
                                                 </span>
                                                 <div class="flex flex-1 flex-col gap-2 justify-center" >
-                                                    <div class="prose flex-1 text-gray-800">{!! $option->option_text !!}</div>
+                                                    <div class="prose">
+                                                        {!! $option->option_text !!}
+                                                    </div>
                                                     @if($option->image_path)
                                                         <img src="{{ Storage::url($option->image_path) }}"
                                                             alt="option_image"
@@ -122,7 +124,9 @@
                                     <h4 class="font-medium text-gray-900 mb-2">Examinee Answer:</h4>
                                     <div class="bg-blue-50 rounded-lg p-4">
                                         @if ($answer->answer_text)
-                                            <div class="whitespace-pre-wrap">{{ $answer->answer_text }}</div>
+                                            <div class="prose">
+                                                {!! $answer->answer_text !!}
+                                            </div>
                                         @else
                                             <span class="text-gray-500 italic">No answer provided</span>
                                         @endif

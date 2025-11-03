@@ -230,12 +230,7 @@
                                         <label for="answer_text" class="block text-sm font-medium text-gray-700 mb-2">
                                             Your Answer:
                                         </label>
-                                        <textarea id="answer_text"
-                                                name="answer_text"
-                                                rows="{{ $question->isLong() ? 10 : 3 }}"
-                                                class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                                placeholder="{{ $question->isShort() ? 'Enter a brief answer...' : 'Provide a detailed answer...' }}"
-                                                oninput="debouncedAutoSave()">{{ $answer ? $answer->answer_text : '' }}</textarea>
+                                        <textarea id="answer_text" name="answer_text" class="tinymce-field" placeholder="{{ $question->isShort() ? 'Enter a brief answer...' : 'Provide a detailed answer...' }}">{{ $answer ? $answer->answer_text : '' }}</textarea>
                                         @if($question->isLong())
                                             <p class="text-xs text-gray-500 mt-1">Take your time to provide a comprehensive answer. You can use multiple paragraphs.</p>
                                         @elseif($question->isShort())
@@ -394,8 +389,9 @@
             document.getElementById('submitForm').submit();
         }
 
-        function autoSaveAnswer() {
+        function autoSaveAnswer(answerText) {
             const formData = new FormData(document.getElementById('answerForm'));
+            formData.set('answer_text', answerText)
 
             fetch('{{ route("student.attempts.auto-save", $attempt) }}', {
                 method: 'POST',
@@ -443,11 +439,11 @@
             });
         }
 
-        function debouncedAutoSave() {
+        function debouncedAutoSave(answerText) {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                autoSaveAnswer();
-            }, 1000); // delay = 1000ms (1 second)
+                autoSaveAnswer(answerText);
+            }, 300);
         }
 
         function openImageModal(src, title) {
@@ -522,6 +518,17 @@
 
         document.getElementById('submitForm').addEventListener('submit', function() {
             isInternalNavigation = true;
+        });
+
+        window.addEventListener('load', () => {
+            if (window.tinymce) {
+                tinymce.activeEditor.on('input', (e) => {
+                    const answerText = e.currentTarget.innerHTML
+                    debouncedAutoSave(answerText)
+                });
+            } else {
+                console.error('tinymce not loaded yet');
+            }
         });
     </script>
 </x-app-layout>

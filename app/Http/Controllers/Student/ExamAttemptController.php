@@ -12,6 +12,7 @@ use App\Models\ExamAnswer;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class ExamAttemptController extends Controller
@@ -392,6 +393,8 @@ class ExamAttemptController extends Controller
             } else {
                 $answerData['answer_text'] = $request->answer_text;
             }
+
+            Log::info("answer data", [$answerData]);
 
             $answer->update($answerData);
 
