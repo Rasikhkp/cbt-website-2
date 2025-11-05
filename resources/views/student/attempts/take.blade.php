@@ -77,6 +77,20 @@
                                     </button>
                                 </form>
                             </div>
+
+                            <div class="mt-4 text-sm text-gray-800">
+                                <p class="mb-2 font-medium">Prohibition:</p>
+                                <ol class="list-decimal pl-4 mb-2">
+                                    <li>Copy/Paste/Cut/Select All not allowed</li>
+                                    <li>Opening developer Tools is not allowed</li>
+                                    <li>Screenshots is not allowed</li>
+                                    <li>Printing is not allowed</li>
+                                    <li>Right-click is not allowed</li>
+                                    <li>Opening another tab or app is not allowed</li>
+                                    <li>Disabling javascript is not allowed</li>
+                                </ol>
+                                <p class="mb-2 font-medium">Please don't even try. We will know</p>
+                            </div>
                         </div>
                     </div>
                 </div>
