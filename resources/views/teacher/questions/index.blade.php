@@ -158,7 +158,7 @@
                                         class="text-yellow-600 hover:text-yellow-900 text-sm">Edit</a>
                                     <form action="{{ route('teacher.questions.destroy', $question) }}" method="POST"
                                         class="inline-block"
-                                        onsubmit="return confirm('Are you sure you want to delete this question?')">
+                                        data-confirm="Are you sure you want to delete this question?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-900 text-sm">

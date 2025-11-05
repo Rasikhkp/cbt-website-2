@@ -213,11 +213,10 @@
 
                                                 @if ($exam->results_released)
                                                     <form action="{{ route('teacher.results.hide', $exam) }}"
-                                                        method="POST" class="inline">
+                                                        method="POST" class="inline" data-confirm="Hide results from examinees?">
                                                         @csrf
                                                         <button type="submit"
-                                                            class="text-orange-600 hover:text-orange-900"
-                                                            onclick="return confirm('Hide results from examinees?')">
+                                                            class="text-orange-600 hover:text-orange-900">
                                                             Hide
                                                         </button>
                                                     </form>

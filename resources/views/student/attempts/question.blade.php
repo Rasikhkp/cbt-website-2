@@ -126,7 +126,7 @@
                             <!-- Submit Button -->
                             <div class="mt-6 pt-4 border-t">
                                 <form action="{{ route('student.attempts.submit', $attempt) }}" method="POST"
-                                      onsubmit="return confirm('Are you sure you want to submit your exam? You cannot make changes after submission.')"
+                                      data-confirm="Are you sure you want to submit your exam? You cannot make changes after submission."
                                       id="submitForm">
                                     @csrf
                                     <input type="hidden" name="confirm_submit" value="1">

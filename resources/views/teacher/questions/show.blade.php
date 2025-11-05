@@ -14,7 +14,7 @@
                     Edit Question
                 </a>
                 <form action="{{ route('teacher.questions.destroy', $question) }}" method="POST" class="inline-block"
-                    onsubmit="return confirm('Are you sure you want to delete this question?')">
+                    data-confirm="Are you sure you want to delete this question?">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">

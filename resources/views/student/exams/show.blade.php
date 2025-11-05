@@ -147,7 +147,7 @@
                         </div>
 
                         <form action="{{ route('student.exams.start', $exam) }}" method="POST"
-                              onsubmit="return confirm('Are you sure you want to start the exam? The timer will begin immediately.')">
+                              data-confirm="Are you sure you want to start the exam? The timer will begin immediately.">
                             @csrf
                             <div class="flex items-center mb-4">
                                 <input type="checkbox" id="confirm_start" name="confirm_start" value="1"

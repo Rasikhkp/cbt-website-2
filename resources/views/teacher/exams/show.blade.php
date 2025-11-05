@@ -18,23 +18,21 @@
 
                 @if($exam->isDraft())
                     <form action="{{ route('teacher.exams.publish', $exam) }}"
-                          method="POST" class="inline-block">
+                          method="POST" class="inline-block" data-confirm="Are you sure you want to publish this exam?">
                         @csrf
                         @method('PATCH')
                         <button type="submit"
-                                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                                onclick="return confirm('Are you sure you want to publish this exam?')">
+                                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                             Publish Exam
                         </button>
                     </form>
                 @elseif($exam->isPublished() && now()->lt($exam->start_time))
                     <form action="{{ route('teacher.exams.unpublish', $exam) }}"
-                          method="POST" class="inline-block">
+                          method="POST" class="inline-block" data-confirm="Are you sure you want to unpublish this exam?">
                         @csrf
                         @method('PATCH')
                         <button type="submit"
-                                class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
-                                onclick="return confirm('Are you sure you want to unpublish this exam?')">
+                                class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
                             Unpublish
                         </button>
                     </form>
@@ -43,7 +41,7 @@
                 @if($exam->isDraft())
                     <form action="{{ route('teacher.exams.destroy', $exam) }}"
                           method="POST" class="inline-block"
-                          onsubmit="return confirm('Are you sure you want to delete this exam? This action cannot be undone.')">
+                          data-confirm="Are you sure you want to delete this exam? This action cannot be undone.">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">

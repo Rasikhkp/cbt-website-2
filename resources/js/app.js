@@ -48,9 +48,64 @@ window.fileSizeFormat = (bytes) => {
 
   return `${bytes.toFixed(2)} ${units[i]}`;
 }
+window.customConfirm = (message, title = "Are you absolutely sure?") => {
+    return new Promise((resolve) => {
+        const modal = document.getElementById("customConfirmModal");
+        const card = document.getElementById("customConfirmCard");
+        const titleEl = document.getElementById("customConfirmTitle");
+        const messageEl = document.getElementById("customConfirmMessage");
+        const okBtn = document.getElementById("customConfirmOkBtn");
+        const cancelBtn = document.getElementById("customConfirmCancelBtn");
+
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+
+        // Show modal and play "enter" animation
+        modal.classList.remove("hidden");
+        requestAnimationFrame(() => {
+          card.classList.remove("modal-enter");
+          card.classList.add("modal-enter-active");
+        });
+
+        const cleanup = () => {
+          // Play leave animation
+          card.classList.remove("modal-enter-active");
+          card.classList.add("modal-leave-active");
+          setTimeout(() => {
+            modal.classList.add("hidden");
+            card.classList.remove("modal-leave-active");
+            card.classList.add("modal-enter");
+          }, 120);
+          okBtn.removeEventListener("click", handleOk);
+          cancelBtn.removeEventListener("click", handleCancel);
+        };
+
+        const handleOk = () => {
+          cleanup();
+          resolve(true);
+        };
+
+        const handleCancel = () => {
+          cleanup();
+          resolve(false);
+        };
+
+        okBtn.addEventListener("click", handleOk);
+        cancelBtn.addEventListener("click", handleCancel);
+    });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     Alpine.start();
     createIcons({ icons });
     addTinyMCE()
 })
+
+document.querySelectorAll("form[data-confirm]").forEach((form) => {
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const message = form.dataset.confirm;
+        const confirmed = await customConfirm(message);
+        if (confirmed) form.submit();
+    });
+});

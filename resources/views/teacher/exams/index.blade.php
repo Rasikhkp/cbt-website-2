@@ -149,21 +149,19 @@
 
                                     @if ($exam->isDraft())
                                         <form action="{{ route('teacher.exams.publish', $exam) }}" method="POST"
-                                            class="inline-block">
+                                            class="inline-block" data-confirm="Are you sure you want to publish this exam?">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="text-green-600 hover:text-green-900 text-sm"
-                                                onclick="return confirm('Are you sure you want to publish this exam?')">
+                                            <button type="submit" class="text-green-600 hover:text-green-900 text-sm">
                                                 Publish
                                             </button>
                                         </form>
                                     @elseif($exam->isPublished() && now()->lt($exam->start_time))
                                         <form action="{{ route('teacher.exams.unpublish', $exam) }}" method="POST"
-                                            class="inline-block">
+                                            class="inline-block" data-confirm="Are you sure you want to unpublish this exam?">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="text-orange-600 hover:text-orange-900 text-sm"
-                                                onclick="return confirm('Are you sure you want to unpublish this exam?')">
+                                            <button type="submit" class="text-orange-600 hover:text-orange-900 text-sm">
                                                 Unpublish
                                             </button>
                                         </form>
@@ -172,7 +170,7 @@
                                     @if ($exam->isDraft())
                                         <form action="{{ route('teacher.exams.destroy', $exam) }}" method="POST"
                                             class="inline-block"
-                                            onsubmit="return confirm('Are you sure you want to delete this exam?')">
+                                            data-confirm="Are you sure you want to delete this exam?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-600 hover:text-red-900 text-sm">

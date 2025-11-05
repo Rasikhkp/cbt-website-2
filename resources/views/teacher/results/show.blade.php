@@ -20,11 +20,10 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     @if ($exam->results_released)
-                        <form action="{{ route('teacher.results.hide', $exam) }}" method="POST" class="inline">
+                        <form action="{{ route('teacher.results.hide', $exam) }}" method="POST" class="inline" data-confirm="Hide results from Examinee?">
                             @csrf
                             <button type="submit"
                                 class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
-                                onclick="return confirm('Hide results from Examinee?')">
                                 Hide Results
                             </button>
                         </form>
