@@ -214,7 +214,7 @@
         </div>
 
         <script>
-            $(document).ready(function() {
+            document.addEventListener('DOMContentLoaded', function() {
                 // Grade form submission
                 $('.grade-form').on('submit', function(e) {
                     e.preventDefault();

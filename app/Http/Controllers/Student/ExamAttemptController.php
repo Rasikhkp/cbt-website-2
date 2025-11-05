@@ -435,4 +435,56 @@ class ExamAttemptController extends Controller
 
         return null;
     }
+
+    public function addSuspiciousBehaviour(Request $request)
+    {
+        try {
+            // ✅ Validate input
+            $validated = $request->validate([
+                'attempt_id' => 'required|exists:exam_attempts,id',
+                'suspicious_behaviour' => 'required|string',
+            ]);
+
+            // ✅ Find the attempt
+            $attempt = ExamAttempt::findOrFail($validated['attempt_id']);
+
+            // ✅ Decode current behaviours (if any)
+            $behaviours = $attempt->suspicious_behaviours ?? [];
+
+            // Ensure it’s an array
+            if (!is_array($behaviours)) {
+                $behaviours = json_decode($behaviours, true) ?? [];
+            }
+
+            // ✅ Add new behaviour
+            $behaviours[] = $validated['suspicious_behaviour'];
+
+            // ✅ Save back to DB
+            $attempt->suspicious_behaviours = $behaviours;
+            $attempt->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Suspicious behaviour added successfully.',
+                'data' => $attempt->suspicious_behaviours,
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Handle validation errors
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
+
+        } catch (\Exception $e) {
+            // Handle unexpected errors
+            Log::error('Error adding suspicious behaviour: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An unexpected error occurred.',
+            ], 500);
+        }
+    }
 }

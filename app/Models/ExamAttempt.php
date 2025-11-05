@@ -23,7 +23,7 @@ class ExamAttempt extends Model
         'percentage_score',
         'status',
         'question_order',
-        'session_data',
+        'suspicious_behaviour',
     ];
 
     protected $casts = [

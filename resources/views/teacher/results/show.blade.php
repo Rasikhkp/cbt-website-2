@@ -295,24 +295,55 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        @if ($attempt->status === 'in_progress')
-                                            <form action="{{ route('teacher.results.submit', $attempt) }}" method="POST">
-                                                @csrf
-                                                <button type="submit" class="text-blue-600 hover:text-blue-900">
-                                                    Submit Exam
+                                        <div class="flex gap-2">
+                                            @if ($attempt->status === 'in_progress')
+                                                <form action="{{ route('teacher.results.submit', $attempt) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="text-blue-600 hover:text-blue-900">
+                                                        Submit Exam
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <div class="flex items-center space-x-2">
+                                                    <a href="{{ route('teacher.results.review', $attempt) }}"
+                                                        class="text-blue-600 hover:text-blue-900">Review</a>
+                                                </div>
+                                            @endif
+
+                                            @php
+                                                $suspicious = json_decode($attempt->suspicious_behaviours, true) ?? [];
+                                            @endphp
+
+                                            <div class="relative">
+                                                <button
+                                                    onclick='showSuspiciousModal(@json($suspicious))'
+                                                    class="text-red-500 hover:text-red-600">
+                                                    Suspicious Behaviours
                                                 </button>
-                                            </form>
-                                        @else
-                                            <div class="flex items-center space-x-2">
-                                                <a href="{{ route('teacher.results.review', $attempt) }}"
-                                                    class="text-blue-600 hover:text-blue-900">Review</a>
+                                                <div class="size-5 flex justify-center items-center bg-red-300 text-white rounded-full absolute -top-2 -right-4 text-xs">
+                                                    {{ count($suspicious) }}
+                                                </div>
                                             </div>
-                                        @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="suspiciousModal" class="fixed hidden inset-0 bg-gray-600 bg-opacity-50 z-50">
+            <div class="flex items-center justify-center min-h-screen px-4">
+                <div class="bg-white rounded-lg max-w-xl p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Suspicious Behaviours</h3>
+                    <div class="overflow-y-scroll h-[60vh] mb-4">
+                         <ol id="suspiciousList" class="list-decimal list-inside text-gray-700 space-y-1"></ol>
+                    </div>
+                    <div class="flex justify-end">
+                        <x-secondary-button onclick="closeSuspiciousModal()">Cancel</x-secondary-button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -387,7 +418,7 @@
 
 
         <script>
-            $(document).ready(function() {
+            document.addEventListener('DOMContentLoaded', function() {
                 let selectedAttempts = [];
                 const maxScore = {{ $statistics['max_possible_score'] ?? 100 }};
 
@@ -682,5 +713,30 @@
                 }
 
             });
+
+            function showSuspiciousModal(behaviours) {
+                const modal = document.getElementById('suspiciousModal');
+                const list = document.getElementById('suspiciousList');
+
+                // Clear old items
+                list.innerHTML = '';
+
+                if (!behaviours || behaviours.length === 0) {
+                    list.innerHTML = '<li class="text-gray-500">No suspicious behaviours recorded.</li>';
+                } else {
+                    // Add each behaviour as <li>
+                    behaviours.forEach(b => {
+                        const li = document.createElement('li');
+                        li.textContent = b;
+                        list.appendChild(li);
+                    });
+                }
+
+                modal.classList.remove('hidden');
+            }
+
+            function closeSuspiciousModal() {
+                document.getElementById('suspiciousModal').classList.add('hidden');
+            }
         </script>
 </x-app-layout>

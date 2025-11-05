@@ -91,4 +91,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/tes', function () {
+    return view('tes');
+});
+
+Route::get('/tes2', function () {
+    return view('tes2');
+});
+
+Route::get('/tes3', function () {
+    return view('tes3');
+});
+
+Route::get('/add-suspicious-behaviour', [ExamAttemptController::class, 'addSuspiciousBehaviour']);
+
 require __DIR__ . '/auth.php';

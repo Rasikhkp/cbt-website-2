@@ -22,7 +22,11 @@
     },
     "dependencies": {
         "@codecogs/eqneditor-tinymce6": "^1.0.2",
+        "@wiris/mathtype-html-integration-devkit": "^1.17.12",
         "@wiris/mathtype-tinymce7": "^8.14.0",
+        "chart.js": "^4.5.1",
+        "jquery": "^3.7.1",
+        "lucide": "^0.552.0",
         "tinymce": "^8.2.0"
     }
 }

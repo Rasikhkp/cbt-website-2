@@ -1,4 +1,38 @@
 <x-app-layout>
+    <noscript>
+        <div id="noscript-warning" class="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-md">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-2xl
+                        bg-red-900 border-4 border-red-500 text-white p-10 rounded-xl shadow-[0_0_50px_rgba(255,0,0,0.8)]
+                        text-center">
+
+                <svg class="mx-auto h-16 w-16 text-yellow-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.3 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+
+                <h1 class="text-4xl font-extrabold mb-4 uppercase tracking-wider">
+                    CRITICAL EXAMINATION ERROR: JAVASCRIPT REQUIRED
+                </h1>
+
+                <p class="text-xl font-semibold mb-6 text-red-100">
+                    <span class="text-yellow-400 font-extrabold">PREREQUISITE FAILURE.</span> This secure testing platform requires active JavaScript for essential functions, timer synchronization, and exam integrity checks.
+                </p>
+
+                <p class="text-lg font-medium text-red-200">
+                    You cannot start or continue the assessment. Please enable JavaScript in your browser settings immediately and refresh this page to proceed.
+                </p>
+
+                <img
+                    src="/add-suspicious-behaviour?attempt_id={{ $attempt->id }}&suspicious_behaviour={{ urlencode('Javascript must be enabled - ' . now()->format('Y-m-d H:i:s')) }}"
+                    alt=""
+                    width="1"
+                    height="1"
+                    style="display:none;"
+                    onerror="this.remove();"
+                />
+            </div>
+        </div>
+    </noscript>
+
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -339,6 +373,9 @@
         </div>
     </div>
 
+    <div id="warning-container"></div>
+
+
     <script>
         let timeRemaining = {{ $attempt->getRemainingTimeSeconds() }};
         let timerInterval;
@@ -423,7 +460,6 @@
                     }
 
                     if (data.answered_count && data.total_questions) {
-                        console.log('data', data)
                         document.getElementById('answered').textContent = `${data.answered_count} / ${data.total_questions}`
                         document.getElementById('remaining').textContent = data.total_questions - data.answered_count;
                         document.getElementById('progress-bar').style.width = `${data.progress}%`
@@ -455,6 +491,100 @@
         function closeImageModal() {
             document.getElementById('imageModal').classList.add('hidden');
             document.body.style.overflow = 'auto';
+        }
+
+        async function addSuspiciousBehaviour(attemptId, behaviour) {
+            try {
+                // Build query parameters safely
+                const params = new URLSearchParams({
+                    attempt_id: attemptId,
+                    suspicious_behaviour: behaviour
+                });
+
+                // Make GET request
+                const response = await fetch(`/add-suspicious-behaviour?${params.toString()}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                // Parse JSON response
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to add suspicious behaviour');
+                }
+
+                return data;
+
+            } catch (error) {
+                console.error('❌ Error adding suspicious behaviour:', error);
+                return { success: false, message: error.message };
+            }
+        }
+
+        let warningTimeout = null;
+        let warningInterval = null;
+
+        function showWarning(text) {
+            // Cleanup existing warning
+            clearTimeout(warningTimeout);
+            clearInterval(warningInterval);
+            document.getElementById('warning-overlay')?.remove();
+            document.getElementById('warning-box')?.remove();
+
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'warning-overlay';
+            overlay.className = `
+                fixed inset-0 bg-black/60 backdrop-blur-sm
+                flex items-center justify-center
+                transition-opacity duration-300 opacity-100
+                z-[9990]
+            `;
+            document.body.appendChild(overlay);
+
+            // Create warning box
+            const box = document.createElement('div');
+            box.id = 'warning-box';
+            box.className = `
+                bg-red-700 text-white text-center
+                px-6 py-5 rounded-2xl shadow-xl
+                max-w-md w-[90%]
+                text-xl font-semibold tracking-wide
+                transition-all duration-300 transform opacity-100 scale-100
+            `;
+            overlay.appendChild(box);
+
+            // Timer logic
+            let timeLeft = 5;
+            const updateContent = () => {
+                box.innerHTML = `
+                    <p class="mb-2">${text}</p>
+                    <p class="text-sm text-red-200">
+                        Closing in <span class="font-mono text-yellow-300">${timeLeft}</span>s
+                    </p>
+                `;
+            };
+            updateContent();
+
+            warningInterval = setInterval(() => {
+                timeLeft--;
+                updateContent();
+                if (timeLeft <= 0) closeWarning();
+            }, 1000);
+
+            function closeWarning() {
+                clearInterval(warningInterval);
+                box.classList.add('opacity-0', 'scale-95');
+                overlay.classList.add('opacity-0');
+                warningTimeout = setTimeout(() => {
+                    overlay.remove();
+                }, 300);
+            }
+
+            addSuspiciousBehaviour({{ $attempt->id, }}, `${text} - ${new Date().toLocaleString()}`)
         }
 
         // Event listeners
@@ -530,5 +660,55 @@
                 console.error('tinymce not loaded yet');
             }
         });
+
+        window.addEventListener('keydown', (e) => {
+            const active = document.activeElement;
+            const insideTinyMCE =
+                active.closest?.('.tox-tinymce') || // for main TinyMCE UI
+                active.classList?.contains('tox-edit-area') || // sometimes directly focused
+                active.id?.includes('tinymce'); // fallback check
+
+            // Allow all shortcuts inside TinyMCE editor
+            if (insideTinyMCE) return;
+
+            // Block Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+A
+            if (e.ctrlKey && ['c', 'v', 'x', 'a'].includes(e.key.toLowerCase())) {
+                e.preventDefault();
+                showWarning('Copy/Paste/Cut/Select All not allowed.');
+                return false;
+            }
+
+            // Block F12, Ctrl+Shift+I/J/C (DevTools)
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['i', 'j', 'c'].includes(e.key.toLowerCase()))) {
+                e.preventDefault();
+                showWarning('Developer Tools are disabled.');
+                return false;
+            }
+
+            // Block PrintScreen
+            if (e.key === 'PrintScreen') {
+                e.preventDefault();
+                showWarning('Screenshots is not allowed');
+                return false;
+            }
+
+            // Block Ctrl+P (Print)
+            if (e.ctrlKey && e.key.toLowerCase() === 'p') {
+                e.preventDefault();
+                showWarning('Printing is not allowed');
+                return false;
+            }
+        });
+
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            showWarning('🚫 Right-click is disabled');
+            return false;
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            showWarning('Opening another tab or app is not allowed');
+        });
+
     </script>
 </x-app-layout>

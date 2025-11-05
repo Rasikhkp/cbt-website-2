@@ -291,7 +291,7 @@
     </div>
 
     <script>
-         $(document).ready(function() {
+         document.addEventListener('DOMContentLoaded', function() {
             // Filter functionality
             $('#statusFilter').on('change', function() {
                 const filter = $(this).val();

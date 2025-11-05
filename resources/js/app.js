@@ -2,6 +2,10 @@ import "./bootstrap";
 import Alpine from "alpinejs";
 import tinymce from 'tinymce';
 import wirisPlugin from '@wiris/mathtype-tinymce7/plugin.min.js?url';
+import $ from 'jquery';
+import jQuery from 'jquery';
+import Chart from 'chart.js/auto';
+import { createIcons, icons } from 'lucide';
 
 import 'tinymce/icons/default';
 import 'tinymce/themes/silver';
@@ -11,12 +15,12 @@ import 'tinymce/plugins/link';
 import 'tinymce/plugins/table';
 import 'tinymce/plugins/charmap';
 
+
+window.$ = $;
+window.jQuery = jQuery;
+window.Chart = Chart
 window.Alpine = Alpine;
-Alpine.start();
-window.test = () => 'anjay'
-
 window.tinymce = tinymce
-
 window.addTinyMCE = () => {
     window.tinymce.init({
         selector: '.tinymce-field',
@@ -30,12 +34,9 @@ window.addTinyMCE = () => {
             tiny_mce_wiris: wirisPlugin,
         },
         draggable_modal: true,
-        content_style: "@import url('https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap'); body { font-family: Figtree; }",
+        content_style: "@import url('/fonts/figtree.css'); body { font-family: Figtree; }",
     })
 }
-
-addTinyMCE()
-
 window.fileSizeFormat = (bytes) => {
   const units = ['B', 'KB', 'MB', 'GB', 'TB'];
   let i = 0;
@@ -47,3 +48,9 @@ window.fileSizeFormat = (bytes) => {
 
   return `${bytes.toFixed(2)} ${units[i]}`;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    Alpine.start();
+    createIcons({ icons });
+    addTinyMCE()
+})

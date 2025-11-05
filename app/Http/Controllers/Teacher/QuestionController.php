@@ -18,9 +18,17 @@ use Illuminate\Http\UploadedFile;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\QuestionImport;
 use Maatwebsite\Excel\Validators\ValidationException;
+use App\Services\ExamService;
 
 class QuestionController extends Controller
 {
+    protected $examService;
+
+    public function __construct(ExamService $examService)
+    {
+        $this->examService = $examService;
+    }
+
     public function index(Request $request)
     {
 
@@ -45,8 +53,10 @@ class QuestionController extends Controller
         }
 
         $questions = $query->orderBy('created_at', 'desc')->paginate(10);
+        $uniqueTags = $this->examService->getUniqueTagsForSelect();
 
-        return view('teacher.questions.index', compact('questions'));
+
+        return view('teacher.questions.index', compact('questions', 'uniqueTags'));
     }
 
     public function create()

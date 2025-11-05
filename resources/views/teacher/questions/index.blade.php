@@ -31,6 +31,15 @@
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div>
+                            <label class="block text-sm font-medium text-gray-700">Tag</label>
+                            <x-multi-select
+                                name="tags"
+                                id="tags-select"
+                                :options="$uniqueTags"
+                                :selected="request('tags', [])"
+                            />
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-gray-700">Type</label>
                             <select name="type"
                                 class="mt-1 block border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">

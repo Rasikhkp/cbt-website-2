@@ -372,21 +372,8 @@
         function filterQuestions() {
             const tagsElement = document.querySelectorAll('[name="tags[]"]');
             const selectedTags = Array.from(tagsElement).map(tagElement => tagElement.value);
-            console.log('selectedTags', selectedTags)
 
             updateDisplayedElement(selectedTags)
-
-            // const params = new URLSearchParams();
-            // selectedTags.forEach(tag => params.append('tags[]', tag));
-
-            // fetch(`{{ route('teacher.exams.filter-questions') }}?${params}`)
-            //     .then(response => response.text())
-            //     .then(html => {
-            //         document.getElementById('questions-container').innerHTML =
-            //             '<div class="space-y-3">' + html + '</div>';
-            //         updateSelectedQuestions();
-            //     })
-            //     .catch(error => console.error('Error:', error));
         }
     </script>
 </x-app-layout>
