@@ -112,7 +112,6 @@
                             <div class="flex gap-4 mb-4">
                                 <x-multi-select
                                     name="tags"
-                                    id="tags-select"
                                     :options="$uniqueTags"
                                     :selected="request('tags', [])"
                                 />

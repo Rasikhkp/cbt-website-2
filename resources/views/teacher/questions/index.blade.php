@@ -33,9 +33,8 @@
                         <div>
                             <label class="block text-sm font-medium mb-1 text-gray-700">Tag</label>
                             <div class="w-72">
-                                <x-multi-select-2
+                                <x-multi-select
                                     name="tags"
-                                    id="tags-select"
                                     :options="$uniqueTags"
                                     :selected="request('tags', [])"
                                 />

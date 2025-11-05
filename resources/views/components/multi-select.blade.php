@@ -1,275 +1,297 @@
 @props([
-    'name' => 'items',
-    'options' => [],
-    'selected' => [],
-    'placeholder' => 'Search...'
+    'name',
+    'options', // Expects: [{ value: '1', label: 'Jack' }, { value: '2', label: 'Ann' }]
+    'selected' => [], // Expects: ['1', '2']
+    'placeholder' => 'Select options'
 ])
 
-<div class="multi-select-container relative" data-name="{{ $name }}">
-    <!-- Hidden inputs (initial selected values) -->
-    <div class="hidden-inputs">
+@php
+    // We need a unique ID for each component instance on the page
+    $componentId = 'multiselect-' . Str::uuid();
+@endphp
+
+{{--
+This component uses vanilla JavaScript.
+It finds its elements by the unique $componentId.
+--}}
+<div class="relative" id="{{ $componentId }}">
+
+    <div data-multiselect-hidden-inputs>
         @foreach($selected as $value)
             <input type="hidden" name="{{ $name }}[]" value="{{ $value }}">
         @endforeach
     </div>
 
-    <!-- Visible input / tags -->
-    <div class="input-box border border-gray-300 rounded-lg px-2 py-1 flex flex-wrap gap-1 items-center cursor-text" tabindex="0">
-        {{-- Pre-render tags for initial selected values --}}
-        @foreach($selected as $value)
-            @php
-                $label = collect($options)->firstWhere('value', $value)['label'] ?? $value;
-            @endphp
-            <span class="tag flex items-center bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm" data-value="{{ $value }}">
-                <span class="tag-label">{{ $label }}</span>
-                <button type="button" class="ml-1 text-blue-500 remove-tag" aria-label="remove">&times;</button>
-            </span>
-        @endforeach
+    <div
+        class="flex w-full cursor-pointer flex-wrap items-center gap-2 rounded-md border border-gray-300 bg-white p-2 min-h-[42px]"
+        data-multiselect-button
+    >
+        <div class="flex flex-wrap gap-2" data-multiselect-pill-container></div>
 
-        <input
-            type="text"
-            class="search-input flex-1 border-none outline-none py-1 focus:ring-0"
-            placeholder="{{ $placeholder }}"
-            autocomplete="off"
+        <span class="text-gray-800" data-multiselect-placeholder>
+            {{ $placeholder }}
+        </span>
+
+        <svg
+            class="ml-auto h-5 w-5 text-gray-400"
+            data-multiselect-arrow
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
         >
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.23 8.29a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+        </svg>
     </div>
 
-    <!-- Dropdown -->
-    <div class="dropdown fixed mt-1 w-52 bg-white border rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto hidden">
-        @foreach($options as $option)
-            <div class="dropdown-item px-3 py-2 cursor-pointer hover:bg-blue-100 flex justify-between items-center"
-                 data-value="{{ $option['value'] }}"
-                 data-label="{{ $option['label'] }}">
-                <span class="item-label">{{ $option['label'] }}</span>
-                <!-- checkmark placeholder -->
-                <span class="selected-check" aria-hidden="true" style="display: none;"><i data-lucide="check" class="text-green-500 w-5 h-5"></i></span>
-            </div>
-        @endforeach
+    <div
+        class="fixed z-10 w-72 mt-1 rounded-md border border-gray-300 bg-white shadow-lg"
+        data-multiselect-dropdown
+        style="display: none;"
+    >
+        <div class="p-2">
+            <input
+                type="text"
+                data-multiselect-search
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                placeholder="Search options..."
+            >
+        </div>
+
+        <ul class="max-h-60 overflow-y-auto" data-multiselect-options-list>
+            </ul>
+
+        <div class="p-2 text-gray-500" data-multiselect-no-results style="display: none;">
+            No options found.
+        </div>
     </div>
 </div>
 
 <script>
-(function () {
-    function initMultiSelect(container) {
-        const name = container.dataset.name;
-        const inputBox = container.querySelector('.input-box');
-        const searchInput = container.querySelector('.search-input');
-        const dropdown = container.querySelector('.dropdown');
-        const hiddenInputs = container.querySelector('.hidden-inputs');
-        const dropdownItems = Array.from(dropdown.querySelectorAll('.dropdown-item'));
+    // Define the initialization function in the global scope,
+    // but wrap it in a check to prevent re-definition.
+    if (typeof initMultiSelect !== 'function') {
+        /**
+         * @param {Object} config
+         * @param {string} config.id - The DOM ID of the component wrapper.
+         * @param {string} config.name - The name for the hidden input fields.
+         * @param {Array<Object>} config.options - [{value: '', label: ''}]
+         * @param {Array<string>} config.selectedValues - ['value1', 'value2']
+         * @param {string} config.placeholder - The placeholder text.
+         */
+        function initMultiSelect(config) {
+            // --- State ---
+            let open = false;
+            let search = '';
+            let selectedValues = [...config.selectedValues];
+            const allOptions = [...config.options];
 
-        let focusedIndex = -1; // --- added for keyboard navigation ---
+            // --- DOM Elements ---
+            const el = document.getElementById(config.id);
+            if (!el) return;
 
-        function getSelectedValues() {
-            return Array.from(hiddenInputs.querySelectorAll('input[type="hidden"]')).map(i => i.value);
-        }
+            const body = document.body;
+            const hiddenInputContainer = el.querySelector('[data-multiselect-hidden-inputs]');
+            const button = el.querySelector('[data-multiselect-button]');
+            const pillContainer = el.querySelector('[data-multiselect-pill-container]');
+            const placeholder = el.querySelector('[data-multiselect-placeholder]');
+            const arrow = el.querySelector('[data-multiselect-arrow]');
+            const dropdown = el.querySelector('[data-multiselect-dropdown]');
+            const searchInput = el.querySelector('[data-multiselect-search]');
+            const optionsList = el.querySelector('[data-multiselect-options-list]');
+            const noResults = el.querySelector('[data-multiselect-no-results]');
 
-        function showDropdown() {
-            dropdown.classList.remove('hidden');
-        }
-        function hideDropdown() {
-            dropdown.classList.add('hidden');
-            clearFocus(); // --- added
-        }
+            // --- Helper Functions ---
+            const getOption = (value) => allOptions.find(opt => opt.value == value);
+            const isSelected = (value) => selectedValues.includes(String(value));
 
-        function updateDropdownFilter() {
-            const q = searchInput.value.trim().toLowerCase();
-            let anyVisible = false;
-            dropdownItems.forEach(item => {
-                const label = (item.dataset.label || '').toLowerCase();
-                const matches = label.indexOf(q) !== -1;
-                item.style.display = matches ? 'flex' : 'none';
-                if (matches) anyVisible = true;
-            });
-
-            let noRow = dropdown.querySelector('.no-results');
-            if (!anyVisible) {
-                if (!noRow) {
-                    noRow = document.createElement('div');
-                    noRow.className = 'no-results px-3 py-2 text-gray-500 text-sm';
-                    noRow.textContent = 'No results found.';
-                    dropdown.appendChild(noRow);
-                }
-            } else {
-                if (noRow) noRow.remove();
+            // --- Render Functions ---
+            function renderHiddenInputs() {
+                hiddenInputContainer.innerHTML = '';
+                selectedValues.forEach(value => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = `${config.name}[]`;
+                    input.value = value;
+                    hiddenInputContainer.appendChild(input);
+                });
             }
 
-            focusedIndex = -1; // --- reset focus index ---
-        }
+            function renderPills() {
+                pillContainer.innerHTML = '';
+                selectedValues.map(getOption).forEach(option => {
+                    const pill = document.createElement('span');
+                    pill.className = 'flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-0.5 text-sm font-medium text-gray-800';
+                    pill.innerHTML = `
+                        <span>${option.label}</span>
+                        <button
+                            type="button"
+                            class="text-gray-500 hover:text-gray-900"
+                            title="Remove"
+                            data-remove-value="${option.value}"
+                        >
+                            &times;
+                        </button>
+                    `;
+                    pillContainer.appendChild(pill);
+                });
+                updatePlaceholder();
+            }
 
-        function syncDropdownSelection() {
-            const selected = getSelectedValues();
-            dropdownItems.forEach(item => {
-                const checkSpan = item.querySelector('.selected-check');
-                if (selected.includes(item.dataset.value)) {
-                    checkSpan.style.display = '';
+            function updatePlaceholder() {
+                placeholder.style.display = selectedValues.length === 0 ? 'inline' : 'none';
+            }
+
+            function renderOptions() {
+                optionsList.innerHTML = '';
+                const filtered = allOptions.filter(
+                    opt => opt.label.toLowerCase().includes(search.toLowerCase())
+                );
+
+                noResults.style.display = filtered.length === 0 ? 'block' : 'none';
+
+                filtered.forEach(option => {
+                    const li = document.createElement('li');
+                    li.className = 'flex cursor-pointer items-center justify-between p-2 hover:bg-indigo-50';
+                    li.dataset.selectValue = option.value;
+
+                    const selected = isSelected(option.value);
+
+                    li.innerHTML = `
+                        <span class="font-medium">${option.label}</span>
+                        ${selected ? `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+                        ` : ''}
+                    `;
+                    optionsList.appendChild(li);
+                });
+            }
+
+            // --- Event Handlers ---
+            function openDropdown() {
+                // 1. Calculate Bounding Box of the Input Button
+                const rect = button.getBoundingClientRect();
+
+                // 2. Apply Fixed Positioning to Dropdown
+                // Note: We use the 'z-50' utility to ensure it's on top of nearly everything.
+                dropdown.style.cssText = `
+                    position: fixed;
+                    top: ${rect.bottom + 4}px; /* Input bottom + margin */
+                    left: ${rect.left}px;
+                    width: ${rect.width}px;
+                    display: block;
+                    z-index: 50;
+                `;
+
+                // 3. Lock Scrolling on Body
+                body.classList.add('overflow-hidden');
+
+                // 4. Update State and Focus
+                open = true;
+                button.classList.add('ring-2', 'ring-indigo-500', 'border-indigo-500');
+                arrow.classList.add('rotate-180');
+                searchInput.focus();
+                renderOptions();
+            }
+
+            /**
+             * Reverts the dropdown to its original hidden, relative state.
+             */
+            function closeDropdown() {
+                // 1. Revert Dropdown Positioning and Visibility
+                dropdown.style.cssText = 'display: none;';
+
+                // 2. Unlock Scrolling on Body
+                body.classList.remove('overflow-hidden');
+
+                // 3. Update State
+                open = false;
+                button.classList.remove('ring-2', 'ring-indigo-500', 'border-indigo-500');
+                arrow.classList.remove('rotate-180');
+                search = '';
+                searchInput.value = '';
+            }
+
+            function toggleDropdown() {
+                if (open) {
+                    closeDropdown();
                 } else {
-                    checkSpan.style.display = 'none';
+                    openDropdown();
+                }
+            }
+
+            function selectOption(value) {
+                if (isSelected(value)) {
+                    selectedValues = selectedValues.filter(v => v != value);
+                } else {
+                    selectedValues.push(String(value));
+                }
+                // Re-render everything
+                renderHiddenInputs();
+                renderPills();
+                renderOptions(); // To update the checkmark
+            }
+
+            // --- Event Listeners ---
+            button.addEventListener('click', toggleDropdown);
+
+            searchInput.addEventListener('input', (e) => {
+                search = e.target.value;
+                renderOptions();
+            });
+
+            // Event delegation for option selection
+            optionsList.addEventListener('click', (e) => {
+                const li = e.target.closest('li[data-select-value]');
+                if (li) {
+                    selectOption(li.dataset.selectValue);
+                    e.stopPropagation()
                 }
             });
-        }
 
-        function createTag(value, label) {
-            if (getSelectedValues().includes(value)) return;
-
-            const hidden = document.createElement('input');
-            hidden.type = 'hidden';
-            hidden.name = name + '[]';
-            hidden.value = value;
-            hiddenInputs.appendChild(hidden);
-
-            const tag = document.createElement('span');
-            tag.className = 'tag flex items-center bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm';
-            tag.dataset.value = value;
-            tag.innerHTML = `<span class="tag-label">${escapeHtml(label)}</span>
-                             <button type="button" class="ml-1 text-blue-500 remove-tag" aria-label="remove">&times;</button>`;
-            inputBox.insertBefore(tag, searchInput);
-
-            syncDropdownSelection();
-        }
-
-        function removeTagByValue(value) {
-            const tag = inputBox.querySelector(`.tag[data-value="${cssEscape(value)}"]`);
-            if (tag) tag.remove();
-            const hidden = hiddenInputs.querySelector(`input[type="hidden"][value="${cssEscape(value)}"]`);
-            if (hidden) hidden.remove();
-            syncDropdownSelection();
-        }
-
-        function toggleValue(value, label) {
-            if (getSelectedValues().includes(value)) {
-                removeTagByValue(value);
-            } else {
-                createTag(value, label);
-            }
-        }
-
-        // --- new helper functions for focus management ---
-        function visibleItems() {
-            return dropdownItems.filter(i => i.style.display !== 'none');
-        }
-
-        function clearFocus() {
-            dropdownItems.forEach(i => i.classList.remove('bg-blue-100'));
-            focusedIndex = -1;
-        }
-
-        function moveFocus(dir) {
-            const vis = visibleItems();
-            if (vis.length === 0) return;
-
-            if (focusedIndex === -1) {
-                focusedIndex = dir === 1 ? 0 : vis.length - 1;
-            } else {
-                focusedIndex = (focusedIndex + dir + vis.length) % vis.length;
-            }
-
-            vis.forEach(i => i.classList.remove('bg-blue-100'));
-            vis[focusedIndex].classList.add('bg-blue-100');
-            vis[focusedIndex].scrollIntoView({ block: 'nearest' });
-        }
-
-        function selectFocused() {
-            const vis = visibleItems();
-            if (focusedIndex >= 0 && focusedIndex < vis.length) {
-                const item = vis[focusedIndex];
-                toggleValue(item.dataset.value, item.dataset.label);
-                searchInput.focus();
-                updateDropdownFilter();
-            }
-        }
-
-        // --- events ---
-        inputBox.addEventListener('click', function (e) {
-            if (e.target === inputBox) {
-                searchInput.focus();
-            }
-            showDropdown();
-            updateDropdownFilter();
-        });
-
-        searchInput.addEventListener('input', function () {
-            updateDropdownFilter();
-            showDropdown();
-        });
-
-        dropdown.addEventListener('click', function (e) {
-            const item = e.target.closest('.dropdown-item');
-            if (!item) return;
-            toggleValue(item.dataset.value, item.dataset.label);
-            searchInput.focus();
-            updateDropdownFilter();
-        });
-
-        inputBox.addEventListener('click', function (e) {
-            const rem = e.target.closest('.remove-tag');
-            if (!rem) return;
-            const tag = rem.closest('.tag');
-            if (!tag) return;
-            removeTagByValue(tag.dataset.value);
-            searchInput.focus();
-        });
-
-        document.addEventListener('click', function (e) {
-            if (!container.contains(e.target)) {
-                hideDropdown();
-            }
-        });
-
-        // --- keyboard controls ---
-        searchInput.addEventListener('keydown', function (e) {
-            const vis = visibleItems();
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                showDropdown();
-                moveFocus(1);
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                showDropdown();
-                moveFocus(-1);
-            } else if (e.key === 'Enter') {
-                if (focusedIndex >= 0 && vis.length) {
-                    e.preventDefault();
-                    const oldIndex = focusedIndex; // preserve index
-                    selectFocused();
-                    // reapply focus to the same position (after update)
-                    const newVis = visibleItems();
-                    if (newVis.length) {
-                        focusedIndex = Math.min(oldIndex, newVis.length - 1);
-                        newVis.forEach(i => i.classList.remove('bg-blue-100'));
-                        newVis[focusedIndex].classList.add('bg-blue-100');
-                        newVis[focusedIndex].scrollIntoView({ block: 'nearest' });
-                    }
+            // Event delegation for pill removal
+            pillContainer.addEventListener('click', (e) => {
+                const removeButton = e.target.closest('button[data-remove-value]');
+                if (removeButton) {
+                    e.stopPropagation(); // Stop the click from toggling the dropdown
+                    selectOption(removeButton.dataset.removeValue);
                 }
-            } else if (e.key === 'Escape') {
-                hideDropdown();
-                searchInput.blur();
-            } else if (e.key === 'Backspace' && searchInput.value === '') {
-                const tags = inputBox.querySelectorAll('.tag');
-                if (tags.length) {
-                    const last = tags[tags.length - 1];
-                    removeTagByValue(last.dataset.value);
+            });
+
+            dropdown.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Click outside to close
+            document.addEventListener('click', (e) => {
+                if (open && !el.contains(e.target)) {
+                    closeDropdown();
                 }
-            }
+            });
+
+            window.addEventListener('resize', () => {
+                if (open) {
+                    // Temporarily close and immediately reopen to recalculate position
+                    // This is cleaner than calculating bounds during every resize event.
+                    closeDropdown();
+                    openDropdown();
+                }
+            });
+
+            // --- Initialization ---
+            renderPills();
+            updatePlaceholder();
+        }
+    }
+
+    // This block calls the initializer function for this specific
+    // instance of the component.
+    document.addEventListener('DOMContentLoaded', () => {
+        initMultiSelect({
+            id: '{{ $componentId }}',
+            name: '{{ $name }}',
+            options: @json($options),
+            selectedValues: @json($selected),
+            placeholder: '{{ $placeholder }}'
         });
-
-        syncDropdownSelection();
-    }
-
-    function cssEscape(s) {
-        return s.replace(/(["'\\])/g, '\\$1');
-    }
-    function escapeHtml(str) {
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.multi-select-container').forEach(initMultiSelect);
     });
-})();
 </script>
