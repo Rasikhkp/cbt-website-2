@@ -14,7 +14,7 @@
     </div>
 
     <!-- Visible input / tags -->
-    <div class="input-box border rounded-lg px-2 py-1 flex flex-wrap gap-1 items-center cursor-text" tabindex="0">
+    <div class="input-box border border-gray-300 rounded-lg px-2 py-1 flex flex-wrap gap-1 items-center cursor-text" tabindex="0">
         {{-- Pre-render tags for initial selected values --}}
         @foreach($selected as $value)
             @php
@@ -26,8 +26,8 @@
             </span>
         @endforeach
 
-        <input 
-            type="text" 
+        <input
+            type="text"
             class="search-input flex-1 border-none outline-none py-1 focus:ring-0"
             placeholder="{{ $placeholder }}"
             autocomplete="off"
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Dropdown -->
-    <div class="dropdown absolute mt-1 w-full bg-white border rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto hidden">
+    <div class="dropdown fixed mt-1 w-52 bg-white border rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto hidden">
         @foreach($options as $option)
             <div class="dropdown-item px-3 py-2 cursor-pointer hover:bg-blue-100 flex justify-between items-center"
                  data-value="{{ $option['value'] }}"

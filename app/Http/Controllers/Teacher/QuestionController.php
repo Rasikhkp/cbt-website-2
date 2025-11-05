@@ -32,6 +32,8 @@ class QuestionController extends Controller
     public function index(Request $request)
     {
 
+        Log::info('request', [$request->all()]);
+
         $query = Question::with(['creator', 'options', 'images']);
 
         // Filter by current user if teacher
@@ -50,6 +52,15 @@ class QuestionController extends Controller
 
         if ($request->filled('search')) {
             $query->where('question_text', 'LIKE', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('tags')) {
+            $tags = $request->input('tags');
+            $query->where(function ($q) use ($tags) {
+                foreach ($tags as $tag) {
+                    $q->orWhereJsonContains('tags', $tag);
+                }
+            });
         }
 
         $questions = $query->orderBy('created_at', 'desc')->paginate(10);

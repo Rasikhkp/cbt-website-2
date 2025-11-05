@@ -23,7 +23,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <form method="GET" action="{{ route('teacher.questions.index') }}"
-                        class="flex flex-wrap gap-4 items-end">
+                        class="flex flex-wrap gap-4 items-start">
                         <div class="flex-1 min-w-64">
                             <label class="block text-sm font-medium text-gray-700">Search</label>
                             <input type="text" name="search" value="{{ request('search') }}"
@@ -31,13 +31,15 @@
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Tag</label>
-                            <x-multi-select
-                                name="tags"
-                                id="tags-select"
-                                :options="$uniqueTags"
-                                :selected="request('tags', [])"
-                            />
+                            <label class="block text-sm font-medium mb-1 text-gray-700">Tag</label>
+                            <div class="w-72">
+                                <x-multi-select-2
+                                    name="tags"
+                                    id="tags-select"
+                                    :options="$uniqueTags"
+                                    :selected="request('tags', [])"
+                                />
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Type</label>
@@ -65,7 +67,7 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 pt-[26px]">
                             <button type="submit" class="bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded">
                                 Filter
                             </button>
