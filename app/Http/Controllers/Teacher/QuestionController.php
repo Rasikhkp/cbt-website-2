@@ -225,6 +225,14 @@ class QuestionController extends Controller
 
             } else {
                 // Remove options for non-MCQ questions
+                foreach ($question->options as $option) {
+                    if (!empty($option->image_path)) {
+                        Storage::disk('public')->delete($option->image_path);
+                    }
+
+                    $option->delete();
+                }
+
                 $question->options()->delete();
             }
 
