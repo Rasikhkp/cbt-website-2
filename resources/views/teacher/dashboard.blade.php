@@ -57,50 +57,6 @@
                             </a>
                         </div>
                     </div>
-
-                    <!-- Recent Activity -->
-                    <div class="mt-8">
-                        <h4 class="text-lg font-medium text-gray-900 mb-4">Recent Activity</h4>
-                        <div class="space-y-3">
-                            @php
-                                $recentQuestions = Auth::user()->questions()->latest()->take(3)->get();
-                                $recentExams = Auth::user()->createdExams()->latest()->take(3)->get();
-                            @endphp
-
-                            @if($recentQuestions->count() > 0)
-                                <div>
-                                    <h5 class="font-medium text-gray-700 mb-2">Recent Questions:</h5>
-                                    @foreach($recentQuestions as $question)
-                                        <div class="text-sm text-gray-600 mb-1">
-                                            • {{ Str::limit($question->question_text, 60) }}
-                                            <span class="text-xs text-gray-400">({{ $question->created_at->diffForHumans() }})</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
-
-                            @if($recentExams->count() > 0)
-                                <div>
-                                    <h5 class="font-medium text-gray-700 mb-2">Recent Exams:</h5>
-                                    @foreach($recentExams as $exam)
-                                        <div class="text-sm text-gray-600 mb-1">
-                                            • {{ $exam->title }}
-                                            <span class="px-2 py-1 text-xs rounded-full {{ $exam->getStatusColorClass() }}">
-                                                {{ ucfirst($exam->status) }}
-                                            </span>
-                                            <span class="text-xs text-gray-400">({{ $exam->created_at->diffForHumans() }})</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
-
-                            @if($recentQuestions->count() == 0 && $recentExams->count() == 0)
-                                <p class="text-gray-500 text-sm">No recent activity. Start by creating your first question or exam!</p>
-                            @endif
-                        </div>
-                    </div>
-                    <div id="mytextarea">
-                    </div>
                 </div>
             </div>
         </div>
