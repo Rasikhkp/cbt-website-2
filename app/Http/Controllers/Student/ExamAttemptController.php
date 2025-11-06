@@ -398,7 +398,14 @@ class ExamAttemptController extends Controller
 
             $answer->update($answerData);
 
-            $answeredCount = $answer->attempt->answers->whereNotNull('selected_options')->count();
+            $answeredCount = $answer
+                ->attempt
+                ->answers()
+                ->where(function ($query) {
+                    $query->whereNotNull('answer_text')->orWhereNotNull('selected_options');
+                })
+                ->count();
+
             $totalQuestions = $answer->attempt->answers->count();
 
             return response()->json([

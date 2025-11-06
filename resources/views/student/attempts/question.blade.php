@@ -665,13 +665,12 @@
         });
 
         window.addEventListener('load', () => {
-            if (window.tinymce) {
+            const tinymceField = document.querySelector('.tinymce-field')
+            if (window.tinymce && tinymceField) {
                 tinymce.activeEditor.on('input', (e) => {
                     const answerText = e.currentTarget.innerHTML
                     debouncedAutoSave(answerText)
                 });
-            } else {
-                console.error('tinymce not loaded yet');
             }
         });
 

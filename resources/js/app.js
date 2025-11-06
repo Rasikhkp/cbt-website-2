@@ -162,3 +162,5 @@ document.querySelectorAll("form[data-confirm]").forEach((form) => {
         if (confirmed) form.submit();
     });
 });
+
+document.querySelector('#year').innerText = new Date().getFullYear()

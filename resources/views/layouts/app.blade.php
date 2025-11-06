@@ -55,8 +55,8 @@
             </div>
         </div>
         <div id="toastContainer" class="fixed top-4 right-4 space-y-2 z-[9999]"></div>
-        <footer class="w-full my-2 text-center text-sm text-gray-500">
-            <p>&copy; 2025 Bintan Resorts • All rights reserved.</p>
+        <footer class="w-full my-4 text-center text-sm text-gray-500">
+            <p>&copy; <span id="year"></span> Bintan Resorts • All rights reserved.</p>
         </footer>
     </div>
 

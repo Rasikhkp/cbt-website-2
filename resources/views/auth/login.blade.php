@@ -86,7 +86,7 @@
     </div>
 
     <footer class="mt-8 text-center text-sm text-gray-500">
-        <p>&copy; 2025 Bintan Resorts • All rights reserved.</p>
+        <p>&copy; <span id="year"></span> Bintan Resorts • All rights reserved.</p>
     </footer>
 
 </body>
