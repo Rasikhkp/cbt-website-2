@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class QuestionImport implements ToModel, WithHeadingRow, WithValidation
 {
@@ -20,8 +21,6 @@ class QuestionImport implements ToModel, WithHeadingRow, WithValidation
     {
         $tags = explode(',', $row['tags']);
         $tags = array_map('trim', $tags);
-
-        Log::info("type", [$row["type"]]);
 
         $question = Question::create([
             "created_by" => Auth::id(),
@@ -42,9 +41,6 @@ class QuestionImport implements ToModel, WithHeadingRow, WithValidation
                 'e' => $row['option_e'],
                 'f' => $row['option_f'],
             ];
-
-
-            Log::info("type", $options);
 
             $correctOption = strtolower($row['correct_option']);
 
@@ -71,7 +67,11 @@ class QuestionImport implements ToModel, WithHeadingRow, WithValidation
         return [
             '*.type'  => ['required', 'in:mcq,short,long'],
             '*.question_text' => ['required', 'string'],
-            '*.explanation' => ['required', 'string'],
+            '*.explanation' => [
+                'nullable',
+                'required_if:*.type,short,long',
+                'string',
+            ],
             '*.points' => ['required', 'numeric'],
             '*.difficulty' => ['nullable', 'in:easy,medium,hard'],
             '*.tags' => ['nullable', 'string'],
@@ -97,7 +97,7 @@ class QuestionImport implements ToModel, WithHeadingRow, WithValidation
             '*.question_text.string' => 'Question text must be a valid string.',
 
             // --- Explanation ---
-            '*.explanation.required' => 'Explanation is required.',
+            '*.explanation.required_if' => 'Explanation is required for short and long questions.',
             '*.explanation.string' => 'Explanation must be a valid string.',
 
             // --- Points ---
