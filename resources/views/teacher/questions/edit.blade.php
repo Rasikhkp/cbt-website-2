@@ -62,7 +62,7 @@
                             </div>
                             <p class="text-sm text-gray-500 mt-1">Maximum file size: 2MB per image. Supported formats:
                                 JPEG, JPG, PNG, GIF</p>
-                            <x-input-error :messages="implode(', ', collect($errors->get('images.*'))->flatten()->toArray())" class="mt-2" />
+                            <x-input-error :messages="implode(', ', collect($errors->get('new_images.*'))->flatten()->toArray())" class="mt-2" />
                         </div>
 
                         <!-- MCQ Options -->

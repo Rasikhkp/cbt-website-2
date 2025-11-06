@@ -45,10 +45,10 @@ class UpdateQuestionRequest extends FormRequest
         return [
             'correct_options.required' => 'Please select at least one correct answer.',
             'options.*.option_text.required' => 'MCQ option text cannot be empty',
-            'options.*.option_image.max' => 'Each image must be smaller than 2MB.',
+            'options.*.new_option_image.max' => 'Each image must be smaller than 2MB.',
             'options.min' => 'MCQ questions must have at least 2 options.',
             'options.max' => 'MCQ questions can have maximum 6 options.',
-            'images.*.max' => 'Each image must be smaller than 2MB.',
+            'new_images.*.max' => 'Each image must be smaller than 2MB.',
         ];
     }
 
