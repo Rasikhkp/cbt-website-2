@@ -15,7 +15,6 @@ import 'tinymce/plugins/link';
 import 'tinymce/plugins/table';
 import 'tinymce/plugins/charmap';
 
-
 window.$ = $;
 window.jQuery = jQuery;
 window.Chart = Chart
@@ -24,14 +23,18 @@ window.tinymce = tinymce
 window.addTinyMCE = () => {
     window.tinymce.init({
         selector: '.tinymce-field',
-        license_key: 'gpl', // gpl for open source, T8LK:... for commercial
-        skin: false, // use imported skin.css
+        license_key: 'gpl',
+        skin: false,
         content_css: false,
         plugins: "link table charmap",
         toolbar: "undo redo | bold italic underline strikethrough | link table | align lineheight | numlist bullist indent | charmap tiny_mce_wiris_formulaEditor | removeformat",
         menubar: false,
         external_plugins: {
             tiny_mce_wiris: wirisPlugin,
+        },
+        paste_preprocess: (plugin, args) => {
+            console.log("Attempted to paste: ", args.content);
+            args.content = '';
         },
         draggable_modal: true,
         content_style: "@import url('/fonts/figtree.css'); body { font-family: Figtree; }",
