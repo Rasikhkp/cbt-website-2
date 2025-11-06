@@ -179,6 +179,12 @@
                 // Handle success
                 if (res.ok) {
                     console.log('✅ Success:', data)
+                    showToast({
+                      title: "Success!",
+                      message: "Your questions was imported successfully.",
+                      type: "success"
+                    });
+
                     return
                 }
 
