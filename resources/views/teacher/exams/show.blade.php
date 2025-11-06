@@ -201,7 +201,7 @@
 
                                     <!-- Question Text -->
                                     <div class="mb-4">
-                                        <div class="bg-gray-50  p-4 rounded-lg">
+                                        <div class="bg-gray-50  p-4 rounded-lg mb-4">
                                             <div class="prose">{!! $question->question_text !!}</div>
                                         </div>
 
