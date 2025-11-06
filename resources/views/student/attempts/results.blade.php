@@ -202,7 +202,7 @@
                                         <h5 class="font-medium text-gray-700 mb-2">Your Answer:</h5>
                                         @if($answer && $answer->answer_text)
                                             <div class="bg-gray-50 border border-gray-200 rounded p-3">
-                                                <p class="text-gray-800 whitespace-pre-wrap">{{ $answer->answer_text }}</p>
+                                                <p class="text-gray-800 whitespace-pre-wrap prose">{!! $answer->answer_text !!}</p>
                                             </div>
                                         @else
                                             <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500 italic">
@@ -224,7 +224,7 @@
                                 @if($question->explanation)
                                     <div class="mt-4 p-3 bg-gray-50 border-l-4 border-gray-400 rounded-r">
                                         <h5 class="font-medium text-gray-800 mb-1">Explanation:</h5>
-                                        <p class="text-gray-700 text-sm">{{ $question->explanation }}</p>
+                                        <p class="text-gray-700 text-sm prose">{!! $question->explanation !!}</p>
                                     </div>
                                 @endif
                             </div>

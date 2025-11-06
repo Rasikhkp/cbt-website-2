@@ -285,7 +285,9 @@
                                     @if($question->explanation)
                                         <div class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r">
                                             <h5 class="font-medium text-blue-800 mb-1">Explanation:</h5>
-                                            <p class="text-blue-700 text-sm">{{ $question->explanation }}</p>
+                                            <p class="text-blue-700 prose text-sm">
+                                                {!! $question->explanation !!}
+                                            </p>
                                         </div>
                                     @endif
 
