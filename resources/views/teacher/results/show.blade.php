@@ -23,7 +23,7 @@
                         <form action="{{ route('teacher.results.hide', $exam) }}" method="POST" class="inline" data-confirm="Hide results from Examinee?">
                             @csrf
                             <button type="submit"
-                                class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
+                                class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors">
                                 Hide Results
                             </button>
                         </form>
@@ -677,7 +677,10 @@
                             _token: $('meta[name="csrf-token"]').attr('content'),
                         },
                         success: function(response) {
-                            showNotification('Results released successfully!', 'success');
+                            showToast({
+                                message: "Results released successfully",
+                                type: "success"
+                            })
                             $('#releaseResultsModal').addClass('hidden');
                             setTimeout(() => location.reload(), 1500);
                         },
@@ -691,7 +694,10 @@
                                 errorMsg = errors.partial_release[0];
                             }
 
-                            showNotification(errorMsg, 'error');
+                            showToast({
+                                message: errorMsg,
+                                type: "error"
+                            })
                         },
                         complete: function() {
                             submitBtn.prop('disabled', false).text(originalText);

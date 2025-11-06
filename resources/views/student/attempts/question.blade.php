@@ -106,7 +106,7 @@
                                 <div class="space-y-1">
                                     <div class="flex justify-between">
                                         <span>Answered:</span>
-                                        <span id="answered" class="font-medium">{{ $answeredCount }}/{{ $totalQuestions }}</span>
+                                        <span id="answered" class="font-medium">{{ $answeredCount }} / {{ $totalQuestions }}</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span>Remaining:</span>
