@@ -159,6 +159,7 @@
                 uploadBtn.disabled = false
             }
         })
+
         async function uploadFile() {
             errorContainer.innerHTML = ''
             const formData = new FormData()
@@ -178,12 +179,14 @@
 
                 // Handle success
                 if (res.ok) {
-                    console.log('✅ Success:', data)
                     showToast({
                       title: "Success!",
                       message: "Your questions was imported successfully.",
                       type: "success"
                     });
+
+                    selectedFile = null;
+                    dragText.innerText = "Drag & drop file here"
 
                     return
                 }
