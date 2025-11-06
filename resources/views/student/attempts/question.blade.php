@@ -22,7 +22,7 @@
                 </p>
 
                 <img
-                    src="/add-suspicious-behaviour?attempt_id={{ $attempt->id }}&suspicious_behaviour={{ urlencode('Javascript must be enabled - ' . now()->format('Y-m-d H:i:s')) }}"
+                    src="/add-suspicious-behaviour?attempt_id={{ $attempt->id }}&suspicious_behaviour={{ urlencode('Disabling javascript is not allowed - ' . now()->format('Y-m-d H:i:s')) }}"
                     alt=""
                     width="1"
                     height="1"
@@ -147,7 +147,7 @@
                             <div class="mt-4 text-sm text-gray-800">
                                 <p class="mb-2 font-medium">Prohibition:</p>
                                 <ol class="list-decimal pl-4 mb-2">
-                                    <li>Copy/Paste/Cut/Select All not allowed</li>
+                                    <li>Copy/Paste/Cut/Select All are not allowed</li>
                                     <li>Opening developer Tools is not allowed</li>
                                     <li>Screenshots is not allowed</li>
                                     <li>Printing is not allowed</li>
@@ -155,7 +155,7 @@
                                     <li>Opening another tab or app is not allowed</li>
                                     <li>Disabling javascript is not allowed</li>
                                 </ol>
-                                <p class="mb-2 font-medium">Please don't even try. We will know</p>
+                                <p class="mb-2 font-medium">Please don't even try. We know.</p>
                             </div>
                         </div>
                     </div>
@@ -688,14 +688,14 @@
             // Block Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+A
             if (e.ctrlKey && ['c', 'v', 'x', 'a'].includes(e.key.toLowerCase())) {
                 e.preventDefault();
-                showWarning('Copy/Paste/Cut/Select All not allowed.');
+                showWarning('Copy/Paste/Cut/Select All are not allowed');
                 return false;
             }
 
             // Block F12, Ctrl+Shift+I/J/C (DevTools)
             if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['i', 'j', 'c'].includes(e.key.toLowerCase()))) {
                 e.preventDefault();
-                showWarning('Developer Tools are disabled.');
+                showWarning('Opening developer Tools is not allowed');
                 return false;
             }
 
@@ -716,7 +716,7 @@
 
         document.addEventListener('contextmenu', (e) => {
             e.preventDefault();
-            showWarning('🚫 Right-click is disabled');
+            showWarning('Right-click is not allowed');
             return false;
         });
 
