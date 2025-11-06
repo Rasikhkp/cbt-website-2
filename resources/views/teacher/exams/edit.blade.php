@@ -118,6 +118,18 @@
                         <div class="mb-8">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Select Questions</h3>
 
+                            <div class="flex gap-4 mb-4">
+                                <x-multi-select
+                                    name="tags"
+                                    :options="$uniqueTags"
+                                    :selected="request('tags', [])"
+                                />
+
+                                <button type="button" onclick="filterQuestions()" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
+                                    Filter by Tags
+                                </button>
+                            </div>
+
                             @php
                                 $selectedQuestionIds = old('questions', $exam->examQuestions->pluck('question_id')->toArray());
                                 $selectedQuestionMarks = old('question_marks', $exam->examQuestions->pluck('marks')->toArray());
@@ -132,7 +144,8 @@
                                                 $selectedIndex = array_search($question->id, $selectedQuestionIds);
                                                 $questionMarks = $selectedIndex !== false ? ($selectedQuestionMarks[$selectedIndex] ?? $question->points) : $question->points;
                                             @endphp
-                                            <div class="question-item border border-gray-200 rounded p-3 hover:bg-gray-50">
+
+                                            <div data-tags="{{ implode(', ', $question->tags) }}" class="question-item border border-gray-200 rounded p-3">
                                                 <div class="flex items-start space-x-3">
                                                     <input type="checkbox"
                                                            name="questions[]"
@@ -358,5 +371,31 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateSelectedQuestions();
         });
+
+        function updateDisplayedElement(selectedTags) {
+            const questionItemEl = document.querySelectorAll('.question-item')
+
+            Array.from(questionItemEl).forEach(el => {
+                el.classList.remove('hidden')
+
+                if (!selectedTags.length) return
+
+                const tags = el.dataset.tags.split(", ")
+                const hasMatch = selectedTags.some(st => tags.includes(st))
+
+                if (!hasMatch) {
+                    el.classList.add('hidden')
+                } else {
+                    el.classList.remove('hidden')
+                }
+            })
+        }
+
+        function filterQuestions() {
+            const tagsElement = document.querySelectorAll('[name="tags[]"]');
+            const selectedTags = Array.from(tagsElement).map(tagElement => tagElement.value);
+
+            updateDisplayedElement(selectedTags)
+        }
     </script>
 </x-app-layout>

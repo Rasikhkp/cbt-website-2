@@ -155,8 +155,9 @@ class ExamController extends Controller
             ->get();
 
         $students = User::where('role', 'student')->orderBy('name')->get();
+        $uniqueTags = $this->examService->getUniqueTagsForSelect();
 
-        return view('teacher.exams.edit', compact('exam', 'questions', 'students'));
+        return view('teacher.exams.edit', compact('exam', 'questions', 'students', 'uniqueTags'));
     }
 
     public function update(UpdateExamRequest $request, Exam $exam)
