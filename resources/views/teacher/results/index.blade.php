@@ -270,7 +270,7 @@
                     <div class="mb-4">
                         <label class="flex items-center">
                             <input type="checkbox" name="release_feedback" checked class="mr-2">
-                            <span class="text-sm text-gray-700">Release teacher feedback</span>
+                            <span class="text-sm text-gray-700">Release committee feedback</span>
                         </label>
                     </div>
 

@@ -351,7 +351,7 @@
         <div id="notesModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
             <div class="flex items-center justify-center min-h-screen px-4">
                 <div class="bg-white rounded-lg max-w-md w-full p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Teacher Notes</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Committee Notes</h3>
                     <form id="notesForm">
                         <input type="hidden" id="notesAttemptId">
                         <div class="mb-4">
@@ -538,7 +538,7 @@
                         method: 'POST',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content'),
-                            teacher_notes: notes
+                            committee_notes: notes
                         },
                         success: function() {
                             showNotification('Notes saved successfully', 'success');

@@ -80,7 +80,7 @@
                             </div>
                             @if(!$attempt->isGraded())
                                 <div class="text-yellow-600 text-sm">
-                                    Some questions require manual grading by your teacher.
+                                    Some questions require manual grading by your committee.
                                 </div>
                             @endif
                         </div>
@@ -215,7 +215,7 @@
                                 <!-- Grader Comments -->
                                 @if($answer && $answer->grader_comments)
                                     <div class="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400 rounded-r">
-                                        <h5 class="font-medium text-blue-800 mb-1">Teacher's Comments:</h5>
+                                        <h5 class="font-medium text-blue-800 mb-1">Committee's Comments:</h5>
                                         <p class="text-blue-700 text-sm">{{ $answer->grader_comments }}</p>
                                     </div>
                                 @endif

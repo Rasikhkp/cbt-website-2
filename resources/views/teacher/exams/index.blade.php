@@ -117,7 +117,7 @@
                                             {{ $exam->getDurationFormatted() }}
                                         </div>
                                         <div class="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-md">
-                                            <span class="font-medium">Students:</span>
+                                            <span class="font-medium">Examinees:</span>
                                             {{ $exam->assignedStudents->count() }}
                                         </div>
                                     </div>

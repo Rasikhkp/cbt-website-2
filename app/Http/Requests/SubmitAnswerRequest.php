@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class SubmitAnswerRequest extends FormRequest
 {
@@ -16,8 +17,7 @@ class SubmitAnswerRequest extends FormRequest
             return false;
         }
 
-        // Attempt must be in progress
-        return $attempt->isInProgress() && !$attempt->isExpired();
+        return true;
     }
 
     public function rules()

@@ -149,7 +149,7 @@
                                 </path>
                             </svg>
                             <h3 class="mt-2 text-sm font-medium text-gray-900">No exams assigned</h3>
-                            <p class="mt-1 text-sm text-gray-500">Your teacher hasn't assigned any exams to you yet.</p>
+                            <p class="mt-1 text-sm text-gray-500">Your committee hasn't assigned any exams to you yet.</p>
                         </div>
                     </div>
                 </div>

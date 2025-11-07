@@ -21,7 +21,7 @@
             <!-- Warning for published exams -->
             @if($exam->isPublished() && now()->lt($exam->start_time))
                 <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
-                    <strong>Warning:</strong> This exam is published but hasn't started yet. Changes will affect all assigned students.
+                    <strong>Warning:</strong> This exam is published but hasn't started yet. Changes will affect all assigned examinees.
                 </div>
             @endif
 
@@ -60,12 +60,12 @@
 
                                 <!-- Instructions -->
                                 <div>
-                                    <x-input-label for="instructions" :value="__('Student Instructions (Optional)')" />
+                                    <x-input-label for="instructions" :value="__('Examinee Instructions (Optional)')" />
                                     <textarea id="instructions"
                                             name="instructions"
                                             rows="4"
                                             class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                            placeholder="Special instructions for students taking this exam">{{ old('instructions', $exam->instructions) }}</textarea>
+                                            placeholder="Special instructions for examinees taking this exam">{{ old('instructions', $exam->instructions) }}</textarea>
                                     <x-input-error :messages="$errors->get('instructions')" class="mt-2" />
                                 </div>
                             </div>
@@ -221,7 +221,7 @@
                                                {{ old('randomize_questions', $exam->randomize_questions) ? 'checked' : '' }}
                                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                         <label for="randomize_questions" class="ml-2 text-sm text-gray-700">
-                                            Randomize question order for each student
+                                            Randomize question order for each examinee
                                         </label>
                                     </div>
 
@@ -255,7 +255,7 @@
 
                         <!-- Student Assignment -->
                         <div class="mb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Assign Students</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Assign Examinee</h3>
 
                             @php
                                 $assignedStudentIds = old('students', $exam->assignedStudents->pluck('id')->toArray());
@@ -288,11 +288,11 @@
                                     </div>
                                 </div>
                                 <p class="text-sm text-gray-500 mt-2">
-                                    Currently {{ count($assignedStudentIds) }} students assigned
+                                    Currently {{ count($assignedStudentIds) }} examinees assigned
                                 </p>
                             @else
                                 <div class="text-center py-6 border-2 border-dashed border-gray-300 rounded-lg">
-                                    <p class="text-gray-500">No students found in the system.</p>
+                                    <p class="text-gray-500">No examinee found in the system.</p>
                                 </div>
                             @endif
                         </div>

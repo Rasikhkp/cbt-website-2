@@ -65,7 +65,7 @@ class ExamAttempt extends Model
 
     public function isExpired()
     {
-        return $this->status === 'expired' || now()->gt($this->expires_at);
+        return $this->status === 'expired' || now()->gt($this->exam->end_time);
     }
 
     public function isGraded()

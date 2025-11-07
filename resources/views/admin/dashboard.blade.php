@@ -30,7 +30,7 @@
                                     {{ \App\Models\User::where('role', 'admin')->count() }}</p>
                                 <p class="text-sm text-green-700">Committees:
                                     {{ \App\Models\User::where('role', 'teacher')->count() }}</p>
-                                <p class="text-sm text-green-700">Students:
+                                <p class="text-sm text-green-700">Examinees:
                                     {{ \App\Models\User::where('role', 'student')->count() }}</p>
                             </div>
                         </div>

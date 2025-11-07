@@ -371,7 +371,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.072 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                     </svg>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mt-2">Time's Up!</h3>
+                <h3 id="warning-message" class="text-lg font-medium text-gray-900 mt-2">Time's Up!</h3>
                 <div class="mt-2 px-7 py-3">
                     <p class="text-sm text-gray-500">
                         Your exam will be automatically submitted in <span id="autoSubmitCountdown"></span> seconds.
@@ -421,8 +421,9 @@
             }
         }
 
-        function showAutoSubmitWarning() {
+        function showAutoSubmitWarning(msg = "Time's Up!") {
             document.getElementById('autoSubmitModal').classList.remove('hidden');
+            document.getElementById('warning-message').innerText = msg
             let countdown = 10;
 
             const countdownInterval = setInterval(() => {
@@ -455,7 +456,7 @@
                 const data = await response.json().catch(() => ({})); // catch invalid JSON
                 if (!response.ok) {
                     if (data.error === 'Exam is expired') {
-                        showAutoSubmitWarning()
+                        showAutoSubmitWarning(data.error)
                     }
 
                     throw new Error(data.message || "Auto-save failed");
@@ -479,6 +480,7 @@
                         document.getElementById('progress-bar').style.width = `${data.progress}%`
                         document.getElementById('unanswered').textContent = data.answered_count < data.total_questions ? `${data.total_questions - data.answered_count} question(s) unanswered` : ''
                     }
+
                     setTimeout(() => {
                         document.getElementById('saveStatus').classList.add('hidden');
                     }, 2000);
