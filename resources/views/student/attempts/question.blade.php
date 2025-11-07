@@ -455,7 +455,7 @@
             .then(async response => {
                 const data = await response.json().catch(() => ({})); // catch invalid JSON
                 if (!response.ok) {
-                    if (data.error === 'Exam is expired') {
+                    if (data.error === 'Exam is ended') {
                         showAutoSubmitWarning(data.error)
                     }
 

@@ -37,29 +37,6 @@
                                 View My Exams →
                             </a>
                         </div>
-
-                        <div class="bg-blue-50 p-6 rounded-lg">
-                            <h4 class="font-medium text-blue-800">Exam History</h4>
-                            <p class="text-blue-600 text-sm mt-2">View your exam results</p>
-                            <div class="mt-3 space-y-1">
-                                @php
-                                    $totalAttempts = Auth::user()->examAttempts()->count();
-                                    $completedAttempts = Auth::user()
-                                        ->examAttempts()
-                                        ->whereIn('status', ['submitted', 'graded'])
-                                        ->count();
-                                    $avgScore = Auth::user()
-                                        ->examAttempts()
-                                        ->whereNotNull('percentage_score')
-                                        ->avg('percentage_score');
-                                @endphp
-                                <p class="text-sm text-blue-700">Total Attempts: {{ $totalAttempts }}</p>
-                                <p class="text-sm text-blue-700">Completed: {{ $completedAttempts }}</p>
-                                @if ($avgScore)
-                                    <p class="text-sm text-blue-700">Average Score: {{ round($avgScore, 1) }}%</p>
-                                @endif
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Quick Actions -->

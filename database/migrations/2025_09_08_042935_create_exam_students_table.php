@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('exam_students', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('exam_id')->constrained()->onDelete('cascade');
+            $table->uuid('exam_id');
+            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
             $table->foreignId('student_id')->constrained('users')->onDelete('cascade');
             $table->datetime('assigned_at');
             $table->datetime('due_date')->nullable();

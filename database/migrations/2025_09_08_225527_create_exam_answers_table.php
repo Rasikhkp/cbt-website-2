@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('exam_answers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('attempt_id')->constrained('exam_attempts')->onDelete('cascade');
+            $table->uuid('attempt_id');
+            $table->foreign('attempt_id')->references('id')->on('exam_attempts')->onDelete('cascade');
             $table->foreignId('question_id')->constrained()->onDelete('cascade');
             $table->text('answer_text')->nullable(); // For short and long answers
             $table->json('selected_options')->nullable(); // For MCQ answers (array of option IDs)

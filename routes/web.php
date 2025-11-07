@@ -80,7 +80,6 @@ Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')
     Route::get('/attempts/{attempt}/results', [ExamAttemptController::class, 'results'])->name('attempts.results');
 
     // AJAX routes for real-time functionality
-    Route::get('/attempts/{attempt}/time-remaining', [ExamAttemptController::class, 'getTimeRemaining'])->name('attempts.time-remaining');
     Route::post('/attempts/{attempt}/auto-save', [ExamAttemptController::class, 'autoSaveAnswer'])->name('attempts.auto-save');
 });
 

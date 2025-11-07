@@ -105,7 +105,7 @@ class ExamService
     public function calculateExamStatistics(Exam $exam): array
     {
         $totalAttempts = $exam->attempts()->count();
-        $completedAttempts = $exam->attempts()->whereIn('status', ['submitted', 'graded', 'expired'])->count();
+        $completedAttempts = $exam->attempts()->whereIn('status', ['submitted', 'graded'])->count();
         $inProgressAttempts = $exam->attempts()->where('status', 'in_progress')->count();
         $averageScore = $exam->attempts()->whereNotNull('percentage_score')->avg('percentage_score');
 

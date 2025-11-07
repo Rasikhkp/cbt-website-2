@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class Exam extends Model
@@ -38,6 +39,20 @@ class Exam extends Model
         'results_released' => 'boolean',
         'results_released_at' => 'datetime'
     ];
+
+    public $incrementing = false; // disable auto-increment
+    protected $keyType = 'string'; // store UUID as string
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = (string) Str::uuid();
+            }
+        });
+    }
 
     // Relationships
     public function creator()
@@ -80,7 +95,7 @@ class Exam extends Model
 
     public function getCompletedAttempts()
     {
-        return $this->attempts()->whereIn('status', ['submitted', 'graded', 'expired'])->get();
+        return $this->attempts()->whereIn('status', ['submitted', 'graded'])->get();
     }
 
     public function isPublished()

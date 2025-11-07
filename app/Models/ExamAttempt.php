@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ExamAttempt extends Model
 {
@@ -36,6 +37,20 @@ class ExamAttempt extends Model
         'percentage_score' => 'decimal:2',
     ];
 
+    public $incrementing = false; // disable auto-increment
+    protected $keyType = 'string'; // store UUID as string
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = (string) Str::uuid();
+            }
+        });
+    }
+
     // Relationships
     public function exam()
     {
@@ -63,9 +78,9 @@ class ExamAttempt extends Model
         return in_array($this->status, ['submitted', 'graded']);
     }
 
-    public function isExpired()
+    public function isExamEnded()
     {
-        return $this->status === 'expired' || now()->gt($this->exam->end_time);
+        return now()->gt($this->exam->end_time);
     }
 
     public function isGraded()
@@ -75,7 +90,7 @@ class ExamAttempt extends Model
 
     public function getRemainingTimeSeconds()
     {
-        if ($this->isSubmitted() || $this->isExpired()) {
+        if ($this->isSubmitted()) {
             return 0;
         }
 
@@ -199,17 +214,14 @@ class ExamAttempt extends Model
         return $totalAutoGraded;
     }
 
-    public function markAsExpired()
+    public function autoSubmit()
     {
-        if ($this->isInProgress()) {
-            $this->update([
-                'status' => 'expired',
-                'submitted_at' => now(),
-            ]);
+        $this->update([
+            'status' => 'submitted',
+            'submitted_at' => now(),
+        ]);
 
-            // Auto-grade whatever answers we have
-            $this->autoGrade();
-        }
+        $this->autoGrade();
     }
 
     public function getProgressPercentage()

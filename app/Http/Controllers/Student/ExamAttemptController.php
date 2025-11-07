@@ -25,12 +25,6 @@ class ExamAttemptController extends Controller
             abort(403, 'Unauthorized access to exam attempt.');
         }
 
-        // Check if attempt has expired
-        if ($attempt->isInProgress() && $attempt->isExpired()) {
-            $attempt->markAsExpired();
-            $attempt->refresh();
-        }
-
         $questions = $attempt->getQuestionsInOrder();
         $answers = $attempt->answers()->with('question')->get()->keyBy('question_id');
 
@@ -108,11 +102,10 @@ class ExamAttemptController extends Controller
             abort(403, 'Unauthorized access to exam attempt.');
         }
 
-        // Check if attempt has expired
-        if ($attempt->isInProgress() && $attempt->isExpired()) {
-            $attempt->markAsExpired();
+        if ($attempt->isExamEnded()) {
+            $attempt->autoSubmit();
             return redirect()->route('student.exams.show', $attempt->exam_id)
-                ->with('warning', 'Your exam time has expired and has been automatically submitted.');
+                ->with('warning', 'Your exam time has ended and has been automatically submitted.');
         }
 
         if (!$attempt->isInProgress()) {
@@ -144,11 +137,10 @@ class ExamAttemptController extends Controller
             abort(403, 'Unauthorized access to exam attempt.');
         }
 
-        // Check if attempt has expired
-        if ($attempt->isInProgress() && $attempt->isExpired()) {
-            $attempt->markAsExpired();
+        if ($attempt->isExamEnded()) {
+            $attempt->autoSubmit();
             return redirect()->route('student.exams.show', $attempt->exam_id)
-                ->with('warning', 'Your exam time has expired and has been automatically submitted.');
+                ->with('warning', 'Your exam time has ended and has been automatically submitted.');
         }
 
         if (!$attempt->isInProgress()) {
@@ -197,12 +189,11 @@ class ExamAttemptController extends Controller
             $questionId = $request->question_id;
             $question = Question::findOrFail($questionId);
 
-            // Check if attempt has expired
-            if ($attempt->isExpired()) {
-                $attempt->markAsExpired();
+            if ($attempt->isExamEnded()) {
+                $attempt->autoSubmit();
                 DB::rollback();
                 return redirect()->route('student.exams.show', $attempt->exam_id)
-                    ->with('warning', 'Your exam time has expired and has been automatically submitted.');
+                    ->with('warning', 'Your exam time has ended and has been automatically submitted.');
             }
 
             $answer = ExamAnswer::where('attempt_id', $attempt->id)
@@ -320,40 +311,6 @@ class ExamAttemptController extends Controller
         return view('student.attempts.results', compact('attempt', 'questions', 'answers', 'summary'));
     }
 
-    // AJAX endpoint for getting remaining time
-    public function getTimeRemaining(ExamAttempt $attempt)
-    {
-        $user = auth()->user();
-
-        if ($attempt->student_id !== $user->id) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        if (!$attempt->isInProgress()) {
-            return response()->json([
-                'expired' => true,
-                'message' => 'Exam is not in progress.'
-            ]);
-        }
-
-        $remainingSeconds = $attempt->getRemainingTimeSeconds();
-
-        if ($remainingSeconds <= 0 && $attempt->isInProgress()) {
-            $attempt->markAsExpired();
-            return response()->json([
-                'expired' => true,
-                'message' => 'Exam has expired.',
-                'redirect' => route('student.attempts.results', $attempt)
-            ]);
-        }
-
-        return response()->json([
-            'remainingSeconds' => $remainingSeconds,
-            'remainingFormatted' => $attempt->getRemainingTimeFormatted(),
-            'expired' => false,
-        ]);
-    }
-
     // AJAX endpoint for auto-saving answers
     public function autoSaveAnswer(Request $request, ExamAttempt $attempt)
     {
@@ -363,8 +320,8 @@ class ExamAttemptController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        if ($attempt->isExpired()) {
-            return response()->json(['error' => 'Exam is expired'], 422);
+        if ($attempt->isExamEnded()) {
+            return response()->json(['error' => 'Exam is ended'], 422);
         }
 
         try {
@@ -425,18 +382,6 @@ class ExamAttemptController extends Controller
         if ($attempt->student_id !== $user->id) {
             abort(403, 'Unauthorized access to exam attempt.');
         }
-    }
-
-    // Helper method to handle expired attempts
-    private function handleExpiredAttempt(ExamAttempt $attempt)
-    {
-        if ($attempt->isInProgress() && $attempt->isExpired()) {
-            $attempt->markAsExpired();
-            return redirect()->route('student.attempts.results', $attempt)
-                ->with('warning', 'Your exam time has expired and has been automatically submitted.');
-        }
-
-        return null;
     }
 
     public function addSuspiciousBehaviour(Request $request)

@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('exam_questions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('exam_id')->constrained()->onDelete('cascade');
+            $table->uuid('exam_id');
+            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
             $table->foreignId('question_id')->constrained()->onDelete('cascade');
             $table->integer('question_order');
             $table->decimal('marks', 5, 2); // Marks for this question in this exam

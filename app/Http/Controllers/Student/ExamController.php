@@ -57,12 +57,7 @@ class ExamController extends Controller
 
         if (!$expiredAttempts->isEmpty()) {
             foreach ($expiredAttempts as $attempt) {
-                $attempt->update([
-                    'status' => 'submitted',
-                    'submitted_at' => now()
-                ]);
-
-                $attempt->autoGrade();
+                $attempt->autoSubmit();
             }
         }
 
@@ -70,12 +65,7 @@ class ExamController extends Controller
             $inProgressAttempts = $attempts->where('status', 'in_progress');
 
             foreach ($inProgressAttempts as $attempt) {
-                $attempt->update([
-                    'status' => 'submitted',
-                    'submitted_at' => now()
-                ]);
-
-                $attempt->autoGrade();
+                $attempt->autoSubmit();
             }
         }
 
