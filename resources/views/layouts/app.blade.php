@@ -8,7 +8,7 @@
     <meta name="description"
         content="Online exam system with question banks, automated grading, and role-based access for committees and examinees.">
 
-    <title>CBT Website</title>
+    <title>BRC CBT System</title>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])

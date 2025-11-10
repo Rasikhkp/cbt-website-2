@@ -8,7 +8,6 @@
             </h2>
         </div>
     </x-slot>
-
     <div class="py-12">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
             <!-- Error Messages -->
@@ -133,7 +132,8 @@
                                                            value="{{ $question->id }}"
                                                            id="question_{{ $question->id }}"
                                                            class="mt-1 rounded question-checkbox"
-                                                           onchange="updateSelectedQuestions()">
+                                                           onchange="updateSelectedQuestions()"
+                                                           @if(in_array($question->id, old('questions', []))) checked @endif>
 
                                                     <div class="flex-1">
                                                         <div class="flex items-center gap-2 mb-1">
@@ -203,6 +203,7 @@
                                         <input type="checkbox"
                                                id="randomize_questions"
                                                name="randomize_questions"
+                                               @if (old('randomize_questions')) checked @endif
                                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                         <label for="randomize_questions" class="ml-2 text-sm text-gray-700">
                                             Randomize question order for each examinee
@@ -213,6 +214,7 @@
                                         <input type="checkbox"
                                                id="randomize_options"
                                                name="randomize_options"
+                                               @if (old('randomize_options')) checked @endif
                                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                         <label for="randomize_options" class="ml-2 text-sm text-gray-700">
                                             Randomize MCQ option order
@@ -257,6 +259,7 @@
                                                        name="students[]"
                                                        value="{{ $student->id }}"
                                                        id="student_{{ $student->id }}"
+                                                       @if(in_array($student->id, old('students', []))) checked @endif
                                                        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 student-checkbox">
                                                 <label for="student_{{ $student->id }}" class="ml-2 text-sm text-gray-700 truncate">
                                                     {{ $student->name }}

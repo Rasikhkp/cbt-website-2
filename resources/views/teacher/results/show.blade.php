@@ -335,9 +335,9 @@
 
         <div id="suspiciousModal" class="fixed hidden inset-0 bg-gray-600 bg-opacity-50 z-50">
             <div class="flex items-center justify-center min-h-screen px-4">
-                <div class="bg-white rounded-lg max-w-xl p-6">
+                <div class="bg-white rounded-lg p-6 w-full max-w-5xl">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Suspicious Behaviours</h3>
-                    <div class="overflow-y-scroll h-[60vh] mb-4">
+                    <div class="overflow-y-auto h-[60vh] mb-4">
                          <ol id="suspiciousList" class="list-decimal list-inside text-gray-700 space-y-1"></ol>
                     </div>
                     <div class="flex justify-end">
@@ -726,9 +726,7 @@
                 // Clear old items
                 list.innerHTML = '';
 
-                if (!behaviours || behaviours.length === 0) {
-                    list.innerHTML = '<li class="text-gray-500">No suspicious behaviours recorded.</li>';
-                } else {
+                if (behaviours.length) {
                     // Add each behaviour as <li>
                     behaviours.forEach(b => {
                         const li = document.createElement('li');
