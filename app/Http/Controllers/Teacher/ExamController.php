@@ -28,11 +28,6 @@ class ExamController extends Controller
     {
         $query = Exam::with(['creator', 'examQuestions', 'assignedStudents']);
 
-        // Filter by current user if teacher
-        if (auth()->user()->isTeacher()) {
-            $query->where('created_by', auth()->id());
-        }
-
         // Apply filters
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -50,9 +45,6 @@ class ExamController extends Controller
     public function create()
     {
         $questions = Question::with(['options', 'creator'])
-            ->when(auth()->user()->isTeacher(), function ($query) {
-                $query->where('created_by', auth()->id());
-            })
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -123,22 +115,12 @@ class ExamController extends Controller
 
     public function show(Exam $exam)
     {
-        // Check authorization
-        if (auth()->user()->isTeacher() && $exam->created_by !== auth()->id()) {
-            abort(403);
-        }
-
         $exam->load(['examQuestions.question.options', 'assignedStudents', 'creator']);
         return view('teacher.exams.show', compact('exam'));
     }
 
     public function edit(Exam $exam)
     {
-        // Check authorization
-        if (auth()->user()->isTeacher() && $exam->created_by !== auth()->id()) {
-            abort(403);
-        }
-
         // Don't allow editing published exams that have started
         if ($exam->isPublished() && now()->gte($exam->start_time)) {
             return redirect()->route('teacher.exams.show', $exam)
@@ -148,9 +130,6 @@ class ExamController extends Controller
         $exam->load(['examQuestions.question', 'assignedStudents']);
 
         $questions = Question::with(['options', 'creator'])
-            ->when(auth()->user()->isTeacher(), function ($query) {
-                $query->where('created_by', auth()->id());
-            })
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -229,11 +208,6 @@ class ExamController extends Controller
 
     public function destroy(Exam $exam)
     {
-        // Check authorization
-        if (auth()->user()->isTeacher() && $exam->created_by !== auth()->id()) {
-            abort(403);
-        }
-
         // Don't allow deleting published exams
         if ($exam->isPublished()) {
             return back()->with('error', 'Cannot delete a published exam.');
@@ -250,11 +224,6 @@ class ExamController extends Controller
 
     public function publish(Exam $exam)
     {
-        // Check authorization
-        if (auth()->user()->isTeacher() && $exam->created_by !== auth()->id()) {
-            abort(403);
-        }
-
         if ($exam->examQuestions()->count() === 0) {
             return back()->with('error', 'Cannot publish an exam with no questions.');
         }
@@ -270,11 +239,6 @@ class ExamController extends Controller
 
     public function unpublish(Exam $exam)
     {
-        // Check authorization
-        if (auth()->user()->isTeacher() && $exam->created_by !== auth()->id()) {
-            abort(403);
-        }
-
         // Don't allow unpublishing exams that have started
         if (now()->gte($exam->start_time)) {
             return back()->with('error', 'Cannot unpublish an exam that has already started.');

@@ -33,11 +33,6 @@ class QuestionController extends Controller
     {
         $query = Question::with(['creator', 'options', 'images']);
 
-        // Filter by current user if teacher
-        if (Auth::user()->isTeacher()) {
-            $query->where('created_by', Auth::id());
-        }
-
         // Apply filters
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -145,22 +140,12 @@ class QuestionController extends Controller
 
     public function show(Question $question)
     {
-        // Check authorization
-        if (Auth::user()->isTeacher() && $question->created_by !== Auth::id()) {
-            abort(403);
-        }
-
         $question->load(['options', 'images', 'creator']);
         return view('teacher.questions.show', compact('question'));
     }
 
     public function edit(Question $question)
     {
-        // Check authorization
-        if (Auth::user()->isTeacher() && $question->created_by !== Auth::id()) {
-            abort(403);
-        }
-
         $question->load(['options', 'images']);
         return view('teacher.questions.edit', compact('question'));
     }
@@ -274,11 +259,6 @@ class QuestionController extends Controller
 
     public function destroy(Question $question)
     {
-        // Check authorization
-        if (Auth::user()->isTeacher() && $question->created_by !== Auth::id()) {
-            abort(403);
-        }
-
         try {
             DB::beginTransaction();
 

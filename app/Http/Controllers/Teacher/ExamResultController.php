@@ -25,8 +25,7 @@ class ExamResultController extends Controller
      */
     public function index(Request $request)
     {
-        $exams = Exam::where('created_by', auth()->id())
-            ->with(['attempts' => function ($query) {
+        $exams = Exam::with(['attempts' => function ($query) {
                 $query->where('status', 'ccwo')
                     ->with('student');
             }])
