@@ -57,14 +57,14 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="flex gap-6">
+            <div class="flex gap-6 flex-col-reverse md:flex-row">
 
                 <!-- Question Navigation Sidebar -->
-                <div class="w-64 flex-shrink-0">
+                <div class="md:w-64 flex-shrink-0">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg sticky top-6">
                         <div class="p-4">
                             <h3 class="font-medium text-gray-900 mb-4">Questions</h3>
-                            <div class="grid grid-cols-5 gap-2">
+                            <div class="grid grid-cols-5 gap-2 w-fit">
                                 @foreach($questions as $index => $examQuestion)
                                     @php
                                         $questionAnswer = $answers->get($examQuestion->question_id);
@@ -180,7 +180,7 @@
 
                             <!-- Question Header -->
                             <div class="flex justify-between items-start mb-6">
-                                <div class="flex items-center gap-3">
+                                <div class="flex flex-wrap items-center gap-3">
                                     <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                                         Question {{ $questionNumber }} of {{ $questions->count() }}
                                     </span>
@@ -298,7 +298,7 @@
                                 </div>
 
                                 <!-- Navigation and Save Buttons -->
-                                <div class="flex justify-between items-center">
+                                <div class="flex justify-between items-center fixed md:static bottom-0 left-0 w-full p-4 md:p-0 bg-white ">
                                     <div class="flex gap-3">
                                         @if($questionIndex > 0)
                                             <button type="submit" name="action" value="previous"
@@ -328,14 +328,6 @@
                                             </button>
                                         @endif
                                     </div>
-                                </div>
-
-                                <!-- Keyboard Shortcuts Info -->
-                                <div class="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
-                                    <strong>Keyboard shortcuts:</strong>
-                                    Ctrl+S to save,
-                                    @if($questionIndex > 0)Ctrl+← for previous, @endif
-                                    @if($questionIndex < $questions->count() - 1)Ctrl+→ for next @endif
                                 </div>
                             </form>
                         </div>
@@ -389,6 +381,7 @@
 
     <div id="warning-container"></div>
 
+    <button class="bg-white p-4 fixed bottom-20 right-4" onclick="smoothScroll()">scroll</button>
 
     <script>
         let timeRemaining = {{ $attempt->getRemainingTimeSeconds() }};
@@ -725,6 +718,22 @@
             showWarning('Opening another tab or app is not allowed');
         });
 
+        function smoothScroll() {
+             const atBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 2;
 
+            if (atBottom) {
+                // Smooth scroll to top
+                window.scrollTo({
+                  top: 0,
+                  behavior: 'smooth'
+                });
+            } else {
+                // Smooth scroll to bottom
+                window.scrollTo({
+                  top: document.body.scrollHeight,
+                  behavior: 'smooth'
+                });
+            }
+        }
     </script>
 </x-app-layout>

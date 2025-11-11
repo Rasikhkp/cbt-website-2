@@ -23,14 +23,14 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="flex gap-6">
+            <div class="flex gap-6 flex-col-reverse md:flex-row">
 
                 <!-- Question Navigation Sidebar -->
-                <div class="w-64 flex-shrink-0">
+                <div class="md:w-64 flex-shrink-0">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg sticky top-6">
                         <div class="p-4">
                             <h3 class="font-medium text-gray-900 mb-4">Questions</h3>
-                            <div class="grid grid-cols-5 gap-2">
+                            <div class="grid grid-cols-5 gap-2 w-fit">
                                 @foreach ($questions as $index => $examQuestion)
                                     @php
                                         $questionAnswer = $answers->get($examQuestion->question_id);
@@ -101,7 +101,7 @@
                         <div class="p-6">
                             <div class="text-center">
                                 <h3 class="text-lg font-medium text-gray-900 mb-4">
-                                    Choose a question from the sidebar to begin
+                                    Choose a question to begin
                                 </h3>
                                 <p class="text-gray-600 mb-6">
                                     Click on any question number to start answering.
