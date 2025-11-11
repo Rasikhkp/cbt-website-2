@@ -725,5 +725,6 @@
             showWarning('Opening another tab or app is not allowed');
         });
 
+
     </script>
 </x-app-layout>

@@ -205,7 +205,5 @@
         // Start the timer
         timerInterval = setInterval(updateTimer, 1000);
         updateTimer(); // Initial call
-
-        // Warn before leaving page
     </script>
 </x-app-layout>

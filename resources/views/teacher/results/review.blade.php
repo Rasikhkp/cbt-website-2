@@ -248,7 +248,11 @@
                                 `Graded: ${response.marks_awarded}/${response.question_points}`);
 
                             // Show success message
-                            showNotification('Grade saved successfully', 'success');
+                            showToast({
+                              title: "Success!",
+                              message: "Grade saved successfully",
+                              type: "success"
+                            });
 
                             // Update submit button text
                             submitBtn.text('Update Grade');
@@ -277,7 +281,11 @@
                                 errorMsg = errors.marks_awarded[0];
                             }
 
-                            showNotification(errorMsg, 'error');
+                            showToast({
+                              title: "Error!",
+                              message: errorMsg,
+                              type: "error"
+                            });
                             submitBtn.text(originalText)
                         },
                     });
@@ -310,7 +318,12 @@
                             'bg-orange-100 text-orange-800').text('Pending');
 
                         // Show success message
-                        showNotification('Grading reset successfully', 'success');
+                        showToast({
+                          title: "Success!",
+                          message: "Grading reset successfully",
+                          type: "success"
+                        });
+
 
                         // Update submit button text
                         submitBtn.text('Save Grade');
@@ -337,7 +350,11 @@
                         updateProgressBar();
                     },
                     error: function() {
-                        showNotification('Error resetting grade', 'error');
+                        showToast({
+                          title: "Error!",
+                          message: "Error resetting grade",
+                          type: "error"
+                        });
                     }
                 });
             });
