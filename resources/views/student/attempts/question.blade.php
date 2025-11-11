@@ -600,7 +600,7 @@
                 }, 300);
             }
 
-            addSuspiciousBehaviour({{ $attempt->id, }}, `${text} - ${new Date().toLocaleString()}`)
+            addSuspiciousBehaviour('{{ $attempt->id }}', `${text} - ${new Date().toLocaleString()}`)
         }
 
         // Event listeners

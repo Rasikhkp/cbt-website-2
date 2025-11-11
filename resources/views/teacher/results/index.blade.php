@@ -206,7 +206,7 @@
                                                         data-exam-title="{{ $exam->title }}"
                                                         data-attempts-count="{{ $exam->total_attempts }}"
                                                         data-graded-count="{{ $exam->graded_attempts }}"
-                                                        e{ !$isFullyGraded ? 'data-partial="true"' : '' }}>
+                                                        {{ !$isFullyGraded ? 'data-partial=true' : '' }}>
                                                         Release
                                                     </button>
                                                 @endif
@@ -258,20 +258,6 @@
                             </svg>
                             <span class="text-sm text-orange-800">Some answers are still ungraded. Examinees will see partial results.</span>
                         </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="flex items-center">
-                            <input type="checkbox" name="release_individual_scores" checked class="mr-2">
-                            <span class="text-sm text-gray-700">Release individual question scores</span>
-                        </label>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="flex items-center">
-                            <input type="checkbox" name="release_feedback" checked class="mr-2">
-                            <span class="text-sm text-gray-700">Release committee feedback</span>
-                        </label>
                     </div>
 
                     <div class="flex justify-end space-x-3">
@@ -331,7 +317,9 @@
                 const examTitle = $(this).data('exam-title');
                 const attemptsCount = $(this).data('attempts-count');
                 const gradedCount = $(this).data('graded-count');
-                const isPartial = $(this).data('partial') === true;
+                const isPartial = $(this).data('partial');
+
+                console.log('isPartial', isPartial)
 
                 $('#examTitle').text(examTitle);
                 $('#attemptsSummary').text(`${attemptsCount} attempts, ${gradedCount} fully graded`);

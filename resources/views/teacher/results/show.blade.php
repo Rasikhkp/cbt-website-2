@@ -47,14 +47,14 @@
                                 </div>
                             </div>
                         </div>
-                    @elseif ($exam->attempts->where('status', 'graded')->count() === $exam->attempts->count())
+                    @else
                         <button id="releaseResultsBtn"
                             class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700 transition-colors"
                             data-exam-id="{{ $exam->id }}"
                             data-exam-title="{{ $exam->title }}"
                             data-attempts-count="{{ $attempts->count() }}"
                             data-graded-count="{{ $attempts->where('status', 'graded')->count() }}"
-                            {{ $attempts->where('total_score', null)->count() > 0 ? 'data-partial="true"' : '' }}>
+                            {{ $attempts->where('status', 'submitted')->count() > 0 ? 'data-partial=true' : '' }}>
                             Release Results
                         </button>
                         <div class="relative inline-block text-left">
@@ -638,7 +638,7 @@
                     const examTitle = $(this).data('exam-title');
                     const attemptsCount = $(this).data('attempts-count');
                     const gradedCount = $(this).data('graded-count');
-                    const isPartial = $(this).data('partial') === true;
+                    const isPartial = $(this).data('partial');
 
                     $('#examTitle').text(examTitle);
                     $('#attemptsSummary').text(`${attemptsCount} attempts, ${gradedCount} fully graded`);

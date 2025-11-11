@@ -31,9 +31,6 @@ class QuestionController extends Controller
 
     public function index(Request $request)
     {
-
-        Log::info('request', [$request->all()]);
-
         $query = Question::with(['creator', 'options', 'images']);
 
         // Filter by current user if teacher
