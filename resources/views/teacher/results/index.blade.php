@@ -190,8 +190,7 @@
                                                 </div>
                                             @else
                                                 <span
-                                                    class="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Not
-                                                    Released</span>
+                                                    class="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Unreleased</span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -351,22 +350,18 @@
 
                 submitBtn.prop('disabled', true).text('Releasing...');
 
-                console.log('data', form.serialize())
-                const release_individual_scores = e.target.release_individual_scores.checked ? 1 : 0
-                const release_feedback = e.target.release_feedback.checked ? 1 : 0
-
-                console.log('url', form.attr('action'))
-
                 $.ajax({
                     url: form.attr('action'),
                     method: 'POST',
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
-                        release_individual_scores,
-                        release_feedback,
                     },
                     success: function(response) {
-                        showNotification('Results released successfully!', 'success');
+                        showToast({
+                          title: "Success!",
+                          message: "Results released successfully!",
+                          type: "success"
+                        });
                         $('#releaseResultsModal').addClass('hidden');
                         setTimeout(() => location.reload(), 1500);
                     },
@@ -380,7 +375,11 @@
                             errorMsg = errors.partial_release[0];
                         }
 
-                        showNotification(errorMsg, 'error');
+                        showToast({
+                          title: "Error!",
+                          message: errorMsg,
+                          type: "error"
+                        });
                     },
                     complete: function() {
                         submitBtn.prop('disabled', false).text(originalText);
