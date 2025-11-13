@@ -7,10 +7,11 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
-class QuestionImport implements ToModel, WithHeadingRow, WithValidation
+class QuestionImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyRows
 {
     /**
     * @param array $row
@@ -75,12 +76,12 @@ class QuestionImport implements ToModel, WithHeadingRow, WithValidation
             '*.points' => ['required', 'numeric'],
             '*.difficulty' => ['nullable', 'in:easy,medium,hard'],
             '*.tags' => ['nullable', 'string'],
-            '*.option_a' => ['nullable', 'string'],
-            '*.option_b' => ['nullable', 'string'],
-            '*.option_c' => ['nullable', 'string'],
-            '*.option_d' => ['nullable', 'string'],
-            '*.option_e' => ['nullable', 'string'],
-            '*.option_f' => ['nullable', 'string'],
+            '*.option_a' => ['nullable'],
+            '*.option_b' => ['nullable'],
+            '*.option_c' => ['nullable'],
+            '*.option_d' => ['nullable'],
+            '*.option_e' => ['nullable'],
+            '*.option_f' => ['nullable'],
             '*.correct_option' => ['nullable', 'in:a,b,c,d,e,f'],
         ];
     }

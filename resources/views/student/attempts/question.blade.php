@@ -33,38 +33,53 @@
         </div>
     </noscript>
 
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $attempt->exam->title }} - Question {{ $questionNumber }}
-            </h2>
-            <div class="flex items-center gap-4">
-                <div class="text-right">
-                    <div class="text-sm text-gray-600">Time Remaining</div>
-                    <div id="timer" class="text-lg font-bold text-red-600">
-                        {{ $attempt->getRemainingTimeFormatted() }}
+    <header class="bg-white shadow sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="flex md:justify-between md:items-center flex-col md:flex-row gap-2">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    {{ $attempt->exam->title }} - Question {{ $questionNumber }}
+                </h2>
+                <div class="flex items-center gap-4 justify-end md:justify-start">
+                    <div class="text-right">
+                        <div class="text-sm text-gray-600">Time Remaining</div>
+                        <div id="timer" class="text-lg font-bold text-red-600">
+                            {{ $attempt->getRemainingTimeFormatted() }}
+                        </div>
                     </div>
-                </div>
-                <div class="text-right">
-                    <div class="text-sm text-gray-600">Progress</div>
-                    <div class="text-lg font-bold text-blue-600">
-                        <span id="progress">{{ $attempt->getProgressPercentage() }}</span>%
+                    <div class="text-right">
+                        <div class="text-sm text-gray-600">Progress</div>
+                        <div class="text-lg font-bold text-blue-600">
+                            <span id="progress">{{ $attempt->getProgressPercentage() }}</span>%
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </x-slot>
+    </header>
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="flex gap-6 flex-col-reverse md:flex-row">
-
                 <!-- Question Navigation Sidebar -->
-                <div class="md:w-64 flex-shrink-0">
+                <div class="md:w-72 flex-shrink-0">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg sticky top-6">
                         <div class="p-4">
+                            <div class="mt-4 text-gray-800 border-b pb-4 mb-4 hidden md:block">
+                                <p class="mb-2 font-medium">Prohibition:</p>
+                                <ol class="text-sm list-decimal pl-4 mb-2">
+                                    <li>Copy/Paste/Cut/Select All are not allowed</li>
+                                    <li>Opening developer Tools is not allowed</li>
+                                    <li>Screenshots is not allowed</li>
+                                    <li>Printing is not allowed</li>
+                                    <li>Right-click is not allowed</li>
+                                    <li>Opening another tab or app is not allowed</li>
+                                    <li>Disabling javascript is not allowed</li>
+                                </ol>
+                                <p class="mb-2 font-medium">Please don't even try. We know.</p>
+                            </div>
+
                             <h3 class="font-medium text-gray-900 mb-4">Questions</h3>
-                            <div class="grid grid-cols-5 gap-2 w-fit">
+                            <div class="flex flex-wrap gap-2">
                                 @foreach($questions as $index => $examQuestion)
                                     @php
                                         $questionAnswer = $answers->get($examQuestion->question_id);
@@ -143,20 +158,6 @@
                                     </p>
                                 @endif
                             </div>
-
-                            <div class="mt-4 text-sm text-gray-800">
-                                <p class="mb-2 font-medium">Prohibition:</p>
-                                <ol class="list-decimal pl-4 mb-2">
-                                    <li>Copy/Paste/Cut/Select All are not allowed</li>
-                                    <li>Opening developer Tools is not allowed</li>
-                                    <li>Screenshots is not allowed</li>
-                                    <li>Printing is not allowed</li>
-                                    <li>Right-click is not allowed</li>
-                                    <li>Opening another tab or app is not allowed</li>
-                                    <li>Disabling javascript is not allowed</li>
-                                </ol>
-                                <p class="mb-2 font-medium">Please don't even try. We know.</p>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -164,7 +165,7 @@
                 <!-- Main Question Content -->
                 <div class="flex-1">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6">
+                        <div class="p-4">
                             <!-- Success/Error Messages -->
                             @if (session('success'))
                                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
@@ -242,7 +243,7 @@
                                                 @php
                                                     $isSelected = $answer && $answer->selected_options && in_array($option->id, $answer->selected_options);
                                                 @endphp
-                                                <label class="flex items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors {{ $isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}">
+                                                <label class="flex items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors border-gray-200">
                                                     <input type="radio"
                                                            name="selected_options[]"
                                                            value="{{ $option->id }}"
@@ -333,6 +334,20 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="bg-white p-4 text-sm text-gray-800 block md:hidden">
+                    <p class="mb-2 font-medium">Prohibition:</p>
+                    <ol class="list-decimal pl-4 mb-2">
+                        <li>Copy/Paste/Cut/Select All are not allowed</li>
+                        <li>Opening developer Tools is not allowed</li>
+                        <li>Screenshots is not allowed</li>
+                        <li>Printing is not allowed</li>
+                        <li>Right-click is not allowed</li>
+                        <li>Opening another tab or app is not allowed</li>
+                        <li>Disabling javascript is not allowed</li>
+                    </ol>
+                    <p class="mb-2 font-medium">Please don't even try. We know.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -381,13 +396,16 @@
 
     <div id="warning-container"></div>
 
-    <button class="bg-white p-4 fixed bottom-20 right-4" onclick="smoothScroll()">scroll</button>
+    <button class="bg-white p-2 fixed bottom-20 right-4 border md:hidden" onclick="smoothScroll()" id="scroll-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-up-icon lucide-chevron-up"><path d="m18 15-6-6-6 6"/></svg>
+    </button>
 
     <script>
         let timeRemaining = {{ $attempt->getRemainingTimeSeconds() }};
         let timerInterval;
         let autoSubmitWarning = false;
         let debounceTimer;
+        const scrollBtn = document.querySelector('#scroll-btn')
 
         function updateTimer() {
             const hours = Math.floor(timeRemaining / 3600);
@@ -718,22 +736,36 @@
             showWarning('Opening another tab or app is not allowed');
         });
 
-        function smoothScroll() {
-             const atBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 2;
+        // SVG icons as constants
+        const CHEVRON_UP = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-up-icon lucide-chevron-up"><path d="m18 15-6-6-6 6"/></svg>`;
+        const CHEVRON_DOWN = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>`;
 
-            if (atBottom) {
-                // Smooth scroll to top
-                window.scrollTo({
-                  top: 0,
-                  behavior: 'smooth'
-                });
-            } else {
-                // Smooth scroll to bottom
-                window.scrollTo({
-                  top: document.body.scrollHeight,
-                  behavior: 'smooth'
-                });
+        const BOTTOM_THRESHOLD = 2;
+
+        function checkIsAtBottom() {
+            return window.innerHeight + window.scrollY >= document.body.offsetHeight - BOTTOM_THRESHOLD;
+        }
+
+        // Track previous state and initialize button
+        let wasAtBottom = checkIsAtBottom();
+        scrollBtn.innerHTML = wasAtBottom ? CHEVRON_UP : CHEVRON_DOWN;
+
+        // Only update DOM when state actually changes
+        document.addEventListener('scroll', () => {
+            const nowAtBottom = checkIsAtBottom();
+
+            if (wasAtBottom !== nowAtBottom) {
+                wasAtBottom = nowAtBottom;
+                scrollBtn.innerHTML = nowAtBottom ? CHEVRON_UP : CHEVRON_DOWN;
             }
+        });
+
+        function smoothScroll() {
+            const atBottom = checkIsAtBottom();
+            window.scrollTo({
+                top: atBottom ? 0 : document.body.scrollHeight,
+                behavior: 'smooth'
+            });
         }
     </script>
 </x-app-layout>
