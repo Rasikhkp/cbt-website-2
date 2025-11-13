@@ -22,28 +22,26 @@
                             @foreach ($activeExams as $exam)
                                 <div class="border border-green-200 rounded-lg p-4 bg-green-50">
                                     <div class="flex justify-between items-start">
-                                        <div class="flex-1">
-                                            <h4 class="font-medium text-gray-900">{{ $exam->title }}</h4>
-                                            @if ($exam->description)
-                                                <p class="text-gray-600 text-sm mt-1">
-                                                    {{ Str::limit($exam->description, 100) }}</p>
-                                            @endif
-                                            <div class="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                                                <span>{{ $exam->examQuestions->count() }} questions</span>
-                                                <span>{{ $exam->total_marks }} marks</span>
-                                                <span>{{ $exam->getDurationFormatted() }}</span>
-                                            </div>
-                                            <div class="text-sm text-gray-600 mt-1">
-                                                <span class="font-medium">Ends:</span>
-                                                {{ $exam->end_time->format('M j, Y g:i A') }}
-                                            </div>
-                                        </div>
-                                        <div class="ml-4">
+                                        <h4 class="font-medium text-gray-900">{{ $exam->title }}</h4>
+                                        <div>
                                             <a href="{{ route('student.exams.show', $exam) }}"
                                                 class="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium">
                                                 View Details
                                             </a>
                                         </div>
+                                    </div>
+                                    @if ($exam->description)
+                                        <p class="text-gray-600 text-sm mt-1">
+                                            {{ Str::limit($exam->description, 100) }}</p>
+                                    @endif
+                                    <div class="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                                        <span>{{ $exam->examQuestions->count() }} questions</span>
+                                        <span>{{ $exam->total_marks }} marks</span>
+                                        <span>{{ $exam->getDurationFormatted() }}</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600 mt-1">
+                                        <span class="font-medium">Ends:</span>
+                                        {{ $exam->end_time->format('M j, Y g:i A') }}
                                     </div>
                                 </div>
                             @endforeach
