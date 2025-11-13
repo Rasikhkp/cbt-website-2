@@ -40,7 +40,7 @@
             <!-- Active Attempt Alert -->
             @if($activeAttempt)
                 <div class="bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 rounded mb-4">
-                    <div class="flex items-center justify-between">
+                    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div>
                             <strong>You have an active attempt!</strong>
                             <p class="text-sm mt-1">
@@ -49,7 +49,7 @@
                             </p>
                         </div>
                         <a href="{{ route('student.attempts.take', $activeAttempt) }}"
-                           class="bg-orange-500 hover:bg-orange-700 text-white px-4 py-2 rounded font-medium">
+                           class="bg-orange-500 hover:bg-orange-700 text-white px-4 py-2 w-fit rounded font-medium">
                             Continue Exam
                         </a>
                     </div>
@@ -223,7 +223,7 @@
                         <div class="space-y-4">
                             @foreach($attempts as $attempt)
                                 <div class="border border-gray-200 rounded-lg p-4 {{ $attempt->isInProgress() ? 'border-orange-300 bg-orange-50' : '' }}">
-                                    <div class="flex justify-between items-start">
+                                    <div class="flex flex-col gap-4 md:flex-row md:justify-between md:items-start">
                                         <div class="flex-1">
                                             <div class="flex items-center gap-2 mb-2">
                                                 <span class="font-medium">Attempt {{ $attempt->attempt_number }}</span>
@@ -262,7 +262,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="ml-4 flex flex-col gap-2">
+                                        <div>
                                             @if($attempt->isInProgress())
                                                 <a href="{{ route('student.attempts.take', $attempt) }}"
                                                    class="bg-orange-500 hover:bg-orange-700 text-white px-4 py-2 rounded text-sm font-medium text-center">
