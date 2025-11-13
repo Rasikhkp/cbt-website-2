@@ -1,10 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center">
-            <a href="{{ route('teacher.questions.index') }}" class="text-blue-600 hover:text-blue-800 mr-4">← Back to
-                Questions</a>
+            <a href="{{ route('admin.users.index') }}" class="text-blue-600 hover:text-blue-800 mr-4">← Back to
+                Users</a>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Import Question') }}
+                {{ __('Import User') }}
             </h2>
         </div>
     </x-slot>
@@ -52,7 +52,7 @@
                 </div>
                 <p class="text-sm text-gray-500 mb-4">Download the template for the correct format</p>
 
-                <a href="{{ route('download.questions.template') }}" class="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition">
+                <a href="{{ route('download.users.template') }}" class="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
@@ -72,31 +72,19 @@
 
                 <div class="mt-3 py-2 px-4 rounded border border-gray-200 font-medium bg-gray-100">
                     <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span class="text-sm text-gray-700">Type (Required)</span>
-                        <span class="text-sm text-gray-500">[mcq, short, long]</span>
-                    </div>
-                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span class="text-sm text-gray-700">Question Text (Required)</span>
+                        <span class="text-sm text-gray-700">Name (Required)</span>
                         <span class="text-sm text-gray-500">Text</span>
                     </div>
                     <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span class="text-sm text-gray-700">Explanation (Required for short and long type)</span>
+                        <span class="text-sm text-gray-700">Email (Required)</span>
                         <span class="text-sm text-gray-500">Text</span>
                     </div>
                     <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span class="text-sm text-gray-700">Points (Required)</span>
-                        <span class="text-sm text-gray-500">Number</span>
+                        <span class="text-sm text-gray-700">Role (Required)</span>
+                        <span class="text-sm text-gray-500">[admin, examinee, committee]</span>
                     </div>
                     <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span class="text-sm text-gray-700">Difficulty (Optional, default to medium)</span>
-                        <span class="text-sm text-gray-500">[easy, medium, hard]</span>
-                    </div>
-                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span class="text-sm text-gray-700">Tags (Optional)</span>
-                        <span class="text-sm text-gray-500">Text</span>
-                    </div>
-                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                        <span class="text-sm text-gray-700">Option A - F (Required for mcq type)</span>
+                        <span class="text-sm text-gray-700">Password (Required)</span>
                         <span class="text-sm text-gray-500">Text</span>
                     </div>
                 </div>
@@ -166,7 +154,7 @@
             formData.append('file', selectedFile)
 
             try {
-                const res = await fetch('/questions-upload-file', {
+                const res = await fetch('/users-upload-file', {
                     headers: {
                         'X-CSRF-TOKEN': csrfToken
                     },
@@ -181,7 +169,7 @@
                 if (res.ok) {
                     showToast({
                       title: "Success!",
-                      message: "Your questions was imported successfully.",
+                      message: "Your users was imported successfully.",
                       type: "success"
                     });
 

@@ -15,12 +15,18 @@ Route::get('/', function () {
     return redirect('dashboard');
 });
 
-Route::get('/download-template', function () {
+Route::get('/download-questions-template', function () {
     $path = public_path('templates/questions-template.xlsx');
     return Response::download($path, 'questions-template.xlsx');
-})->name('download.template');
+})->name('download.questions.template');
 
-Route::post('/upload-file', [QuestionController::class, 'uploadFile']);
+Route::get('/download-users-template', function () {
+    $path = public_path('templates/users-template.xlsx');
+    return Response::download($path, 'users-template.xlsx');
+})->name('download.users.template');
+
+Route::post('/questions-upload-file', [QuestionController::class, 'uploadFile']);
+Route::post('/users-upload-file', [UserController::class, 'uploadFile']);
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -31,6 +37,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
 
     // User management routes
+    Route::get('users/import', [UserController::class, 'import'])->name('users.import');
     Route::resource('users', UserController::class);
 });
 

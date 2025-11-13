@@ -4,10 +4,16 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('User Management') }}
             </h2>
-            <a href="{{ route('admin.users.create') }}"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Add New User
-            </a>
+            <div class="flex gap-4">
+                <a href="{{ route('admin.users.create') }}"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Add New User
+                </a>
+                <a href="{{ route('admin.users.import') }}"
+                    class="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold py-2 px-4 rounded">
+                    Import User
+                </a>
+            </div>
         </div>
     </x-slot>
 

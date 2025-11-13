@@ -8,6 +8,11 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Validators\ValidationException;
+use App\Imports\UserImport;
 
 class UserController extends Controller
 {
@@ -72,5 +77,57 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User deleted successfully.');
+    }
+
+    public function import()
+    {
+        return view('admin.users.import');
+    }
+
+    public function uploadFile(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|file|mimes:xlsx,xls,csv|max:2048',
+            ]);
+
+            $file = $request->file('file');
+
+            Excel::import(new UserImport, $file);
+
+            Log::info('Excel import successful', ['file_name' => $file->getClientOriginalName()]);
+
+            return response()->json(['status' => 'success', 'message' => 'Import completed successfully.']);
+        } catch (ValidationException $e) {
+            $failures = $e->failures();
+            $errorDetails = [];
+
+            foreach ($failures as $failure) {
+                $errorDetails[] = [
+                    'row' => $failure->row(),
+                    'attribute' => $failure->attribute(),
+                    'errors' => $failure->errors(),
+                    'values' => $failure->values(),
+                ];
+
+                Log::error('Validation error', end($errorDetails)); // logs latest error
+            }
+
+            return response()->json([
+                'status' => 'validation_error',
+                'message' => 'There were validation errors in the file.',
+                'errors' => $errorDetails,
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Excel import failed', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An unexpected error occurred during import.',
+            ], 500);
+        }
     }
 }
