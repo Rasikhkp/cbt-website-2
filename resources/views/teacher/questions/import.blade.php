@@ -164,6 +164,9 @@
             errorContainer.innerHTML = ''
             const formData = new FormData()
             formData.append('file', selectedFile)
+            uploadBtn.innerText = "Processing..."
+            uploadBtn.disabled = true
+
 
             try {
                 const res = await fetch('/questions-upload-file', {
@@ -191,6 +194,8 @@
                     return
                 }
 
+                uploadBtn.disabled = false
+
                 // Handle validation errors (422)
                 if (res.status === 422) {
                     console.warn('⚠️ Validation Errors:', data.errors)
@@ -213,6 +218,9 @@
                 console.error('❌ Error response:', data)
             } catch (error) {
                 console.error('🔥 Fetch failed:', error)
+                uploadBtn.disabled = false
+            } finally {
+                uploadBtn.innerText = "Upload File"
             }
         }
 
