@@ -109,9 +109,32 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs(['teacher.dashboard', 'admin.dashboard', 'student.dashboard'])">
                 {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+            </x-nav-link>
+
+            @if (Auth::user()->isAdmin())
+                <!-- Admin Links -->
+                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                    {{ __('User Management') }}
+                </x-nav-link>
+            @elseif(Auth::user()->isTeacher())
+                <!-- Teacher Links -->
+                <x-responsive-nav-link :href="route('teacher.questions.index')" :active="request()->routeIs('teacher.questions.*')">
+                    {{ __('Question Bank') }}
+                </x-nav-link>
+                <x-responsive-nav-link :href="route('teacher.exams.index')" :active="request()->routeIs('teacher.exams.*')">
+                    {{ __('Exams') }}
+                </x-nav-link>
+                <x-responsive-nav-link :href="route('teacher.results.index')" :active="request()->routeIs('teacher.results.*')">
+                    {{ __('Results') }}
+                </x-nav-link>
+            @elseif(Auth::user()->isStudent())
+                <!-- Student Links -->
+                <x-responsive-nav-link :href="route('student.exams.index')" :active="request()->routeIs('student.exams.*')">
+                    {{ __('My Exams') }}
+                </x-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
