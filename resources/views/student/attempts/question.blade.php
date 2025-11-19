@@ -188,9 +188,6 @@
                                     <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
                                         {{ $question->getTypeDisplayName() }}
                                     </span>
-                                    <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $question->getDifficultyColorClass() }}">
-                                        {{ ucfirst($question->difficulty) }}
-                                    </span>
                                     @if($question->tags && count($question->tags) > 0)
                                         @foreach(array_slice($question->tags, 0, 2) as $tag)
                                             <span class="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
@@ -198,9 +195,6 @@
                                             </span>
                                         @endforeach
                                     @endif
-                                </div>
-                                <div class="text-sm font-medium text-gray-700">
-                                    {{ $currentQuestion->marks }} {{ Str::plural('mark', $currentQuestion->marks) }}
                                 </div>
                             </div>
 
@@ -732,8 +726,18 @@
             return false;
         });
 
+        let visibilityTimeout = null;
+
         document.addEventListener('visibilitychange', () => {
-            showWarning('Opening another tab or app is not allowed');
+            if (document.visibilityState === 'hidden') {
+                // Wait 300ms to confirm it's an actual tab switch
+                visibilityTimeout = setTimeout(() => {
+                    showWarning('Opening another tab or app is not allowed');
+                }, 300);
+            } else {
+                // Return to visible → cancel false alarm
+                clearTimeout(visibilityTimeout);
+            }
         });
 
         // SVG icons as constants
