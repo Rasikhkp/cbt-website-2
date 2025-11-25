@@ -401,6 +401,10 @@
         let debounceTimer;
         const scrollBtn = document.querySelector('#scroll-btn')
 
+        document.addEventListener('DOMContentLoaded', () => {
+            addTinyMCE(false)
+        })
+
         function updateTimer() {
             const hours = Math.floor(timeRemaining / 3600);
             const minutes = Math.floor((timeRemaining % 3600) / 60);

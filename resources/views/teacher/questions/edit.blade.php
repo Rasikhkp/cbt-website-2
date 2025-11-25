@@ -183,7 +183,9 @@
         let imageUploadCount = 1;
         let optionCount = {{ max(2, count(old('options', $question->options->toArray()))) }};
 
-        console.log('optionCount', optionCount)
+        document.addEventListener('DOMContentLoaded', () => {
+            addTinyMCE(true)
+        })
 
         function toggleOptionsSection() {
             const type = document.getElementById('type').value;

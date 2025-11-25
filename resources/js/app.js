@@ -20,7 +20,7 @@ window.jQuery = jQuery;
 window.Chart = Chart
 window.Alpine = Alpine;
 window.tinymce = tinymce
-window.addTinyMCE = () => {
+window.addTinyMCE = (allowPaste = false) => {
     window.tinymce.init({
         selector: '.tinymce-field',
         license_key: 'gpl',
@@ -33,8 +33,9 @@ window.addTinyMCE = () => {
             tiny_mce_wiris: wirisPlugin,
         },
         paste_preprocess: (plugin, args) => {
-            console.log("Attempted to paste: ", args.content);
-            args.content = '';
+            if (!allowPaste) {
+                args.content = '';
+            }
         },
         draggable_modal: true,
         content_style: "@import url('/fonts/figtree.css'); body { font-family: Figtree; }",
@@ -151,7 +152,6 @@ window.showToast = ({
 document.addEventListener('DOMContentLoaded', () => {
     Alpine.start();
     createIcons({ icons });
-    addTinyMCE()
 })
 
 document.querySelectorAll("form[data-confirm]").forEach((form) => {

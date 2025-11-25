@@ -160,6 +160,10 @@
     <script>
         let optionCount = 2;
 
+        document.addEventListener('DOMContentLoaded', () => {
+            addTinyMCE(true)
+        })
+
         function toggleOptionsSection() {
             const type = document.getElementById('type').value;
             const mcqOptions = document.getElementById('mcqOptions');
