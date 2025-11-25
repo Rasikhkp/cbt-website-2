@@ -12,8 +12,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - .:/var/www/html:ro
-      - storage:/var/www/html/storage
+      - storage:/app/storage
     networks:
       - cbt_net
       - caddy_net

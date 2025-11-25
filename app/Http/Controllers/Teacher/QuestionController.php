@@ -288,6 +288,7 @@ class QuestionController extends Controller
 
     public function uploadFile(Request $request)
     {
+        set_time_limit(0);
         try {
             $request->validate([
                 'file' => 'required|file|mimes:xlsx,xls,csv|max:2048',
