@@ -6,13 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateQuestionRequest extends FormRequest
 {
-    public function authorize()
-    {
-        $question = $this->route('question');
-        return (auth()->user()->isTeacher() && $question->created_by === auth()->id())
-            || auth()->user()->isAdmin();
-    }
-
     public function rules()
     {
         $rules = [

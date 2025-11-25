@@ -34,13 +34,58 @@
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
+                    <!-- Filter and Search Form -->
+                    <form method="GET" action="{{ route('admin.users.index') }}" class="mb-6">
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-1">
+                                <input type="text" name="search" placeholder="Search by name or email"
+                                    class="w-full px-4 py-2 border rounded-md"
+                                    value="{{ request()->input('search') }}">
+                            </div>
+                            <div class="flex-1">
+                                <select name="role" class="w-full px-4 py-2 border rounded-md">
+                                    <option value="">All Roles</option>
+                                    @php
+                                        $roleLabels = [
+                                            'admin' => 'Admin',
+                                            'student' => 'Examinee',
+                                            'teacher' => 'Committee',
+                                        ];
+                                    @endphp
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role }}"
+                                            {{ request()->input('role') == $role ? 'selected' : '' }}>
+                                            {{ $roleLabels[$role] ?? ucfirst($role) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="flex-1 md:flex-none">
+                                <button type="submit"
+                                    class="w-full md:w-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md">
+                                    Filter
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
                     <div class="overflow-x-auto">
                         <table class="min-w-full table-auto">
                             <thead class="bg-gray-50">
                                 <tr>
+                                    @php
+                                        $sortParams = ['search' => request('search'), 'role' => request('role')];
+                                    @endphp
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Name</th>
+                                        <a
+                                            href="{{ route('admin.users.index', array_merge($sortParams, ['sort_by' => 'name', 'sort_order' => request('sort_by') == 'name' && request('sort_order') == 'asc' ? 'desc' : 'asc'])) }}">
+                                            Name
+                                            @if (request('sort_by') == 'name')
+                                                <span>{{ request('sort_order') == 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </a>
+                                    </th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Email</th>
@@ -49,7 +94,14 @@
                                         Role</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Created</th>
+                                        <a
+                                            href="{{ route('admin.users.index', array_merge($sortParams, ['sort_by' => 'created_at', 'sort_order' => request('sort_by', 'created_at') == 'created_at' && request('sort_order', 'desc') == 'asc' ? 'desc' : 'asc'])) }}">
+                                            Created
+                                            @if (request('sort_by', 'created_at') == 'created_at')
+                                                <span>{{ request('sort_order', 'desc') == 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </a>
+                                    </th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Actions</th>
@@ -96,7 +148,7 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $user->created_at->format('j F Y') }}
+                                            {{ $user->created_at->format('j F Y, H:i') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex space-x-2">
@@ -131,10 +183,11 @@
 
                     <!-- Pagination -->
                     <div class="mt-4">
-                        {{ $users->links() }}
+                        {{ $users->appends(request()->query())->links() }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </x-app-layout>
+

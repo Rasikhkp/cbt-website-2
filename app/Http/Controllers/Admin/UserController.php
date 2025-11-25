@@ -16,10 +16,38 @@ use App\Imports\UserImport;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::orderBy('created_at', 'desc')->paginate(10);
-        return view('admin.users.index', compact('users'));
+        $query = User::query();
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by role
+        if ($request->filled('role')) {
+            $query->where('role', $request->input('role'));
+        }
+
+        // Sort
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortOrder = $request->input('sort_order', 'desc');
+        $allowedSorts = ['name', 'created_at'];
+
+        if (in_array($sortBy, $allowedSorts)) {
+            $query->orderBy($sortBy, $sortOrder);
+        }
+
+        $users = $query->paginate(10);
+        $roles = User::distinct()->pluck('role')->toArray();
+
+
+        return view('admin.users.index', compact('users', 'roles'));
     }
 
     public function create()
@@ -86,6 +114,7 @@ class UserController extends Controller
 
     public function uploadFile(Request $request)
     {
+        set_time_limit(0);
         try {
             $request->validate([
                 'file' => 'required|file|mimes:xlsx,xls,csv|max:2048',
