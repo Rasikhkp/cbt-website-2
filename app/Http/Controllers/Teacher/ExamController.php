@@ -208,11 +208,6 @@ class ExamController extends Controller
 
     public function destroy(Exam $exam)
     {
-        // Don't allow deleting published exams
-        if ($exam->isPublished()) {
-            return back()->with('error', 'Cannot delete a published exam.');
-        }
-
         try {
             $exam->delete();
             return redirect()->route('teacher.exams.index')

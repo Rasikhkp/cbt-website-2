@@ -167,7 +167,7 @@
                                         </form>
                                     @endif
 
-                                    @if ($exam->isDraft())
+                                    @if ($exam->isDraft() || $exam->isPast())
                                         <form action="{{ route('teacher.exams.destroy', $exam) }}" method="POST"
                                             class="inline-block"
                                             data-confirm="Are you sure you want to delete this exam?">
