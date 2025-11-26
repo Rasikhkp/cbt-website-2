@@ -726,22 +726,15 @@
 
         document.addEventListener('contextmenu', (e) => {
             e.preventDefault();
+            console.log('right click:', e.isTrusted)
             showWarning('Right-click is not allowed');
             return false;
         });
 
         let visibilityTimeout = null;
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden') {
-                // Wait 300ms to confirm it's an actual tab switch
-                visibilityTimeout = setTimeout(() => {
-                    showWarning('Opening another tab or app is not allowed');
-                }, 300);
-            } else {
-                // Return to visible → cancel false alarm
-                clearTimeout(visibilityTimeout);
-            }
+        window.addEventListener('blur', (e) => {
+            showWarning('Opening another tab or app is not allowed');
         });
 
         // SVG icons as constants

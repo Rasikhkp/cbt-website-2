@@ -177,7 +177,7 @@ class QuestionController extends Controller
                     ->all();
 
                 foreach ($question->options as $option) {
-                    if (!in_array($option->image_path, $existingOptionImages ?? [])) {
+                    if (!empty($option->image_path) && !in_array($option->image_path, $existingOptionImages ?? [])) {
                         Storage::disk('public')->delete($option->image_path);
                     }
 
@@ -219,7 +219,7 @@ class QuestionController extends Controller
             }
 
             foreach ($question->images as $image) {
-                if(!in_array($image->path, $request->existing_images ?? [])) {
+                if(!empty($image->path) && !in_array($image->path, $request->existing_images ?? [])) {
                     Storage::disk('public')->delete($image->path);
                     $image->delete();
                 }
