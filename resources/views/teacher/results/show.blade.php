@@ -175,7 +175,7 @@
                 <form action="{{ route('teacher.results.show', $exam) }}" method="GET">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
                         <!-- Search on the left -->
-                        <div class="w-full md:w-1/4 lg:w-full"> {{-- Adjusted width for search input --}}
+                        <div class="w-full flex-1"> {{-- Adjusted width for search input --}}
                             <label for="search" class="block text-sm font-medium text-gray-700">Search Examinee</label>
                             <input type="text" name="search" id="search"
                                 value="{{ $filters['search'] ?? '' }}"
