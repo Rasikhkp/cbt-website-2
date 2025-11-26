@@ -141,7 +141,7 @@
                             <!-- Submit Button -->
                             <div class="mt-6 pt-4 border-t">
                                 <form action="{{ route('student.attempts.submit', $attempt) }}" method="POST"
-                                      data-confirm="Are you sure you want to submit your exam? You cannot make changes after submission."
+                                      data-confirm="Are you sure you want to finish your exam? {{ $answeredCount < $totalQuestions ? "You still have <strong>" . $totalQuestions - $answeredCount . " unanswered question(s)</strong>." : "" }} You cannot make changes after finishing the exam."
                                       id="submitForm">
                                     @csrf
                                     <input type="hidden" name="confirm_submit" value="1">
@@ -364,8 +364,8 @@
     </div>
 
     <!-- Auto-submit warning modal -->
-    <div id="autoSubmitModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div id="autoSubmitModal" class="fixed inset-0 hidden bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto py-5 border max-w-md shadow-lg rounded-md bg-white">
             <div class="mt-3 text-center">
                 <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
                     <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -488,6 +488,12 @@
                         document.getElementById('remaining').textContent = data.total_questions - data.answered_count;
                         document.getElementById('progress-bar').style.width = `${data.progress}%`
                         document.getElementById('unanswered').textContent = data.answered_count < data.total_questions ? `${data.total_questions - data.answered_count} question(s) unanswered` : ''
+                    }
+
+                    if (data.answered_count < data.total_questions) {
+                        document.getElementById("submitForm").dataset.confirm = `Are you sure you want to finish your exam? You still have <strong>${data.total_questions - data.answered_count} unanswered question(s)</strong>. You cannot make changes after finishing the exam.`
+                    } else {
+                        document.getElementById("submitForm").dataset.confirm = `Are you sure you want to finish your exam? You cannot make changes after finishing the exam.`
                     }
 
                     setTimeout(() => {

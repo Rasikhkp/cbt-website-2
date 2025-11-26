@@ -62,7 +62,7 @@ window.customConfirm = (message, title = "Are you absolutely sure?") => {
         const cancelBtn = document.getElementById("customConfirmCancelBtn");
 
         titleEl.textContent = title;
-        messageEl.textContent = message;
+        messageEl.innerHTML = message;
 
         // Show modal and play "enter" animation
         modal.classList.remove("hidden");
