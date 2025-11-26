@@ -72,7 +72,7 @@
                                     <li>Screenshots is not allowed</li>
                                     <li>Printing is not allowed</li>
                                     <li>Right-click is not allowed</li>
-                                    <li>Opening another tab or app is not allowed</li>
+                                    <li>Opening another tab, extension, or app is not allowed</li>
                                     <li>Disabling javascript is not allowed</li>
                                 </ol>
                                 <p class="mb-2 font-medium">Please don't even try. We know.</p>
@@ -147,7 +147,7 @@
                                     <input type="hidden" name="confirm_submit" value="1">
                                     <button id='submit-btn' type="submit"
                                             class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                        Submit Exam
+                                        Finish Exam
                                     </button>
                                 </form>
 
@@ -200,7 +200,7 @@
 
                             <!-- Question Text -->
                             <div class="mb-6">
-                                <div class="bg-gray-50 mb-4  p-4 rounded-lg">
+                                <div class="bg-gray-50 mb-4  p-4 rounded-lg select-none">
                                     <div class="prose">{!! $question->question_text !!}</div>
                                 </div>
 
@@ -319,7 +319,7 @@
                                             <button type="button"
                                                     onclick="document.getElementById('submit-btn').click()"
                                                     class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                                Submit Exam
+                                                Finish Exam
                                             </button>
                                         @endif
                                     </div>
@@ -731,10 +731,26 @@
             return false;
         });
 
-        let visibilityTimeout = null;
+        let blurTimeout = null;
 
-        window.addEventListener('blur', (e) => {
-            showWarning('Opening another tab or app is not allowed');
+        window.addEventListener('blur', () => {
+            const active = document.activeElement;
+
+            // Ignore TinyMCE iframe focus
+            if (active && active.tagName === 'IFRAME') return;
+
+            // Start 500ms timer
+            blurTimeout = setTimeout(() => {
+                // After 500ms, check if the window is STILL not focused
+                if (!document.hasFocus()) {
+                    showWarning("Opening another tab, extension, or app is not allowed");
+                }
+            }, 500);
+        });
+
+        window.addEventListener('focus', () => {
+            // Cancel warning if user refocuses quickly
+            if (blurTimeout) clearTimeout(blurTimeout);
         });
 
         // SVG icons as constants
