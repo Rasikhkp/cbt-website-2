@@ -170,6 +170,72 @@
             @endif
 
 
+            <!-- Search and Filter Form -->
+            <div class="bg-white rounded-lg shadow mb-8 p-6">
+                <form action="{{ route('teacher.results.show', $exam) }}" method="GET">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+                        <!-- Search on the left -->
+                        <div class="w-full md:w-1/4 lg:w-full"> {{-- Adjusted width for search input --}}
+                            <label for="search" class="block text-sm font-medium text-gray-700">Search Examinee</label>
+                            <input type="text" name="search" id="search"
+                                value="{{ $filters['search'] ?? '' }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                placeholder="Name or email...">
+                        </div>
+
+                        <!-- Filters and buttons on the right -->
+                        <div class="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-4 md:gap-2"> {{-- Added sm:flex-wrap for better wrapping on smaller wide screens --}}
+                            <div class="w-full sm:w-auto">
+                                <label for="grade" class="block text-sm font-medium text-gray-700">Grade</label>
+                                <select name="grade" id="grade"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    <option value="">All Grades</option>
+                                    <option value="A" @selected(isset($filters['grade']) && $filters['grade'] == 'A')>A</option>
+                                    <option value="B" @selected(isset($filters['grade']) && $filters['grade'] == 'B')>B</option>
+                                    <option value="C" @selected(isset($filters['grade']) && $filters['grade'] == 'C')>C</option>
+                                    <option value="D" @selected(isset($filters['grade']) && $filters['grade'] == 'D')>D</option>
+                                    <option value="F" @selected(isset($filters['grade']) && $filters['grade'] == 'F')>F</option>
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-auto">
+                                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                                <select name="status" id="status"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    <option value="">All Statuses</option>
+                                    <option value="graded" @selected(isset($filters['status']) && $filters['status'] == 'graded')>Graded
+                                    </option>
+                                    <option value="submitted" @selected(isset($filters['status']) && $filters['status'] == 'submitted')>
+                                        Submitted</option>
+                                    <option value="in_progress" @selected(isset($filters['status']) && $filters['status'] == 'in_progress')>In
+                                        Progress</option>
+                                </select>
+                            </div>
+                            <div class="w-full sm:w-auto">
+                                <label for="suspicious"
+                                    class="block text-sm font-medium text-gray-700">Suspicious</label>
+                                <select name="suspicious" id="suspicious"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    <option value="">Any</option>
+                                    <option value="none" @selected(isset($filters['suspicious']) && $filters['suspicious'] == 'none')>None</option>
+                                    <option value="1-10" @selected(isset($filters['suspicious']) && $filters['suspicious'] == '1-10')>1-10</option>
+                                    <option value="10+" @selected(isset($filters['suspicious']) && $filters['suspicious'] == '10+')>10+</option>
+                                </select>
+                            </div>
+                            <div class="flex gap-2 w-full sm:w-auto"> {{-- Grouping buttons --}}
+                                <button type="submit"
+                                    class="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                                    Filter
+                                </button>
+                                <a href="{{ route('teacher.results.show', $exam) }}"
+                                    class="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 flex items-center justify-center">
+                                    Clear
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
             <!-- Results Table -->
             <div class="bg-white rounded-lg shadow">
                 <div class="px-6 py-4 border-b border-gray-200">

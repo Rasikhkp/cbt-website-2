@@ -44,21 +44,75 @@ class ExamResultController extends Controller
     /**
      * Show detailed results for specific exam
      */
-    public function show(Exam $exam)
+    public function show(Request $request, Exam $exam)
     {
-        $attempts = ExamAttempt::where('exam_id', $exam->id)
+        $filters = $request->only(['search', 'status', 'grade', 'suspicious']);
+
+        $attemptsQuery = ExamAttempt::where('exam_id', $exam->id)
             ->with([
                 'student',
                 'answers' => function ($query) {
                     $query->with('question');
                 }
-            ])
-            ->orderBy('total_score', 'desc')
-            ->get();
+            ]);
+
+        // Search by name or email
+        if (!empty($filters['search'])) {
+            $searchTerm = $filters['search'];
+            $attemptsQuery->whereHas('student', function ($query) use ($searchTerm) {
+                $query->where('name', 'like', "%{$searchTerm}%")
+                    ->orWhere('email', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // Filter by status
+        if (!empty($filters['status'])) {
+            $attemptsQuery->where('status', $filters['status']);
+        }
+
+        // Filter by grade
+        if (!empty($filters['grade'])) {
+            $grade = $filters['grade'];
+            $maxScore = $exam->total_marks ?: 100;
+
+            if ($maxScore > 0) {
+                $gradeBoundaries = [
+                    'A' => [90, 100],
+                    'B' => [80, 89.99],
+                    'C' => [70, 79.99],
+                    'D' => [60, 69.99],
+                    'F' => [0, 59.99],
+                ];
+
+                if (array_key_exists($grade, $gradeBoundaries)) {
+                    $lowerBound = ($gradeBoundaries[$grade][0] / 100) * $maxScore;
+                    $upperBound = ($gradeBoundaries[$grade][1] / 100) * $maxScore;
+                    $attemptsQuery->whereBetween('total_score', [$lowerBound, $upperBound]);
+                }
+            }
+        }
+
+        // Filter by suspicious behaviours count
+        if (!empty($filters['suspicious'])) {
+            $suspicious = $filters['suspicious'];
+            if ($suspicious === 'none') {
+                $attemptsQuery->where(function ($query) {
+                    $query->whereNull('suspicious_behaviours')
+                        ->orWhere(DB::raw('JSON_LENGTH(suspicious_behaviours)'), '=', 0);
+                });
+            } elseif ($suspicious === '1-10') {
+                $attemptsQuery->where(DB::raw('JSON_LENGTH(suspicious_behaviours)'), '>=', 1)
+                    ->where(DB::raw('JSON_LENGTH(suspicious_behaviours)'), '<=', 10);
+            } elseif ($suspicious === '10+') {
+                $attemptsQuery->where(DB::raw('JSON_LENGTH(suspicious_behaviours)'), '>=', 10);
+            }
+        }
+
+        $attempts = $attemptsQuery->orderBy('total_score', 'desc')->get();
 
         $statistics = $this->resultService->getExamStatistics($exam);
 
-        return view('teacher.results.show', compact('exam', 'attempts', 'statistics'));
+        return view('teacher.results.show', compact('exam', 'attempts', 'statistics', 'filters'));
     }
 
     /**
