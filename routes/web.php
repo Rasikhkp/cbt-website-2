@@ -54,6 +54,7 @@ Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->name('teac
     Route::resource('exams', TeacherExamController::class);
     Route::patch('exams/{exam}/publish', [TeacherExamController::class, 'publish'])->name('exams.publish');
     Route::patch('exams/{exam}/unpublish', [TeacherExamController::class, 'unpublish'])->name('exams.unpublish');
+    Route::post('exams/{exam}/duplicate', [TeacherExamController::class, 'duplicate'])->name('exams.duplicate');
 
     // Grading management routes
     Route::post('grading/answers/{answer}/grade', [GradingController::class, 'gradeAnswer'])->name('grade-answer');

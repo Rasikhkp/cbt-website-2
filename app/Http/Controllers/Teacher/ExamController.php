@@ -243,4 +243,47 @@ class ExamController extends Controller
 
         return back()->with('success', 'Exam unpublished successfully.');
     }
+
+    public function duplicate(Exam $exam)
+    {
+        try {
+            DB::beginTransaction();
+
+            // Replicate the exam
+            $newExam = $exam->replicate();
+
+            // Modify attributes for the new exam
+            $newExam->title = 'Copy of ' . $exam->title;
+            $newExam->status = 'draft';
+            $newExam->created_at = now();
+            $newExam->updated_at = now();
+            $newExam->start_time = now()->addDay();
+            $newExam->end_time = now()->addDays(2);
+            $newExam->created_by = auth()->id();
+            $newExam->push(); // Save to get a new ID
+
+            // Duplicate exam questions
+            foreach ($exam->examQuestions as $question) {
+                $newQuestion = $question->replicate();
+                $newQuestion->exam_id = $newExam->id;
+                $newQuestion->push();
+            }
+
+            // Duplicate assigned students
+            foreach ($exam->examStudents as $student) {
+                $newStudent = $student->replicate();
+                $newStudent->exam_id = $newExam->id;
+                $newStudent->push();
+            }
+
+            DB::commit();
+
+            return redirect()->route('teacher.exams.index')
+                ->with('success', 'Exam duplicated successfully.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Error duplicating exam: ' . $e->getMessage());
+            return back()->with('error', 'Error duplicating exam: ' . $e->getMessage());
+        }
+    }
 }

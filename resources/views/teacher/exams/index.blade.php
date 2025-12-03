@@ -178,6 +178,15 @@
                                             </button>
                                         </form>
                                     @endif
+                                    <form action="{{ route('teacher.exams.duplicate', $exam) }}" method="POST"
+                                        class="inline-block"
+                                        data-confirm="Are you sure you want to duplicate this exam?">
+                                        @csrf
+                                        <button type="submit"
+                                            class="text-blue-600 hover:text-blue-900 text-sm">
+                                            Duplicate
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
