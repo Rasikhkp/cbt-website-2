@@ -25,13 +25,16 @@ class ExamResultsExport implements FromCollection, WithHeadings
 
         foreach ($this->attempts as $attempt) {
             $percentage = $maxScore > 0 ? ($attempt->total_score / $maxScore) * 100 : 0;
-            $timeTaken = $attempt->started_at && $attempt->submitted_at
-                ? $attempt->started_at->diff($attempt->submitted_at)
-                : null;
+            $timeTakenFormatted = 'N/A';
 
-            $timeTakenFormatted = $timeTaken
-                ? ($timeTaken->i . 'm ' . $timeTaken->s . 's')
-                : 'N/A';
+            if ($attempt->started_at && $attempt->submitted_at) {
+                $totalSeconds = $attempt->started_at->diffInSeconds($attempt->submitted_at);
+
+                $timeTakenFormatted = gmdate(
+                    $totalSeconds >= 3600 ? 'H\h i\m s\s' : 'i\m s\s',
+                    $totalSeconds
+                );
+            }
 
             $row = [
                 $attempt->student->name,
