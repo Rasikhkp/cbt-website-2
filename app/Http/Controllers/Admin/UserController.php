@@ -34,6 +34,24 @@ class UserController extends Controller
             $query->where('role', $request->input('role'));
         }
 
+        // Filter by status
+        if ($request->filled('status')) {
+            $status = $request->input('status');
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        // Filter by Date Range
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->input('date_from'));
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->input('date_to'));
+        }
+
         // Sort
         $sortBy = $request->input('sort_by', 'created_at');
         $sortOrder = $request->input('sort_order', 'desc');
@@ -59,6 +77,7 @@ class UserController extends Controller
     {
         $validated = $request->validated();
         $validated['password'] = Hash::make($validated['password']);
+        $validated['is_active'] = true;
 
         User::create($validated);
 
@@ -105,6 +124,46 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User deleted successfully.');
+    }
+
+    public function toggleStatus(User $user)
+    {
+        if ($user->id === Auth::id()) {
+            return redirect()->back()->with('error', 'You cannot deactivate your own account.');
+        }
+
+        $user->is_active = !$user->is_active;
+        $user->save();
+
+        $status = $user->is_active ? 'activated' : 'deactivated';
+        return redirect()->back()->with('success', "User {$user->name} has been {$status}.");
+    }
+
+    public function bulkAction(Request $request)
+    {
+        $request->validate([
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id',
+            'action' => 'required|in:activate,deactivate',
+        ]);
+
+        $userIds = $request->input('user_ids');
+        $action = $request->input('action');
+        $isActive = $action === 'activate';
+
+        // Filter out self
+        $userIds = array_diff($userIds, [Auth::id()]);
+
+        if (empty($userIds)) {
+            return redirect()->back()->with('error', 'No valid users selected (you cannot modify your own account).');
+        }
+
+        User::whereIn('id', $userIds)->update(['is_active' => $isActive]);
+
+        $count = count($userIds);
+        $status = $isActive ? 'activated' : 'deactivated';
+        
+        return redirect()->back()->with('success', "{$count} users have been {$status}.");
     }
 
     public function import()

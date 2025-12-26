@@ -35,46 +35,110 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <!-- Filter and Search Form -->
-                    <form method="GET" action="{{ route('admin.users.index') }}" class="mb-6">
-                        <div class="flex flex-col md:flex-row gap-4">
-                            <div class="flex-1">
-                                <input type="text" name="search" placeholder="Search by name or email"
-                                    class="w-full px-4 py-2 border rounded-md"
-                                    value="{{ request()->input('search') }}">
+                    <div class="bg-white rounded-lg border border-gray-200 shadow-sm mb-8 p-6">
+                        <form method="GET" action="{{ route('admin.users.index') }}">
+                            <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+                                <!-- Search on the left -->
+                                <div class="w-full flex-1">
+                                    <label for="search" class="block text-sm font-medium text-gray-700">Search User</label>
+                                    <input type="text" name="search" id="search"
+                                        value="{{ request()->input('search') }}"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                        placeholder="Name or email...">
+                                </div>
+
+                                <!-- Filters and buttons on the right -->
+                                <div class="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-4 md:gap-2">
+                                    <div class="w-full sm:w-auto">
+                                        <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+                                        <select name="role" id="role"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                            <option value="">All Roles</option>
+                                            @php
+                                                $roleLabels = [
+                                                    'admin' => 'Admin',
+                                                    'student' => 'Examinee',
+                                                    'teacher' => 'Committee',
+                                                ];
+                                            @endphp
+                                            @foreach ($roles as $role)
+                                                <option value="{{ $role }}" @selected(request()->input('role') == $role)>
+                                                    {{ $roleLabels[$role] ?? ucfirst($role) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="w-full sm:w-auto">
+                                        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                                        <select name="status" id="status"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                            <option value="">All Statuses</option>
+                                            <option value="active" @selected(request()->input('status') == 'active')>Active</option>
+                                            <option value="inactive" @selected(request()->input('status') == 'inactive')>Inactive</option>
+                                        </select>
+                                    </div>
+                                    <div class="w-full sm:w-auto">
+                                        <label for="date_from" class="block text-sm font-medium text-gray-700">From</label>
+                                        <input type="date" name="date_from" id="date_from"
+                                            value="{{ request()->input('date_from') }}"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    </div>
+                                    <div class="w-full sm:w-auto">
+                                        <label for="date_to" class="block text-sm font-medium text-gray-700">To</label>
+                                        <input type="date" name="date_to" id="date_to"
+                                            value="{{ request()->input('date_to') }}"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    </div>
+
+                                    <div class="flex gap-2 w-full sm:w-auto">
+                                        <button type="submit"
+                                            class="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                                            Filter
+                                        </button>
+                                        <a href="{{ route('admin.users.index') }}"
+                                            class="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 flex items-center justify-center">
+                                            Clear
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="flex-1">
-                                <select name="role" class="w-full px-4 py-2 border rounded-md">
-                                    <option value="">All Roles</option>
-                                    @php
-                                        $roleLabels = [
-                                            'admin' => 'Admin',
-                                            'student' => 'Examinee',
-                                            'teacher' => 'Committee',
-                                        ];
-                                    @endphp
-                                    @foreach ($roles as $role)
-                                        <option value="{{ $role }}"
-                                            {{ request()->input('role') == $role ? 'selected' : '' }}>
-                                            {{ $roleLabels[$role] ?? ucfirst($role) }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="flex-1 md:flex-none">
-                                <button type="submit"
-                                    class="w-full md:w-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md">
-                                    Filter
+                        </form>
+                    </div>
+
+                    <!-- Bulk Actions Bar -->
+                    <div id="bulkActions" class="hidden bg-blue-50 border border-blue-200 p-4 rounded-md mb-4 flex items-center justify-between">
+                        <span class="text-blue-800 font-medium">
+                            <span id="selectedCount">0</span> users selected
+                        </span>
+                        <div class="flex gap-2">
+                            <form action="{{ route('admin.users.bulk-action') }}" method="POST" class="inline" onsubmit="return confirm('Activate selected users?')">
+                                @csrf
+                                <input type="hidden" name="action" value="activate">
+                                <input type="hidden" name="user_ids[]" class="bulk-ids">
+                                <button type="submit" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                                    Activate Selected
                                 </button>
-                            </div>
+                            </form>
+                            <form action="{{ route('admin.users.bulk-action') }}" method="POST" class="inline" onsubmit="return confirm('Deactivate selected users? They will not be able to login.')">
+                                @csrf
+                                <input type="hidden" name="action" value="deactivate">
+                                <input type="hidden" name="user_ids[]" class="bulk-ids">
+                                <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">
+                                    Deactivate Selected
+                                </button>
+                            </form>
                         </div>
-                    </form>
+                    </div>
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full table-auto">
                             <thead class="bg-gray-50">
                                 <tr>
+                                    <th class="px-6 py-3 text-left">
+                                        <input type="checkbox" id="selectAll" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                    </th>
                                     @php
-                                        $sortParams = ['search' => request('search'), 'role' => request('role')];
+                                        $sortParams = array_merge(request()->only(['search', 'role', 'status', 'date_from', 'date_to']));
                                     @endphp
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -85,6 +149,9 @@
                                                 <span>{{ request('sort_order') == 'asc' ? '▲' : '▼' }}</span>
                                             @endif
                                         </a>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
                                     </th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -109,7 +176,12 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse ($users as $user)
-                                    <tr class="hover:bg-gray-50">
+                                    <tr class="hover:bg-gray-50 {{ !$user->is_active ? 'bg-gray-50' : '' }}">
+                                        <td class="px-6 py-4">
+                                            @if($user->id !== auth()->id())
+                                                <input type="checkbox" name="selected_users[]" value="{{ $user->id }}" class="user-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                            @endif
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 h-10 w-10">
@@ -121,10 +193,23 @@
                                                     </div>
                                                 </div>
                                                 <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">{{ $user->name }}
+                                                    <div class="text-sm font-medium {{ $user->is_active ? 'text-gray-900' : 'text-gray-500' }}">{{ $user->name }}
                                                     </div>
                                                 </div>
                                             </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @if($user->is_active)
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    <span class="w-fit h-2 bg-green-400 rounded-full"></span>
+                                                    Active
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    <span class="w-fit h-2 bg-red-400 rounded-full"></span>
+                                                    Inactive
+                                                </span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             {{ $user->email }}
@@ -151,28 +236,40 @@
                                             {{ $user->created_at->format('j F Y, H:i') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex space-x-2">
-                                                <a href="{{ route('admin.users.show', $user) }}"
-                                                    class="text-indigo-600 hover:text-indigo-900">View</a>
-                                                <a href="{{ route('admin.users.edit', $user) }}"
-                                                    class="text-yellow-600 hover:text-yellow-900">Edit</a>
-                                                @if ($user->id !== auth()->id())
-                                                    <form action="{{ route('admin.users.destroy', $user) }}"
-                                                        method="POST" class="inline-block"
-                                                        data-confirm="Are you sure you want to delete this user?">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="text-red-600 hover:text-red-900">
-                                                            Delete
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            </div>
-                                        </td>
+                                                                                        <div class="flex items-center space-x-2">
+                                                                                            <div class="relative">
+                                                                                                <button onclick="toggleDropdown('dropdown-{{ $user->id }}')" class="text-gray-500 hover:text-gray-700 focus:outline-none bg-gray-100 rounded-full p-1 transition-colors hover:bg-gray-200">
+                                                                                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                                                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                                                                                    </svg>
+                                                                                                </button>
+                                                                                                <div id="dropdown-{{ $user->id }}" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden border action-dropdown">
+                                                                                                    <a href="{{ route('admin.users.show', $user) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">View Details</a>
+                                                                                                    <a href="{{ route('admin.users.edit', $user) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit User</a>
+                                                                                                    
+                                                                                                    @if ($user->id !== auth()->id())
+                                                                                                        <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="block">
+                                                                                                            @csrf
+                                                                                                            <button type="submit" class="w-full text-left px-4 py-2 text-sm {{ $user->is_active ? 'text-orange-600 hover:bg-orange-50' : 'text-green-600 hover:bg-green-50' }}">
+                                                                                                                {{ $user->is_active ? 'Deactivate User' : 'Activate User' }}
+                                                                                                            </button>
+                                                                                                        </form>
+                                                                                                        <div class="border-t border-gray-100 my-1"></div>
+                                                                                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="block" onsubmit="return confirm('Are you sure you want to delete this user?')">
+                                                                                                            @csrf
+                                                                                                            @method('DELETE')
+                                                                                                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                                                                                                Delete User
+                                                                                                            </button>
+                                                                                                        </form>
+                                                                                                    @endif
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
                                             No users found.
                                         </td>
                                     </tr>
@@ -189,5 +286,93 @@
             </div>
         </div>
     </div>
-</x-app-layout>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAll = document.getElementById('selectAll');
+            const userCheckboxes = document.querySelectorAll('.user-checkbox');
+            const bulkActions = document.getElementById('bulkActions');
+            const selectedCount = document.getElementById('selectedCount');
+            const bulkIdInputs = document.querySelectorAll('.bulk-ids');
+
+            function updateBulkActions() {
+                const checked = Array.from(userCheckboxes).filter(cb => cb.checked);
+                const count = checked.length;
+
+                selectedCount.textContent = count;
+
+                // Update hidden inputs
+                const ids = checked.map(cb => cb.value);
+                bulkIdInputs.forEach(input => {
+                    // Create multiple hidden inputs for array
+                    const container = input.parentElement;
+                    // Remove old hidden inputs
+                    container.querySelectorAll('input[name="user_ids[]"]').forEach(el => el.remove());
+
+                    ids.forEach(id => {
+                        const hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = 'user_ids[]';
+                        hidden.value = id;
+                        container.appendChild(hidden);
+                    });
+                });
+
+                if (count > 0) {
+                    bulkActions.classList.remove('hidden');
+                } else {
+                    bulkActions.classList.add('hidden');
+                }
+            }
+
+            selectAll.addEventListener('change', function() {
+                userCheckboxes.forEach(cb => cb.checked = selectAll.checked);
+                updateBulkActions();
+            });
+
+            userCheckboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    if (!this.checked) {
+                        selectAll.checked = false;
+                    }
+                    updateBulkActions();
+                });
+            });
+
+            // Dropdown management
+            window.toggleDropdown = function(id) {
+                // Close all other dropdowns first
+                document.querySelectorAll('.action-dropdown').forEach(el => {
+                    if (el.id !== id) {
+                        el.classList.add('hidden');
+                    }
+                });
+                
+                // Toggle the requested dropdown
+                const dropdown = document.getElementById(id);
+                if (dropdown) {
+                    dropdown.classList.toggle('hidden');
+                }
+                
+                // Prevent event bubbling so document click doesn't immediately close it
+                event.stopPropagation();
+            }
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(event) {
+                document.querySelectorAll('.action-dropdown').forEach(el => {
+                    if (!el.classList.contains('hidden')) {
+                        el.classList.add('hidden');
+                    }
+                });
+            });
+            
+            // Prevent clicks inside the dropdown from closing it
+            document.querySelectorAll('.action-dropdown').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+        });
+    </script>
+</x-app-layout>
