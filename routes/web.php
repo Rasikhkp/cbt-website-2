@@ -39,6 +39,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // User management routes
     Route::get('users/import', [UserController::class, 'import'])->name('users.import');
     Route::resource('users', UserController::class);
+
+    // Settings routes
+    Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
+    Route::patch('settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
 });
 
 // Teacher routes

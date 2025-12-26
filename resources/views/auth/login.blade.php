@@ -82,6 +82,17 @@
                     LOG IN
                 </button>
             </form>
+
+            @if (\App\Models\Setting::where('key', 'registration_enabled')->value('value') === '1')
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">
+                        Don't have an account?
+                        <a href="{{ route('register') }}" class="font-medium text-primary hover:text-red-700">
+                            Register
+                        </a>
+                    </p>
+                </div>
+            @endif
         </div>
     </div>
 

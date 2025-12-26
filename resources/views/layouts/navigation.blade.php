@@ -21,6 +21,9 @@
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('User Management') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
+                            {{ __('Settings') }}
+                        </x-nav-link>
                     @elseif(Auth::user()->isTeacher())
                         <!-- Teacher Links -->
                         <x-nav-link :href="route('teacher.questions.index')" :active="request()->routeIs('teacher.questions.*')">
@@ -114,10 +117,13 @@
             </x-nav-link>
 
             @if (Auth::user()->isAdmin())
-                <!-- Admin Links -->
+<!-- Admin Links -->
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                     {{ __('User Management') }}
-                </x-nav-link>
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
+                    {{ __('Settings') }}
+                </x-responsive-nav-link>
             @elseif(Auth::user()->isTeacher())
                 <!-- Teacher Links -->
                 <x-responsive-nav-link :href="route('teacher.questions.index')" :active="request()->routeIs('teacher.questions.*')">

@@ -23,8 +23,8 @@
             <x-input-label for="role" :value="__('Role')" />
             <select id="role" name="role"
                 class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                <option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Student</option>
-                <option value="teacher" {{ old('role') == 'teacher' ? 'selected' : '' }}>Teacher</option>
+                <option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Examinee</option>
+                <option value="teacher" {{ old('role') == 'teacher' ? 'selected' : '' }}>Committee</option>
                 <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
             </select>
             <x-input-error :messages="$errors->get('role')" class="mt-2" />
