@@ -70,6 +70,7 @@ Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->name('teac
     Route::get('results/{attempt}/review', [GradingController::class, 'attempt'])->name('results.review');
     Route::post('results/{exam}/hide', [ExamResultController::class, 'hide'])->name('results.hide');
     Route::post('results/{attempt}/submit', [ExamResultController::class, 'submit'])->name('results.submit');
+    Route::post('exams/{exam}/add-time', [ExamResultController::class, 'addTimeToAll'])->name('exams.add-time');
     Route::get('results/{exam}/export', [ExamResultController::class, 'export'])->name('results.export');
     Route::post('results/{exam}/release', [ExamResultController::class, 'release'])->name('results.release');
 });

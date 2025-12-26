@@ -57,6 +57,11 @@
                             {{ $attempts->where('status', 'submitted')->count() > 0 ? 'data-partial=true' : '' }}>
                             Release Results
                         </button>
+                        <button type="button"
+                            onclick="document.getElementById('addTimeModal').classList.remove('hidden')"
+                            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 transition-colors">
+                            + Add Time
+                        </button>
                         <div class="relative inline-block text-left">
                             <button id="exportBtn"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
@@ -478,11 +483,40 @@
                         </div>
                     </form>
                 </div>
-            </div>
-        </div>
-
-
-        <script>
+                        </div>
+                    </div>
+            
+                    <!-- Add Time Modal -->
+                    <div id="addTimeModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+                        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                            <div class="mt-3 text-center">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900">Add Time to Exam</h3>
+                                <div class="mt-2 px-7 py-3">
+                                    <p class="text-sm text-gray-500 mb-4">
+                                        This will add time to <strong>all active attempts</strong> and update the exam duration for future attempts.
+                                    </p>
+                                    <form action="{{ route('teacher.exams.add-time', $exam) }}" method="POST" id="addTimeForm">
+                                        @csrf
+                                        <label class="block text-sm text-gray-600 mb-2 text-left">Enter minutes to add:</label>
+                                        <input type="number" name="minutes" class="w-full px-3 py-2 border rounded-md" min="1" required placeholder="e.g. 10">
+                                        
+                                        <div class="flex justify-between mt-4">
+                                            <button type="button" onclick="document.getElementById('addTimeModal').classList.add('hidden')"
+                                                class="px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                                                Cancel
+                                            </button>
+                                            <button type="submit"
+                                                class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                                Add Time
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <script>
             document.addEventListener('DOMContentLoaded', function() {
                 let selectedAttempts = [];
                 const maxScore = {{ $statistics['max_possible_score'] ?? 100 }};

@@ -26,9 +26,9 @@ class ExamResultController extends Controller
     public function index(Request $request)
     {
         $exams = Exam::with(['attempts' => function ($query) {
-                $query->where('status', 'ccwo')
-                    ->with('student');
-            }])
+            $query->where('status', 'ccwo')
+                ->with('student');
+        }])
             ->withCount([
                 'attempts as total_attempts',
                 'attempts as graded_attempts' => function ($query) {
@@ -182,5 +182,30 @@ class ExamResultController extends Controller
             DB::rollback();
             return redirect()->back()->with('error', 'Failed to submit exam: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Add extra time to all active exam attempts
+     */
+    public function addTimeToAll(Request $request, Exam $exam)
+    {
+        $request->validate([
+            'minutes' => 'required|integer|min:1',
+        ]);
+
+        // Update exam duration for future attempts
+        $exam->increment('duration_minutes', $request->minutes);
+
+        // Update active attempts
+        $count = $exam->attempts()
+            ->where('status', 'in_progress')
+            ->get()
+            ->each(function ($attempt) use ($request) {
+                $attempt->expires_at = $attempt->expires_at->addMinutes((int) $request->minutes);
+                $attempt->save();
+            })
+            ->count();
+
+        return redirect()->back()->with('success', "Successfully added {$request->minutes} minutes to {$count} active attempts.");
     }
 }
