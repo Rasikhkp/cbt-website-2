@@ -48,7 +48,7 @@ class ExamController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $students = User::where('role', 'student')->orderBy('name')->get();
+        $students = User::where('role', 'student')->where('is_active', true)->orderBy('name')->get();
         $uniqueTags = $this->examService->getUniqueTagsForSelect();
 
         return view('teacher.exams.create', compact('questions', 'students', 'uniqueTags'));
@@ -133,7 +133,7 @@ class ExamController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $students = User::where('role', 'student')->orderBy('name')->get();
+        $students = User::where('role', 'student')->where('is_active', true)->orderBy('name')->get();
         $uniqueTags = $this->examService->getUniqueTagsForSelect();
 
         return view('teacher.exams.edit', compact('exam', 'questions', 'students', 'uniqueTags'));
