@@ -9,8 +9,7 @@ class UpdateExamRequest extends FormRequest
     public function authorize()
     {
         $exam = $this->route('exam');
-        return (auth()->user()->isTeacher() && $exam->created_by === auth()->id())
-            || auth()->user()->isAdmin();
+        return auth()->user()->isTeacher() || auth()->user()->isAdmin();
     }
 
     public function rules()
