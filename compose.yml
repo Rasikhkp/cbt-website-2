@@ -3,38 +3,21 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: cbt_web
+    container_name: cbt
     restart: unless-stopped
     env_file:
       - .env.prod
-    depends_on:
-      - mysql
-    ports:
-      - "8080:80"
     volumes:
-      - storage:/app/storage
+      - cbt-storage:/app/storage
     networks:
-      - cbt_net
-      - caddy_net
-
-  mysql:
-    image: mysql:8.0
-    container_name: mysql_db
-    restart: unless-stopped
-    command: --default-authentication-plugin=mysql_native_password
-    env_file:
-      - .env.prod
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - cbt_net
+      - caddy-net
+      - mysql-db-v8-network
 
 volumes:
-  mysql_data:
-  storage:
+  cbt-storage:
 
 networks:
-  cbt_net:
-    driver: bridge
-  caddy_net:
+  mysql-db-v8-network:
+    external: true
+  caddy-net:
     external: true
